@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "753533262079",
+    "firebase_url": "https://buddy-plans.firebaseio.com",
+    "project_id": "buddy-plans",
+    "storage_bucket": "buddy-plans.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:753533262079:android:b02f565d5e64a19d",
+        "android_client_info": {
+          "package_name": "com.chatapp.ramji.buddyplans"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "753533262079-fvoo18vh31q53iv9oqbhqasetkv7nrpg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chatapp.ramji.buddyplans",
+            "certificate_hash": "3381C39960620971F3757EBDE3963409DF2D428E"
+          }
+        },
+        {
+          "client_id": "753533262079-mal7qo6g7djqrs7skqf4f0rl8a3fm3p6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyc1Tjud1JH5nvfJE3FiekFUa7oNP6ZeI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "753533262079-mal7qo6g7djqrs7skqf4f0rl8a3fm3p6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
