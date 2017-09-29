@@ -1,19 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:layout_marginLeft="16dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_group_black_24dp"
+        app:civ_border_color="@android:color/white"
+        app:civ_shadow="false"
+        app:civ_border_width=".1dp"
+        android:id="@+id/group_item_photo"
+        android:layout_gravity="center_vertical"
+        />
 
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        >
 
     <TextView
         android:id="@+id/group_item_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:layout_marginLeft="48dp"
-        android:layout_marginRight="48dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="8dp"
+        />
+
+     <TextView
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         tools:text="Ramji : Can we meet for lunch ?"
+         android:maxLength="36"
+         android:id="@+id/lastmessage"
+         android:textSize="12sp"
+         android:textStyle="italic"
+         android:layout_marginLeft="24dp"
+         android:layout_marginBottom="10dp"
+         />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/timestamp"
+        tools:text="10:45"
+         android:textSize="12dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:layout_marginRight="16dp"
+        android:layout_gravity="center_vertical"
+
         />
 
 </LinearLayout>

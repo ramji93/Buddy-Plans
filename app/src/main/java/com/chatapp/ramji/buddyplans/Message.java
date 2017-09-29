@@ -14,6 +14,8 @@ public class Message {
     private String userName;
     private Long TimeStamp;
     private String PhotoUrl;
+    private String Uid;
+    private Location location;
 
     public String getPhotoContentName() {
         return PhotoContentName;
@@ -21,6 +23,14 @@ public class Message {
 
     public void setPhotoContentName(String photoContentName) {
         PhotoContentName = photoContentName;
+    }
+
+    public String getUid() {
+        return Uid;
+    }
+
+    public void setUid(String uid) {
+        this.Uid = uid;
     }
 
     public String getPhotoContentUrl() {
@@ -69,14 +79,21 @@ public class Message {
     }
 
 
-    public Message(String content, String userName, String photoContentUrl,String photoContentName)
+    public Message(String content, String userName, String photoContentUrl,String photoContentName, String uid,Location location)
     {
         this.Text = content;
         this.userName = userName;
         this.PhotoContentUrl = photoContentUrl;
         this.PhotoContentName = photoContentName;
+        this.Uid = uid;
+        this.location = location;
     }
 
+    public Location getLocation() {
+        return location;
+    }
 
-
+    public void setLocation(Location location) {
+        this.location = location;
+    }
 }

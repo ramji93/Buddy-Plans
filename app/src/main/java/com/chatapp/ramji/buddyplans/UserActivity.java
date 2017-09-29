@@ -2,20 +2,26 @@ package com.chatapp.ramji.buddyplans;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
+import com.mikhaellopez.circularimageview.CircularImageView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,14 +32,27 @@ public class UserActivity extends AppCompatActivity {
 
     private User user;
     @BindView(R.id.userDP)
-    ImageView profilePhotoView;
+    CircularImageView profilePhotoView;
 //    @BindView(R.id.username)
 //    TextView userNameView;
 //    @BindView(R.id.useremail)
 //    TextView userEmailView;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-
+    @BindView(R.id.divider)
+    View dividerview;
+    @BindView(R.id.fb_button)
+    ImageButton fb_button;
+    @BindView(R.id.fb_group)
+    LinearLayout fbLayout;
+    @BindView(R.id.mail_id)
+    TextView mailText;
+    @BindView(R.id.coordinatorlayout)
+    CoordinatorLayout coordinatorLayout;
+    @BindView(R.id.already_exists_frame)
+    View constraintLayout;
+    @BindView(R.id.useradd)
+    FloatingActionButton userAdd;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference friendDatabaseReference1;
     DatabaseReference friendDatabaseReference2;
@@ -43,6 +62,8 @@ public class UserActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
+        ButterKnife.bind(this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -50,15 +71,19 @@ public class UserActivity extends AppCompatActivity {
 
         user = (User) intent.getSerializableExtra("User");
 
+        if(user.getFb_id()!=null)
+        {
+            dividerview.setVisibility(View.VISIBLE);
+            fbLayout.setVisibility(View.VISIBLE);
+
+
+        }
+
         getSupportActionBar().setTitle(user.getUserName());
 
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
-
-
-        ButterKnife.bind(this);
-
-
+        mailText.setText(user.geteMail());
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -70,7 +95,46 @@ public class UserActivity extends AppCompatActivity {
 
         //userNameView.setText(user.getUserName());
 
+        if(FriendsFragment.friendListAdapter.friendHashMap.containsKey(user.getUid()))
+
+        {
+            constraintLayout.setVisibility(View.VISIBLE);
+
+            userAdd.setVisibility(View.INVISIBLE);
+
+//            Snackbar snackbar1 = Snackbar.make(coordinatorLayout, "This user is already in your friends list", Snackbar.LENGTH_LONG);
+//
+//            snackbar1.show();
+
+
+        }
+
+
     }
+
+
+    @OnClick(R.id.fb_button)
+    public void viewFbProfile()
+    {
+
+        Intent intent = new Intent();
+
+            try {
+                getPackageManager()
+                        .getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
+              intent = new  Intent(Intent.ACTION_VIEW,
+                        Uri.parse("fb://page/"+user.getFb_id())); //Trys to make intent with FB's URI
+            } catch (Exception e) {
+                intent = new  Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://www.facebook.com/"+user.getFb_id())); //catches and opens a url to the desired page
+            }
+
+
+
+        startActivity(intent);
+
+    }
+
 
     @OnClick(R.id.useradd)
     public void addToFriends()
@@ -78,6 +142,9 @@ public class UserActivity extends AppCompatActivity {
 
 
         //1. add new object in friends/user id/
+
+
+
 
         User currentUser;
 
@@ -102,8 +169,17 @@ public class UserActivity extends AppCompatActivity {
 
            friendDatabaseReference2.setValue(friend2);
 
+        Snackbar snackbar = Snackbar
+                .make(coordinatorLayout, "Added to your friends list", Snackbar.LENGTH_LONG);
+
+        snackbar.show();
+
+        finish();
+
 
     }
+
+
 
 
 

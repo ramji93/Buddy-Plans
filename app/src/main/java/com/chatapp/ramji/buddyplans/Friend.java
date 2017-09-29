@@ -14,7 +14,7 @@ public class Friend implements Serializable {
 
     private String lastMessage;
 
-    private Long lastMessageTimestamp;
+    private Long lastMessageTimestap;
 
     private boolean active;
 
@@ -82,12 +82,12 @@ public class Friend implements Serializable {
         this.lastMessage = lastMessage;
     }
 
-    public Long getLastMessageTimestamp() {
-        return lastMessageTimestamp;
+    public Long getLastMessageTimestap() {
+        return lastMessageTimestap;
     }
 
-    public void setLastMessageTimestamp(Long lastMessageTimestamp) {
-        this.lastMessageTimestamp = lastMessageTimestamp;
+    public void setLastMessageTimestap(Long lastMessageTimestamp) {
+        this.lastMessageTimestap = lastMessageTimestamp;
     }
 
     public boolean isActive() {

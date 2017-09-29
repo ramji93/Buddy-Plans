@@ -5,15 +5,24 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,16 +32,28 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.Profile;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
+import com.mikhaellopez.circularimageview.CircularImageView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,6 +81,20 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.viewPager)
     ViewPager mViewpager;
 
+    @BindView(R.id.nav_view)
+    NavigationView navigationView;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawer;
+
+    TextView txtName;
+
+    CircularImageView imgProfile;
+
+    private View navHeader;
+
+    private GroupsFragment groupsFragment;
+    private FriendsFragment friendsFragment;
+
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -76,15 +111,25 @@ public class MainActivity extends AppCompatActivity {
     private String mUsername = null;
     private String mUid = null;
 
+    int tab_index = 0;
+
     FirebaseUser user;
+
+    public static int navItemIndex = 0;
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new GroupsFragment(), "BUDDIES GROUP");
-        adapter.addFragment(new FriendsFragment(), "FRIENDS");
+        friendsFragment = new FriendsFragment();
+        groupsFragment = new GroupsFragment();
+        adapter.addFragment(groupsFragment, "BUDDIES GROUP");
+        adapter.addFragment(friendsFragment, "FRIENDS");
 
         viewPager.setAdapter(adapter);
+
+
     }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,11 +142,16 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(mainToolbar);
 
+        navHeader = navigationView.getHeaderView(0);
+
+
+        txtName = (TextView) navHeader.findViewById(R.id.name);
+
+        imgProfile = (CircularImageView) navHeader.findViewById(R.id.img_profile);
+
         mAuth = FirebaseAuth.getInstance();
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-
-
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -129,16 +179,104 @@ public class MainActivity extends AppCompatActivity {
 
                     List<AuthUI.IdpConfig> authProviders = new ArrayList<AuthUI.IdpConfig>();
 
+                    authProviders.add(new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build());
+
                     authProviders.add(new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build());
 
-                    startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder().setIsSmartLockEnabled(false)
+                    startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder().setIsSmartLockEnabled(false).setLogo(R.drawable.ic_whatshot_black_24dp)
                             .setProviders(authProviders).build(), RC_SIGN_IN);
                 }
             }
         };
 
+        mAuth.addAuthStateListener(mAuthListener);
+        int size = navigationView.getMenu().size();
+        for (int i = 0; i < size; i++) {
+            navigationView.getMenu().getItem(i).setChecked(false);
+        }
+
+    }
 
 
+
+    private void setUpNavigationView() {
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+
+            // This method will trigger on item Click of navigation menu
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+                //Check to see which item was being clicked and perform appropriate action
+                switch (menuItem.getItemId()) {
+                    //Replacing the main content with ContentFragment Which is our Inbox View;
+                    case R.id.nav_profile:
+                        navItemIndex = 1;
+
+                        startActivity(new Intent(MainActivity.this,MyProfileActivity.class));
+                        drawer.closeDrawers();
+
+
+                        break;
+
+
+                    case R.id.nav_logout:
+                        navItemIndex = 3;
+
+                        drawer.closeDrawers();
+                        AuthUI.getInstance().signOut(MainActivity.this);
+
+                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
+
+                        editor.remove("User");
+
+                        editor.remove("profiledp");
+
+                        editor.commit();
+
+                        return true;
+
+
+                    default:
+                        navItemIndex = 0;
+
+                }
+
+//                if (menuItem.isChecked()) {
+//                    menuItem.setChecked(false);
+//                } else {
+//                    menuItem.setChecked(true);
+//                }
+                menuItem.setChecked(false);
+                return true;
+
+            }
+
+        });
+
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawer, mainToolbar, R.string.openDrawer, R.string.closeDrawer) {
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                // Code here will be triggered once the drawer closes as we dont want anything to happen so we leave this blank
+                super.onDrawerClosed(drawerView);
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
+                super.onDrawerOpened(drawerView);
+
+
+            }
+        };
+
+        //Setting the actionbarToggle to drawer layout
+        drawer.addDrawerListener(actionBarDrawerToggle);
+
+        //calling sync state is necessary or else your hamburger icon wont show up
+        actionBarDrawerToggle.syncState();
 
     }
 
@@ -147,12 +285,45 @@ public class MainActivity extends AppCompatActivity {
     {
 
 
+        String facebook_id = null;
+
+        User currentuser = null;
+//        List<String> providerId = null;
+//
+//        AccessToken.getCurrentAccessToken()
+//
+//        providerId = user.getProviders();
+//
+//        for(String str: providerId)
+//
+//        {
+//            Log.d("providerid is ", str);
+//        }
+
+//        user.getToken(false).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
+//            @Override
+//            public void onSuccess(GetTokenResult getTokenResult) {
+//
+//               Log.d("Token is ",getTokenResult.getToken());
+//
+//            }
+//        });
+
+        if(AccessToken.getCurrentAccessToken()!=null) {
+
+            facebook_id = Profile.getCurrentProfile().getId().toString();
+
+
+        }
+
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
 
-        if(!sharedPreferences.contains("Uid"))
+        if(!sharedPreferences.contains("User"))
         {
 
-            User currentuser = new User( (user.getPhotoUrl() == null) ? null : user.getPhotoUrl().toString() ,user.getDisplayName(),user.getEmail(),user.getUid());
+             currentuser = new User( (user.getPhotoUrl() == null) ? null : user.getPhotoUrl().toString() ,user.getDisplayName(),user.getEmail(),user.getUid());
+
+            currentuser.setFb_id(facebook_id);
 
             SharedPreferences.Editor editor = sharedPreferences.edit();
             Gson gson = new Gson();
@@ -160,9 +331,30 @@ public class MainActivity extends AppCompatActivity {
             editor.putString("User",currentUserString);
             editor.commit();
 
+
         }
 
+        else
+        {
+            Gson gson = new Gson();
+
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            currentuser = gson.fromJson(sharedPreferences.getString("User", ""), User.class);
+        }
+
+
+        txtName.setText(mUsername);
+
+        if(currentuser.getProfileDP()!=null)
+
+        Glide.with(this).load(currentuser.getProfileDP()).into(imgProfile);
+
+        setUpNavigationView();
+
         setupViewPager(mViewpager);
+
+
+
         mainTabLayout.setupWithViewPager(mViewpager);
 
         mainTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -172,6 +364,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     searchMenuItem.setVisible(false);
                     addGroupMenuItem.setVisible(true);
+                    tab_index = tab.getPosition();
 
                 }
 
@@ -179,6 +372,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     searchMenuItem.setVisible(true);
                     addGroupMenuItem.setVisible(false);
+                    tab_index = tab.getPosition();
 
                 }
 
@@ -197,6 +391,7 @@ public class MainActivity extends AppCompatActivity {
 
         mDatabaseReference = mFirebaseDatabase.getReference().child("Users").child(mUid);
 
+        final User finalCurrentuser = currentuser;
         UserCheckListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -205,7 +400,24 @@ public class MainActivity extends AppCompatActivity {
                 if(currentUser == null)
                 {
 
-                    mDatabaseReference.setValue(new User((user.getPhotoUrl() == null) ? null : user.getPhotoUrl().toString(),user.getDisplayName(),user.getEmail(),mUid));
+                    mDatabaseReference.setValue(finalCurrentuser);
+
+                }
+
+                else
+
+                {
+                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                    if(currentUser.getProfileDP()!=null)
+
+                    {
+                        editor.putString("profiledp", currentUser.getProfileDP());
+
+                        editor.commit();
+                    }
 
                 }
 
@@ -219,6 +431,13 @@ public class MainActivity extends AppCompatActivity {
 
         mDatabaseReference.addListenerForSingleValueEvent(UserCheckListener);
 
+        String token = FirebaseInstanceId.getInstance().getToken();
+
+        if(token!= null)
+        {
+
+            mDatabaseReference.child("instanceId").setValue(token);
+        }
 
 
 
@@ -228,6 +447,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void SignoutFuction()
     {
+
+        ViewPagerAdapter pagerAdapter =  (ViewPagerAdapter) mViewpager.getAdapter();
+
+       FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+       fragmentTransaction.remove(groupsFragment);
+       fragmentTransaction.remove(friendsFragment);
+       fragmentTransaction.commit();
+
 
         if(UserCheckListener != null)
         mDatabaseReference.removeEventListener(UserCheckListener);
@@ -256,16 +483,31 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+//        TabLayout.Tab tab = mainTabLayout.getTabAt();
+//        tab.select();
+
+//        mAuth.addAuthStateListener(mAuthListener);
+//        int size = navigationView.getMenu().size();
+//        for (int i = 0; i < size; i++) {
+//            navigationView.getMenu().getItem(i).setChecked(false);
+//        }
+
 
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+//        if (mAuth != null)
+//            mAuth.removeAuthStateListener(mAuthListener);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         if (mAuth != null)
             mAuth.removeAuthStateListener(mAuthListener);
-
     }
 
     @Override
@@ -299,6 +541,8 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
 
                 editor.remove("User");
+
+                editor.remove("profiledp");
 
                 editor.commit();
 

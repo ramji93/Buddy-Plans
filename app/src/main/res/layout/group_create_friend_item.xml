@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="70dp">
+
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="20dp"
+        android:id="@+id/group_create_friend_photo"
+        android:layout_gravity="center_vertical"
+        app:civ_border="false"
+        app:civ_shadow="false"
+        />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:id="@+id/group_create_friend_name"
+        android:layout_gravity="center_vertical"
+        android:textAppearance="@android:style/TextAppearance.Medium"
+
+        />
+
+
+
+
+</LinearLayout>

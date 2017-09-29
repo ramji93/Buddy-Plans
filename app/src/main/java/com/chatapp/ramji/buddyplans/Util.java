@@ -19,6 +19,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 import static android.R.attr.path;
@@ -38,18 +40,37 @@ public class Util {
 //    String time = String.format("%02d:%02d:%02d:%d", hour, minute, second, millis);
 
 
-    public static void getDate(Long timestamp)
+    public static String getDate(Long timestamp)
     {
 
 
 
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+        Calendar msgcalendar = Calendar.getInstance();
+
+        msgcalendar.setTimeInMillis(timestamp);
+
+        Date date = new Date();
+
+        Calendar todaycalendar = Calendar.getInstance();
+
+        todaycalendar.setTime(date);
+
+        SimpleDateFormat sdf;
+
+        if(todaycalendar.get(Calendar.DAY_OF_YEAR) > msgcalendar.get(Calendar.DAY_OF_YEAR))
+
+        sdf = new SimpleDateFormat("HH:mm dd/MM");
+
+        else
+
+        sdf = new SimpleDateFormat("HH:mm");
+
         String dateAsString = sdf.format (timestamp);
         Log.i("Inside Util func","date is "+ dateAsString );
 
 
-
+        return dateAsString;
 
 
     }
@@ -67,9 +88,11 @@ public class Util {
 
         File fdir = new File(dir);
 
+        boolean create_result = false;
+
         if(!fdir.exists())
 
-          fdir.mkdirs();
+         create_result = fdir.mkdirs();
 
         String path = Environment.getExternalStorageDirectory().getPath()+appsegment+"/"+photoContentName;
 
@@ -81,6 +104,8 @@ public class Util {
             return;
         else
         {
+
+
 
             Bitmap bitmap = null;
 
@@ -103,11 +128,15 @@ public class Util {
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
+                catch(IOException e) {
+                    e.printStackTrace();
+                }
             catch (Exception e) {
                 e.printStackTrace();
             }
              finally {
                 try {
+                    if(fos!=null)
                     fos.close();
                 } catch (IOException e) {
                     e.printStackTrace();

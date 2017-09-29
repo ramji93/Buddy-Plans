@@ -22,6 +22,20 @@
     <string name="title_activity_user">UserActivity</string>
 
     <string name="sample_content">In a professional context it often happens that private or corporate clients corder a publication to be made and presented with the actual content still not being ready. Think of a news blog thats filled with content hourly on the day of going live. However, reviewers tend to be distracted by comprehensible content, say, a random text copied from a newspaper or the internet. The are likely to focus on the text, disregarding the layout and its elements. Besides, random text risks to be unintendedly humorous or offensive, an unacceptable risk in corporate environments. Lorem ipsum and its many variants have been employed since the early 1960ies, and quite likely since the sixteenth century. </string>
+    <string name="fb_login_protocol_scheme">fb148052065742272</string>
+    <string name="facebook_app_id">148052065742272</string>
+    <string name="edit_group">Edit Group</string>
 
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="openDrawer">open_drawer</string>
+    <string name="closeDrawer">close_drawer</string>
 
+    <string name="nav_profile">Your Profile</string>
+    <string name="nav_logout">Log Out</string>
+    <string name="favourite_chats">Favourite Chats</string>
+    <string name="add_location">Add Location</string>
+    <string-array name="nav_item_activity_titles">
+        <item>Your Profile</item>
+    </string-array>
 </resources>

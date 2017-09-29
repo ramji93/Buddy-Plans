@@ -1,13 +1,20 @@
 package com.chatapp.ramji.buddyplans;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.mikhaellopez.circularimageview.CircularImageView;
+
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -21,12 +28,20 @@ public class GroupListAdapter extends ArrayAdapter<Groupheader> {
 
     List<Groupheader> groups;
 
+    HashMap<String,Groupheader> grouphashmap;
+
     public GroupListAdapter(Context context, List<Groupheader> objects) {
         super(context, R.layout.group_list_item , objects);
 
         mcontext = context;
         groups = objects;
 
+        grouphashmap = new HashMap<String, Groupheader>();
+    }
+
+    @Override
+    public int getCount() {
+        return groups.size();
     }
 
     @NonNull
@@ -47,11 +62,42 @@ public class GroupListAdapter extends ArrayAdapter<Groupheader> {
 
         else
 
+        {
+
+            ((TextView) convertView.findViewById(R.id.timestamp)).setText("");
+
+            ((TextView) convertView.findViewById(R.id.lastmessage)).setText("");
+
             groupItemView = convertView;
+
+
+        }
 
         TextView groupNameView = (TextView) groupItemView.findViewById(R.id.group_item_name);
 
+        CircularImageView groupPhotoView = (CircularImageView) groupItemView.findViewById(R.id.group_item_photo);
+
+
+
+        ViewCompat.setTransitionName(groupPhotoView,groups.get(position).getName());
+
         groupNameView.setText(groups.get(position).getName());
+
+        if(groups.get(position).getPhotoUrl()!=null)
+
+        Glide.with(mcontext).load(groups.get(position).getPhotoUrl()).asBitmap().into(groupPhotoView);
+
+        TextView lastmessage = (TextView) groupItemView.findViewById(R.id.lastmessage);
+
+        if(groups.get(position).getLastMessage() != null)
+
+        lastmessage.setText(groups.get(position).getLastMessage());
+
+        TextView timestamp = (TextView) groupItemView.findViewById(R.id.timestamp);
+
+        if(groups.get(position).getLastMessageTimestap() != null)
+
+        timestamp.setText(Util.getDate(groups.get(position).getLastMessageTimestap()));
 
         return groupItemView;
 
@@ -61,6 +107,9 @@ public class GroupListAdapter extends ArrayAdapter<Groupheader> {
     public void add(Groupheader object) {
 
         groups.add(object);
+        grouphashmap.put(object.getGroupKey(),object);
+
+
 
 
     }

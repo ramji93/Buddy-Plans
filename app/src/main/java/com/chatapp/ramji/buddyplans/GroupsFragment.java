@@ -3,14 +3,23 @@ package com.chatapp.ramji.buddyplans;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -19,6 +28,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -38,6 +48,8 @@ public class GroupsFragment extends Fragment {
 
     GroupListAdapter groupListAdapter;
 
+    View rootView;
+
     public GroupsFragment() {
         // Required empty public constructor
     }
@@ -47,39 +59,27 @@ public class GroupsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-    }
+        MainActivity mainActivity = (MainActivity)  getActivity();
+
+        Gson gson = new Gson();
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        User currentUser = gson.fromJson(sharedPreferences.getString("User", ""), User.class);
+
+        Uid = currentUser.getUid();
 
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        MainActivity mainActivity = (MainActivity) context;
-        mFirebaseUser = mainActivity.user;
-        mFirebaseDatabase = mainActivity.mFirebaseDatabase;
-        Uid =  mFirebaseUser.getUid();
 
-    }
+        //GroupsFragment container = (GroupsFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.groupfragment);
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+        ViewGroup container = (ViewGroup) getActivity().findViewById(R.id.groupfragment);
+        rootView =  LayoutInflater.from(getActivity())
+                .inflate(R.layout.fragment_groups, container, false);
 
-
-        setHasOptionsMenu(false);
-        // Inflate the layout for this fragment
-
-        groupReference = mFirebaseDatabase.getReference().child("GroupChat");
-
-        mGroupListener = new GroupListener();
-        // Inflate the layout for this fragment
-
-        groupListAdapter = new GroupListAdapter(getContext(),new ArrayList<Groupheader>());
-
-
-        View rootView =  inflater.inflate(R.layout.fragment_groups, container, false);
 
         GroupLists = (ListView) rootView.findViewById(R.id.grouplist);
 
+        groupListAdapter = new GroupListAdapter(getContext(),new ArrayList<Groupheader>());
 
         GroupLists.setAdapter(groupListAdapter);
 
@@ -88,35 +88,135 @@ public class GroupsFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getContext(),GroupChatActivity.class);
                 Groupheader group = (Groupheader) parent.getItemAtPosition(position);
+
+                ImageView imageView = (ImageView) view.findViewById(R.id.group_item_photo);
+
+
+
+                if(imageView.getDrawable()!=null) {
+                    Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                    intent.putExtra("image", bitmap);
+                }
+                intent.putExtra("transition",ViewCompat.getTransitionName(imageView));
                 intent.putExtra("group",group);
-                startActivity(intent);
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation
+                        (
+                                getActivity(),
+                                imageView,
+                                ViewCompat.getTransitionName(imageView));
+                startActivity(intent,options.toBundle());
 
             }
         });
 
-        return rootView;
 
-    }
+        groupReference = mFirebaseDatabase.getReference().child("GroupChat");
 
-    @Override
-    public void onResume() {
-        super.onResume();
+        mGroupListener = new GroupListener();
+
         groupListQuery = groupReference.orderByKey();
 
         if(mGroupListener!=null)
             groupListQuery.addChildEventListener(mGroupListener);
 
+
+
+
     }
 
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        MainActivity mainActivity = (MainActivity) context;
+       // mFirebaseUser = mainActivity.user;
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+
+
+//        if(mFirebaseUser!=null)
+//        Uid =  mFirebaseUser.getUid();
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+
+
+        setHasOptionsMenu(false);
+        // Inflate the layout for this fragment
+
+//        groupReference = mFirebaseDatabase.getReference().child("GroupChat");
+
+//        mGroupListener = new GroupListener();
+        // Inflate the layout for this fragment
+
+
+
+
+
+        return rootView;
+
+
+
+    }
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        groupListQuery = groupReference.orderByKey();
+//
+//        if(mGroupListener!=null)
+//            groupListQuery.addChildEventListener(mGroupListener);
+//
+//    }
+//
+//
+//    @Override
+//    public void onPause() {
+//        super.onPause();
+//        if(mGroupListener!=null) {
+//            groupListQuery.removeEventListener(mGroupListener);
+//            mGroupListener=null;
+//        }
+//
+//    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+//        groupListQuery = groupReference.orderByKey();
+//
+//        if(mGroupListener!=null)
+//            groupListQuery.addChildEventListener(mGroupListener);
+
+    }
+
+    @Override
+    public void onAttachFragment(Fragment childFragment) {
+        super.onAttachFragment(childFragment);
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+//        if(mGroupListener!=null) {
+//            groupListQuery.removeEventListener(mGroupListener);
+//            mGroupListener=null;
+//        }
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         if(mGroupListener!=null) {
             groupListQuery.removeEventListener(mGroupListener);
             mGroupListener=null;
         }
-
     }
 
     private class GroupListener implements ChildEventListener
@@ -132,13 +232,13 @@ public class GroupsFragment extends Fragment {
 
             DatabaseReference userCheckRef = mFirebaseDatabase.getReference("GroupMemebers").child(dataSnapshot.getKey()).child(Uid);
 
+            group.setGroupKey(dataSnapshot.getKey());
+
             userCheckRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if(dataSnapshot.exists())
                     {
-
-                        group.setGroupKey(dataSnapshot.getKey());
 
                         groupListAdapter.add(group);
 
@@ -159,6 +259,57 @@ public class GroupsFragment extends Fragment {
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            final Groupheader group = (Groupheader) dataSnapshot.getValue(Groupheader.class);
+
+            DatabaseReference userCheckRef = mFirebaseDatabase.getReference("GroupMemebers").child(dataSnapshot.getKey()).child(Uid);
+
+            group.setGroupKey(dataSnapshot.getKey());
+
+            userCheckRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists())
+                    {
+
+//                        groupListAdapter.add(group);
+//
+//                        groupListAdapter.notifyDataSetChanged();
+
+//                        Friend friend = (Friend) dataSnapshot.getValue(Friend.class);
+//
+//                        Friend friend1 = friendListAdapter.friendHashMap.get(friend.getUid());
+//
+//                        friendListAdapter.friends.remove(friend1);
+//
+//                        friendListAdapter.friendHashMap.remove(friend.getUid());
+//
+//                        friendListAdapter.add(friend);
+//
+//                        friendListAdapter.notifyDataSetChanged();
+
+                         Groupheader group1 =  groupListAdapter.grouphashmap.get(group.getGroupKey());
+
+                         groupListAdapter.groups.remove(group1);
+
+                         groupListAdapter.grouphashmap.remove(group.getGroupKey());
+
+                         groupListAdapter.add(group);
+
+                         groupListAdapter.notifyDataSetChanged();
+
+
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+
 
         }
 

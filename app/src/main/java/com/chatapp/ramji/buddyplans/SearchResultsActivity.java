@@ -2,6 +2,8 @@ package com.chatapp.ramji.buddyplans;
 
 import android.app.SearchManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +17,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.gson.Gson;
+import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
 
@@ -30,7 +34,10 @@ public class SearchResultsActivity extends AppCompatActivity {
     private UserListener userListener;
     @BindView(R.id.usersearchlist) RecyclerView userSearchList;
     @BindView(R.id.search_results_toolbar) Toolbar toolbar;
+
     UserSearchAdapter userSearchAdapter;
+
+    User currentUser;
 
 
     @Override
@@ -57,6 +64,14 @@ public class SearchResultsActivity extends AppCompatActivity {
             displayResults(query);
         }
 
+
+
+        Gson gson = new Gson();
+
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        currentUser = gson.fromJson(sharedPreferences.getString("User",""),User.class);
+
     }
 
 
@@ -67,9 +82,11 @@ public class SearchResultsActivity extends AppCompatActivity {
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
             User user = dataSnapshot.getValue(User.class);
-            userSearchAdapter.userList.add(user);
-            userSearchAdapter.notifyDataSetChanged();
 
+            if(!user.getUid().equalsIgnoreCase(currentUser.getUid())) {
+                userSearchAdapter.userList.add(user);
+                userSearchAdapter.notifyDataSetChanged();
+            }
 
         }
 
@@ -98,7 +115,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     {
 
 
-        userQuery = usersReference.orderByChild("userName").startAt(query);
+        userQuery = usersReference.orderByChild("userName").startAt(query) ;
 
          userListener = new UserListener();
 

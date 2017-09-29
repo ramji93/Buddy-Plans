@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -15,20 +22,29 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:id="@+id/groupchat_toolbar"
         android:background="@color/colorPrimaryDark"
-        app:titleMarginStart="50dp"
+        app:titleMarginStart="0dp"
         app:title="@string/app_name"
 
         >
 
-        <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="Title"-->
-            <!--android:textColor="@android:color/white"-->
-            <!--android:textAppearance="?android:attr/textAppearanceLarge"-->
-            <!--android:textStyle="bold"-->
-            <!--android:id="@+id/groupchat_title"-->
-            <!--android:layout_gravity="center"/>-->
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/group_activity_logo"
+            android:src="@drawable/ic_group_black_24dp"
+            app:civ_shadow="false"
+            app:civ_border_width=".1dp"
+            app:civ_border_color="@android:color/white"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Title"
+            android:textColor="@android:color/white"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/groupchat_title"
+            android:paddingLeft="16dp"/>
 
     </android.support.v7.widget.Toolbar>
 
@@ -37,28 +53,69 @@
         android:layout_marginTop="?android:attr/actionBarSize"
         android:id="@+id/groupchat_messages"
         android:layout_width="match_parent"
+        android:paddingBottom="54dp"
         android:layout_height="wrap_content">
 
     </android.support.v7.widget.RecyclerView>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:orientation="horizontal"
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/menu_yellow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_margin="10dp"
-        android:background="@android:color/white"
+        android:layout_alignParentLeft="true"
+        app:menu_fab_size="mini"
+        app:menu_labels_style="@style/MenuLabelsStyle"
+        app:menu_labels_showAnimation="@anim/jump_from_down"
+        app:menu_labels_hideAnimation="@anim/jump_to_down"
+        app:menu_animationDelayPerItem="0"
+        app:menu_icon="@drawable/ic_attach_file_24dp"
+        app:menu_shadowColor="#444"
+        app:menu_labels_position="right"
+        app:menu_colorNormal="#FF4081"
+        app:menu_colorPressed="#F2AB00"
+        app:menu_colorRipple="#D99200">
 
-        android:layout_height="wrap_content">
-
-        <android.support.design.widget.FloatingActionButton
+        <com.github.clans.fab.FloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fabSize="mini"
-            android:src="@drawable/ic_attach_file_24dp"
+            app:fab_label="Attach picture"
+            app:fab_colorNormal="#FF4081"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/picture_24"
             android:id="@+id/attachPhoto"
-
             />
 
+        <com.github.clans.fab.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fabSize="mini"
+            app:fab_label="Attach location"
+            app:fab_colorNormal="#FF4081"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/marker_24"
+            android:id="@+id/attachlocation"
+            />
+
+    </com.github.clans.fab.FloatingActionMenu>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="4dp"
+        android:layout_alignBaseline="@id/menu_yellow"
+        android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:elevation="4dp"
+        android:layout_marginLeft="52dp"
+        android:background="@drawable/message_textpad_background"
+
+        android:layout_height="wrap_content">
 
         <!--<EditText-->
             <!--android:layout_width="0dp"-->
@@ -70,7 +127,7 @@
             <!--android:hint="type your message" />-->
 
         <ImageView
-            android:layout_width="wrap_content"
+            android:layout_width="54dp"
             android:layout_height="wrap_content"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:id="@+id/smiley_button"
@@ -83,15 +140,20 @@
             android:id="@+id/group_message_input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:maxLength="100"
             app:emojiconSize="28sp" />
 
         <ImageButton
             android:src="@drawable/ic_send_black_24dp"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
+            android:layout_width="72dp"
             android:layout_height="wrap_content"
             android:id="@+id/groupsend_button"
             />
     </LinearLayout>
 
+    </LinearLayout>
+
 </RelativeLayout>
+
+    </android.support.design.widget.CoordinatorLayout>

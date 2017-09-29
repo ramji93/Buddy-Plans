@@ -14,6 +14,7 @@ public class User implements Serializable {
     private String userName;
     private String eMail;
     private String uid;
+    private String fb_id;
 
 
     public  User(String profiledp,String username,String email,String uid)
@@ -28,6 +29,14 @@ public class User implements Serializable {
     public User()
     {
 
+    }
+
+    public String getFb_id() {
+        return fb_id;
+    }
+
+    public void setFb_id(String fb_id) {
+        this.fb_id = fb_id;
     }
 
     public String getUid() {

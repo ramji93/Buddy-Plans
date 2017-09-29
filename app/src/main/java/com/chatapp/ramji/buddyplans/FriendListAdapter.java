@@ -11,9 +11,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.internal.bind.ReflectiveTypeAdapterFactory;
+import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import butterknife.BindView;
@@ -30,12 +34,17 @@ public class FriendListAdapter extends ArrayAdapter<Friend>
 
     List<Friend> friends;
 
+    HashMap<String,Friend> friendHashMap;
+
     public FriendListAdapter(Context context, List<Friend> objects) {
         super(context, R.layout.friend_list_item, objects);
 
         friends = objects;
 
+
         this.context = context;
+
+        friendHashMap = new HashMap<String, Friend>();
     }
 
     @NonNull
@@ -57,13 +66,40 @@ public class FriendListAdapter extends ArrayAdapter<Friend>
 
         else
 
-        friendListItem = convertView;
+       {
+
+           ((TextView) convertView.findViewById(R.id.timestamp)).setText("");
+
+           ((TextView) convertView.findViewById(R.id.lastmessage)).setText("");
+
+           friendListItem = convertView;
+
+
+
+       }
 
         TextView friendNameView = (TextView) friendListItem.findViewById(R.id.friendName);
 
+        CircularImageView imageView = (CircularImageView) friendListItem.findViewById(R.id.friend_item_photo);
+
+        Glide.with(context).load(friends.get(position).getPhotourl()).asBitmap().into(imageView);
+
         friendNameView.setText(friends.get(position).getName());
 
-        return friendNameView;
+        TextView lastmessage = (TextView) friendListItem.findViewById(R.id.lastmessage);
+
+        if(friends.get(position).getLastMessage() != null)
+
+            lastmessage.setText(friends.get(position).getLastMessage());
+
+        TextView timestamp = (TextView) friendListItem.findViewById(R.id.timestamp);
+
+        if(friends.get(position).getLastMessageTimestap() != null)
+
+            timestamp.setText(Util.getDate(friends.get(position).getLastMessageTimestap()));
+
+
+        return friendListItem;
 
 
     }
@@ -73,8 +109,20 @@ public class FriendListAdapter extends ArrayAdapter<Friend>
 
         friends.add(object);
 
+        friendHashMap.put(object.getUid(),object);
+
+
 
     }
+
+
+    public boolean checkFriendExists(String userUid)
+    {
+
+      return   friendHashMap.containsKey(userUid);
+
+    }
+
 
 
 }

@@ -1,85 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_chat"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.chatapp.ramji.buddyplans.ChatActivity">
+    android:fitsSystemWindows="true">
 
-   <android.support.v7.widget.Toolbar
-       android:layout_width="match_parent"
-       android:layout_height="?android:attr/actionBarSize"
-             android:elevation="4dp"
-       app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-       android:id="@+id/chat_toolbar"
-       android:background="@color/colorPrimaryDark"
-             app:titleMarginStart="50dp"
+<RelativeLayout
 
-       >
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/activity_chat"
+    >
 
-       <com.mikhaellopez.circularimageview.CircularImageView
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:id="@+id/chat_toolbar"
+        android:background="@color/colorPrimaryDark"
+        app:titleMarginStart="0dp"
+        app:title="@string/app_name"
 
-           android:layout_width="40dp"
-           android:layout_height="40dp"
-           android:src="@drawable/ic_person_black_24dp"
-           app:civ_border_color="@android:color/white"
-           app:civ_border_width="2dp"
-           app:civ_shadow="false"
-           app:civ_shadow_radius="10"
-           app:civ_shadow_color="#8BC34A"
-           android:layout_gravity="left"
-           />
+        >
 
-       <TextView
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:text="Title"
-           android:textColor="@android:color/white"
-           android:textAppearance="?android:attr/textAppearanceLarge"
-           android:textStyle="bold"
-           android:id="@+id/chat_title"
-           android:layout_gravity="center"/>
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/circular_image"
+            android:src="@drawable/ic_group_black_24dp"
+            app:civ_shadow="false"
+            app:civ_border_width=".1dp"
+            app:civ_border_color="@android:color/white"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Title"
+            android:textColor="@android:color/white"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/chat_title"
+            android:paddingLeft="16dp"/>
+
+    </android.support.v7.widget.Toolbar>
 
 
-   </android.support.v7.widget.Toolbar>
+
+
+    <!--<RelativeLayout-->
+        <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content">-->
 
     <android.support.v7.widget.RecyclerView
 
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_marginTop="?android:attr/actionBarSize"
         android:id="@+id/chat_messages"
         android:layout_width="match_parent"
+        android:paddingBottom="54dp"
         android:layout_height="wrap_content">
 
     </android.support.v7.widget.RecyclerView>
 
 
+
+
+    <!--</RelativeLayout>-->
+
+
+
+        <com.github.clans.fab.FloatingActionMenu
+            android:id="@+id/menu_yellow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            app:menu_fab_size="mini"
+            app:menu_labels_style="@style/MenuLabelsStyle"
+            app:menu_labels_showAnimation="@anim/jump_from_down"
+            app:menu_labels_hideAnimation="@anim/jump_to_down"
+            app:menu_animationDelayPerItem="0"
+            app:menu_icon="@drawable/ic_attach_file_24dp"
+            app:menu_shadowColor="#444"
+            app:menu_labels_position="right"
+            app:menu_colorNormal="#FF4081"
+            app:menu_colorPressed="#F2AB00"
+            app:menu_colorRipple="#D99200">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fabSize="mini"
+            app:fab_label="Attach picture"
+            app:fab_colorNormal="#FF4081"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/picture_24"
+            android:id="@+id/attachPhoto"
+            />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:fabSize="mini"
+                app:fab_label="Attach location"
+                app:fab_colorNormal="#FF4081"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/marker_24"
+                android:id="@+id/attachlocation"
+                />
+
+        </com.github.clans.fab.FloatingActionMenu>
+
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_alignParentBottom="true"
+    android:layout_margin="4dp"
+    android:layout_alignBaseline="@id/menu_yellow"
+    android:layout_height="wrap_content">
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="10dp"
-        android:background="@android:color/white"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="52dp"
 
-        android:layout_height="wrap_content">
-        <EditText
+
+        android:background="@drawable/message_textpad_background"
+        android:elevation="4dp"
+
+        android:orientation="horizontal">
+
+
+        <!--<EditText-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--android:inputType="text"-->
+        <!--android:ems="10"-->
+        <!--android:id="@+id/group_message_input"-->
+        <!--android:hint="type your message" />-->
+
+        <ImageView
+            android:id="@+id/smiley_button"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="54dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_smiley" />
+
+        <hani.momanii.supernova_emoji_library.Helper.EmojiconEditText
+            android:id="@+id/chat_message_input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:inputType="text"
-            android:ems="10"
-            android:id="@+id/message_input"
-            android:hint="type your message" />
+            android:hint="say something"
+            android:maxLength="34"
+            app:emojiconSize="28sp" />
 
-        <Button
-            android:text="Send"
-            android:layout_width="100dp"
+        <ImageButton
+            android:id="@+id/chatsend_button"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="72dp"
             android:layout_height="wrap_content"
-            android:id="@+id/send_button"
-            />
+            android:src="@drawable/ic_send_black_24dp" />
     </LinearLayout>
 
 
-
+</LinearLayout>
 
 </RelativeLayout>
+
+    </android.support.design.widget.CoordinatorLayout>

@@ -8,8 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.mikhaellopez.circularimageview.CircularImageView;
+
 import java.util.ArrayList;
 import java.util.zip.Inflater;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by user on 10-03-2017.
@@ -36,6 +42,8 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
 
         holder.userNameView.setText(userList.get(position).getUserName());
 
+        Glide.with(mContext).load(userList.get(position).getProfileDP()).into(holder.imageView);
+
 
     }
 
@@ -60,7 +68,11 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
 
     public class UserList_ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
+        @BindView(R.id.username)
         TextView userNameView;
+
+        @BindView(R.id.image)
+        CircularImageView imageView;
 
 
         public UserList_ViewHolder(View view)
@@ -68,7 +80,7 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
 
             super(view);
 
-            userNameView = (TextView) view.findViewById(R.id.username);
+            ButterKnife.bind(this,view);
 
             view.setOnClickListener(this);
 

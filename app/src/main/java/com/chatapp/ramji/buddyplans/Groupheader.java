@@ -26,13 +26,24 @@ public class Groupheader implements Serializable{
 
     private String groupKey;
 
+    private String photoUrl;
 
-    public  Groupheader(String name,String chatId)
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+
+    public  Groupheader(String name, String chatId, String photoUrl)
     {
 
         this.name = name;
 
         this.chatId = chatId;
+
+        this.photoUrl = photoUrl;
 
     }
 

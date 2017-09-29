@@ -15,11 +15,19 @@
       },
       "oauth_client": [
         {
+          "client_id": "753533262079-3pgjmt9567o2a19sre9vmbr0mdr7iim5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chatapp.ramji.buddyplans",
+            "certificate_hash": "ee028c58a10c4960884af94fcfd9677d943485fe"
+          }
+        },
+        {
           "client_id": "753533262079-fvoo18vh31q53iv9oqbhqasetkv7nrpg.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.chatapp.ramji.buddyplans",
-            "certificate_hash": "3381C39960620971F3757EBDE3963409DF2D428E"
+            "certificate_hash": "3381c39960620971f3757ebde3963409df2d428e"
           }
         },
         {

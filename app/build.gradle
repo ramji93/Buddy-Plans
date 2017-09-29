@@ -2,17 +2,26 @@ apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'new'
+            keyPassword 'newkeystore'
+            storeFile file('D:/android studio projects/keystore/new.jks')
+            storePassword 'newkeystore'
+        }
+    }
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.chatapp.ramji.buddyplans"
         minSdkVersion 16
         targetSdkVersion 25
+        multiDexEnabled true
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.config
     }
-
     repositories {
         mavenLocal()
         jcenter()
@@ -21,18 +30,14 @@ android {
         }
 
         maven { url 'https://maven.fabric.io/public' }
-       //maven { url "https://jitpack.io" }
-        maven { url "https://dl.bintray.com/hani-momanii/maven"}
+        //maven { url "https://jitpack.io" }
+        maven { url "https://dl.bintray.com/hani-momanii/maven" }
 
 
     }
-
-
-
     packagingOptions {
         exclude 'META-INF/LICENSE'
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -43,14 +48,18 @@ android {
         targetCompatibility 1.7
         sourceCompatibility 1.7
     }
+    productFlavors {
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
+    compile 'com.google.android.gms:play-services-places:10.0.1'
+    compile 'com.github.oliveiradev:image-zoom:0.4.0'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.mikhaellopez:circularimageview:3.0.2'
@@ -64,12 +73,17 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.android.support:design:25.1.0'
     compile 'com.android.support:support-v4:25.1.0'
-    testCompile 'junit:junit:4.12'
-    apt 'com.jakewharton:butterknife-compiler:8.4.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
     compile 'com.android.support:recyclerview-v7:25.1.0'
     compile 'hani.momanii.supernova_emoji_library:supernova-emoji-library:0.0.2'
     compile 'gun0912.ted:tedbottompicker:1.0.11'
+    compile 'com.android.support:multidex:1.0.1'
+    compile 'com.github.clans:fab:1.6.4'
+    compile 'com.github.lzyzsd:circleprogress:1.2.1'
+
+
+    testCompile 'junit:junit:4.12'
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
 }
 
 
