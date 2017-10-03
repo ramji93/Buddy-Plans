@@ -2,12 +2,16 @@ package com.chatapp.ramji.buddyplans;
 
 import android.*;
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.SystemClock;
@@ -16,6 +20,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -102,6 +107,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     EmojIconActions emojIcon;
     TedBottomPicker bottomSheetDialogFragment;
     final int WRITE_REQUEST = 1;
+    Context mContext = this;
     final int LOCATION_REQUEST = 2;
     final int PLACE_PICKER_REQUEST = 100;
     HandlerThread handlerThread;
@@ -118,6 +124,8 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
+
+        attachMenu.setClosedOnTouchOutside(true);
 
         setSupportActionBar(toolbar);
 
@@ -222,9 +230,46 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
                  String sharedText = shareIntent.getStringExtra(Intent.EXTRA_TEXT);
                   messageInput.setText(sharedText);
 
-
+                 shareIntent = null;
 
              }
+
+             else if(shareIntent.getType().contains("image")) {
+
+                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                 builder.setMessage("Do you want to upload the image in this chat? ");
+                 builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                     public void onClick(DialogInterface dialog, int id) {
+                         // User clicked OK button
+
+                         Uri imageUri = (Uri) shareIntent.getParcelableExtra(Intent.EXTRA_STREAM);
+
+                         uploadImage(imageUri);
+                         shareIntent = null;
+
+                     }
+                 });
+                 builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                     public void onClick(DialogInterface dialog, int id) {
+
+                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                             ((Activity) mContext).finishAndRemoveTask();
+                         }
+                         else
+                         {
+                             ((Activity) mContext).finishAffinity();
+                         }
+
+
+                     }
+                 });
+                 AlertDialog dialog =  builder.create();
+                 dialog.show();
+
+                 Log.d(this.getClass().getName(),"inside onsharedintent");
+
+             }
+
          }
 
      }
@@ -278,7 +323,9 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     public void startPlacePicker()
     {
 
-        attachMenu.hideMenu(true);
+//            attachMenu.toggleMenu(true);
+        attachMenu.toggle(true);
+
 
         if(ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -334,7 +381,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     public void attachPhoto()
     {
 
-        attachMenu.hideMenu(true);
+        attachMenu.toggle(true);
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -378,91 +425,8 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
                         @Override
                         public void onImageSelected(final Uri uri) {
-                            // here is selected uri
 
-                            attachMenu.setVisibility(View.VISIBLE);
-
-                            boolean stop = false;
-
-                            StorageReference imageRef = imageStorageReference.child(uri.getLastPathSegment());
-
-                            final Snackbar snackbar = Snackbar.make(RootView,"Uploading the image",Snackbar.LENGTH_LONG);
-                            snackbar.show();
-
-
-                            final Message loadmessage = new Message(null, myName,uri.toString(),uri.getLastPathSegment(),currentUser.getUid(),null);
-                            loadmessage.setTimeStamp(System.currentTimeMillis());
-
-                            messages_adapter.messages.add(loadmessage);
-
-                            messages_adapter.notifyDataSetChanged();
-
-
-
-                            imageRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-
-                                    @SuppressWarnings("VisibleForTests") Message message = new Message(null, myName, taskSnapshot.getDownloadUrl().toString(),uri.getLastPathSegment(),currentUser.getUid(),null);
-
-
-
-                                    if (currentUser.getProfileDP() != null)
-                                        message.setPhotoUrl(currentUser.getProfileDP());
-
-
-
-                                    String messageKey = messageReference.push().getKey();
-
-                                    messageReference.child(messageKey).setValue(message);
-
-                                    messages_adapter.messages.remove(loadmessage);
-
-                                    messages_adapter.notifyDataSetChanged();
-
-                                    messageReference.child(messageKey).child("timeStamp").setValue(ServerValue.TIMESTAMP);
-
-                                    messageInput.setText("");
-
-                                    firebaseDatabase.getReference().child("Friends").child(myUid).child(friendUid).child("lastMessage").setValue(currentUser.getUserName() + " has uploaded a image");
-
-                                    firebaseDatabase.getReference().child("Friends").child(myUid).child(friendUid).child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
-
-                                    firebaseDatabase.getReference().child("Friends").child(friendUid).child(myUid).child("lastMessage").setValue(currentUser.getUserName() + " has uploaded a image");
-
-                                    firebaseDatabase.getReference().child("Friends").child(friendUid).child(myUid).child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
-
-                                    NotificationMessage notificationMessage = new NotificationMessage(myUid,friendUid,currentUser.getUserName() + " has uploaded a image" );
-
-                                    firebaseDatabase.getReference().child("Notications").push().setValue(notificationMessage);
-
-                                    Snackbar snackbar2 = Snackbar.make(RootView, "Uploading done !", Snackbar.LENGTH_SHORT);
-                                    snackbar2.show();
-
-                                }
-                            });
-
-//                            if(currentUser.getProfileDP()!=null)
-//                                message.setPhotoUrl(currentUser.getProfileDP());
-//
-//                            String messageKey = groupmessageReference.push().getKey();
-//
-//                            groupmessageReference.child(messageKey).setValue(message);
-//
-//                            groupmessageReference.child(messageKey).child("timeStamp").setValue(ServerValue.TIMESTAMP);
-//
-//                            groupMessageText.setText("");
-//
-//                            firebaseDatabase.getReference("/GroupChat/"+groupheader.getGroupKey()).child("lastMessage").setValue(message.getText());
-//
-//                            firebaseDatabase.getReference("/GroupChat/"+groupheader.getGroupKey()).child("lastMessageTimestap").setValue(message.getTimeStamp());
-
-
-
-
-
-
+                            uploadImage(uri);
                         }
                     })
                     .create();
@@ -470,6 +434,69 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
         bottomSheetDialogFragment.show(getSupportFragmentManager());
+
+    }
+
+    private void uploadImage(final Uri uri)
+    {
+            // here is selected uri
+
+            StorageReference imageRef = imageStorageReference.child(uri.getLastPathSegment());
+
+            final Snackbar snackbar = Snackbar.make(RootView,"Uploading the image",Snackbar.LENGTH_LONG);
+            snackbar.show();
+
+
+            final Message loadmessage = new Message(null, myName,uri.toString(),uri.getLastPathSegment(),currentUser.getUid(),null);
+            loadmessage.setTimeStamp(System.currentTimeMillis());
+
+            messages_adapter.messages.add(loadmessage);
+
+            messages_adapter.notifyDataSetChanged();
+
+            imageRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+
+                    @SuppressWarnings("VisibleForTests") Message message = new Message(null, myName, taskSnapshot.getDownloadUrl().toString(),uri.getLastPathSegment(),currentUser.getUid(),null);
+
+
+
+                    if (currentUser.getProfileDP() != null)
+                        message.setPhotoUrl(currentUser.getProfileDP());
+
+
+
+                    String messageKey = messageReference.push().getKey();
+
+                    messageReference.child(messageKey).setValue(message);
+
+                    messages_adapter.messages.remove(loadmessage);
+
+                    messages_adapter.notifyDataSetChanged();
+
+                    messageReference.child(messageKey).child("timeStamp").setValue(ServerValue.TIMESTAMP);
+
+                    messageInput.setText("");
+
+                    firebaseDatabase.getReference().child("Friends").child(myUid).child(friendUid).child("lastMessage").setValue(currentUser.getUserName() + " has uploaded a image");
+
+                    firebaseDatabase.getReference().child("Friends").child(myUid).child(friendUid).child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
+
+                    firebaseDatabase.getReference().child("Friends").child(friendUid).child(myUid).child("lastMessage").setValue(currentUser.getUserName() + " has uploaded a image");
+
+                    firebaseDatabase.getReference().child("Friends").child(friendUid).child(myUid).child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
+
+                    NotificationMessage notificationMessage = new NotificationMessage(myUid,friendUid,currentUser.getUserName() + " has uploaded a image" );
+
+                    firebaseDatabase.getReference().child("Notications").push().setValue(notificationMessage);
+
+                    Snackbar snackbar2 = Snackbar.make(RootView, "Uploading done !", Snackbar.LENGTH_SHORT);
+                    snackbar2.show();
+
+                }
+            });
 
     }
 

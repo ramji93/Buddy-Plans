@@ -3,6 +3,7 @@ package com.chatapp.ramji.buddyplans;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -11,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -162,10 +164,11 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
                       File f=new File(path);
 
                      if(f.exists()) {
+
                          Intent intent = new Intent();
                          intent.setAction(Intent.ACTION_VIEW);
 
-                         if(Build.VERSION.SDK_INT > M)
+                             if(Build.VERSION.SDK_INT > M)
                          {
                            intent.setDataAndType(CustomFileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".my.package.name.provider", f),"image/*");
                              intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);

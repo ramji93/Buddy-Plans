@@ -3,6 +3,9 @@ package com.chatapp.ramji.buddyplans;
 import android.*;
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -19,6 +22,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,11 +38,14 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.github.clans.fab.FloatingActionMenu;
 import com.github.oliveiradev.image_zoom.lib.widget.ZoomAnimation;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -86,7 +93,10 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     Toolbar groupChatToolbar;
     @BindView(R.id.activity_chat_group)
     View rootView;
+    @BindView(R.id.menu_yellow)
+    FloatingActionMenu attachMenu;
 
+    Context mContext = this;
     @BindView(R.id.group_activity_logo)
     CircularImageView groupLogo;
     @BindView(R.id.groupchat_title)
@@ -101,7 +111,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     final int WRITE_REQUEST = 1;
     HandlerThread handlerThread;
     Handler mhandler;
-
+    Intent shareIntent = null;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -137,6 +147,8 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         }
 
         Bitmap bitmap = (Bitmap) intent.getParcelableExtra("image");
+        shareIntent = (Intent) intent.getParcelableExtra("shareIntent");
+
         if(bitmap != null) {
             groupLogo.setImageBitmap(bitmap);
             supportStartPostponedEnterTransition();
@@ -205,6 +217,111 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
         mhandler = new Handler(handlerThread.getLooper());
 
+        if(shareIntent!= null)
+        {
+
+            handleSharedIntent();
+
+        }
+
+    }
+
+
+    public void handleSharedIntent()
+    {
+
+
+        if (Intent.ACTION_SEND.equals(shareIntent.getAction()) && shareIntent.getType() != null) {
+            if ("text/plain".equals(shareIntent.getType())) {
+                // Handle text being sent
+
+                String sharedText = shareIntent.getStringExtra(Intent.EXTRA_TEXT);
+                groupMessageText.setText(sharedText);
+
+                shareIntent = null;
+
+            }
+
+            else if(shareIntent.getType().contains("image")) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Do you want to upload the image in this chat? ");
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked OK button
+
+                        Uri imageUri = (Uri) shareIntent.getParcelableExtra(Intent.EXTRA_STREAM);
+
+                        uploadImage(imageUri);
+                        shareIntent = null;
+
+                    }
+                });
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            ((Activity) mContext).finishAndRemoveTask();
+                        }
+                        else
+                        {
+                            ((Activity) mContext).finishAffinity();
+                        }
+
+
+                    }
+                });
+                AlertDialog dialog =  builder.create();
+                dialog.show();
+
+                Log.d(this.getClass().getName(),"inside onsharedintent");
+
+            }
+
+        }
+
+    }
+
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlacePicker.getPlace(this,data);
+                String toastMsg = String.format("Place: %s", place.getId());
+                Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
+
+                com.chatapp.ramji.buddyplans.Location location = new com.chatapp.ramji.buddyplans.Location(place.getLatLng().latitude,place.getLatLng().longitude);
+
+                Message message = new Message(null,myName,null,null,currentUser.getUid(),location);
+
+                String messageKey = groupmessageReference.push().getKey();
+
+                groupmessageReference.child(messageKey).setValue(message);
+
+                groupmessageReference.child(messageKey).child("timeStamp").setValue(ServerValue.TIMESTAMP);
+
+                groupMessageText.setText("");
+
+                String notificationText = groupheader.getName()+ " : " + myName + " has uploaded a location";
+
+                GroupNotification groupNotification = new GroupNotification(currentUser.getUid(),myName,groupChatId,notificationText);
+
+                firebaseDatabase.getReference("GroupNotifications").push().setValue(groupNotification);
+
+                firebaseDatabase.getReference("/GroupChat/" + groupheader.getGroupKey()).child("lastMessage").setValue(message.getUserName() + " uploaded a location ");
+
+                firebaseDatabase.getReference("/GroupChat/" + groupheader.getGroupKey()).child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
+
+
+
+
+            }
+
+
+        }
     }
 
 
@@ -241,6 +358,8 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     @OnClick(R.id.attachlocation)
     public void startPlacePicker()
     {
+
+        attachMenu.toggle(true);
 
         if(ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -293,6 +412,8 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     public void attachPhoto()
     {
 
+        attachMenu.toggle(true);
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
@@ -319,74 +440,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
                         @Override
                         public void onImageSelected(final Uri uri) {
-                            // here is selected uri
-
-                             boolean stop = false;
-
-                              StorageReference imageRef = imageStorageReference.child(uri.getLastPathSegment());
-
-
-                            final Snackbar snackbar = Snackbar.make(rootView,"Uploading the image",Snackbar.LENGTH_LONG);
-                            snackbar.show();
-
-                                imageRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                    @Override
-                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-
-                                        @SuppressWarnings("VisibleForTests") Message message = new Message(null, myName, taskSnapshot.getDownloadUrl().toString(),uri.getLastPathSegment(),currentUser.getUid(),null);
-
-                                        if (currentUser.getProfileDP() != null)
-                                            message.setPhotoUrl(currentUser.getProfileDP());
-
-                                        String messageKey = groupmessageReference.push().getKey();
-
-                                        groupmessageReference.child(messageKey).setValue(message);
-
-                                        groupmessageReference.child(messageKey).child("timeStamp").setValue(ServerValue.TIMESTAMP);
-
-                                        groupMessageText.setText("");
-
-                                        String notificationText = groupheader.getName()+ " : " + myName + " has uploaded a image";
-
-                                        GroupNotification groupNotification = new GroupNotification(currentUser.getUid(),myName,groupChatId,notificationText);
-
-                                        firebaseDatabase.getReference("GroupNotifications").push().setValue(groupNotification);
-
-                                        firebaseDatabase.getReference("/GroupChat/" + groupheader.getGroupKey()).child("lastMessage").setValue(message.getUserName() + " uploaded a image ");
-
-                                        firebaseDatabase.getReference("/GroupChat/" + groupheader.getGroupKey()).child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
-
-                                        Snackbar snackbar2 = Snackbar.make(rootView, "Uploading done !", Snackbar.LENGTH_SHORT);
-                                        snackbar2.show();
-
-                                    }
-                                });
-
-
-
-
-
-//                            if(currentUser.getProfileDP()!=null)
-//                                message.setPhotoUrl(currentUser.getProfileDP());
-//
-//                            String messageKey = groupmessageReference.push().getKey();
-//
-//                            groupmessageReference.child(messageKey).setValue(message);
-//
-//                            groupmessageReference.child(messageKey).child("timeStamp").setValue(ServerValue.TIMESTAMP);
-//
-//                            groupMessageText.setText("");
-//
-//                            firebaseDatabase.getReference("/GroupChat/"+groupheader.getGroupKey()).child("lastMessage").setValue(message.getText());
-//
-//                            firebaseDatabase.getReference("/GroupChat/"+groupheader.getGroupKey()).child("lastMessageTimestap").setValue(message.getTimeStamp());
-
-
-
-
-
-
+                            uploadImage(uri);
                         }
                     })
                     .create();
@@ -395,6 +449,53 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
           bottomSheetDialogFragment.show(getSupportFragmentManager());
 
+
+
+    }
+
+
+    private void uploadImage(final Uri uri) {
+        // here is selected uri
+
+        StorageReference imageRef = imageStorageReference.child(uri.getLastPathSegment());
+
+
+        final Snackbar snackbar = Snackbar.make(rootView, "Uploading the image", Snackbar.LENGTH_LONG);
+        snackbar.show();
+
+        imageRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+
+                @SuppressWarnings("VisibleForTests") Message message = new Message(null, myName, taskSnapshot.getDownloadUrl().toString(), uri.getLastPathSegment(), currentUser.getUid(), null);
+
+                if (currentUser.getProfileDP() != null)
+                    message.setPhotoUrl(currentUser.getProfileDP());
+
+                String messageKey = groupmessageReference.push().getKey();
+
+                groupmessageReference.child(messageKey).setValue(message);
+
+                groupmessageReference.child(messageKey).child("timeStamp").setValue(ServerValue.TIMESTAMP);
+
+                groupMessageText.setText("");
+
+                String notificationText = groupheader.getName() + " : " + myName + " has uploaded a image";
+
+                GroupNotification groupNotification = new GroupNotification(currentUser.getUid(), myName, groupChatId, notificationText);
+
+                firebaseDatabase.getReference("GroupNotifications").push().setValue(groupNotification);
+
+                firebaseDatabase.getReference("/GroupChat/" + groupheader.getGroupKey()).child("lastMessage").setValue(message.getUserName() + " uploaded a image ");
+
+                firebaseDatabase.getReference("/GroupChat/" + groupheader.getGroupKey()).child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
+
+                Snackbar snackbar2 = Snackbar.make(rootView, "Uploading done !", Snackbar.LENGTH_SHORT);
+                snackbar2.show();
+
+            }
+        });
 
 
     }

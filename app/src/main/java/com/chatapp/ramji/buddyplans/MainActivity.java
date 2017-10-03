@@ -5,12 +5,14 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -112,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
     private String mUid = null;
 
     int tab_index = 0;
+    final int WRITE_REQUEST = 1;
 
     FirebaseUser user;
 
@@ -185,6 +188,9 @@ public class MainActivity extends AppCompatActivity {
 
                     startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder().setIsSmartLockEnabled(false).setLogo(R.drawable.ic_whatshot_black_24dp)
                             .setProviders(authProviders).build(), RC_SIGN_IN);
+
+
+
                 }
             }
         };
@@ -193,6 +199,13 @@ public class MainActivity extends AppCompatActivity {
         int size = navigationView.getMenu().size();
         for (int i = 0; i < size; i++) {
             navigationView.getMenu().getItem(i).setChecked(false);
+        }
+
+        if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_REQUEST);
+
         }
 
     }
@@ -216,7 +229,6 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(new Intent(MainActivity.this,MyProfileActivity.class));
                         drawer.closeDrawers();
 
-
                         break;
 
 
@@ -234,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
 
                         editor.commit();
 
-                        return true;
+
 
 
                     default:
@@ -248,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
 //                    menuItem.setChecked(true);
 //                }
                 menuItem.setChecked(false);
-                return true;
+                return false;
 
             }
 

@@ -49,6 +49,7 @@ public class GroupsFragment extends Fragment {
     GroupListAdapter groupListAdapter;
 
     View rootView;
+    Intent shareIntent = null;
 
     public GroupsFragment() {
         // Required empty public constructor
@@ -61,14 +62,15 @@ public class GroupsFragment extends Fragment {
 
         MainActivity mainActivity = (MainActivity)  getActivity();
 
+        if(getActivity().getIntent() != null)
+            shareIntent = getActivity().getIntent();
+
         Gson gson = new Gson();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         User currentUser = gson.fromJson(sharedPreferences.getString("User", ""), User.class);
 
         Uid = currentUser.getUid();
-
-
 
         //GroupsFragment container = (GroupsFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.groupfragment);
 
@@ -99,6 +101,13 @@ public class GroupsFragment extends Fragment {
                 }
                 intent.putExtra("transition",ViewCompat.getTransitionName(imageView));
                 intent.putExtra("group",group);
+
+                if(shareIntent!= null)
+                {
+                    intent.putExtra("shareIntent",shareIntent);
+                    shareIntent = null;
+                }
+
                 ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation
                         (
                                 getActivity(),
