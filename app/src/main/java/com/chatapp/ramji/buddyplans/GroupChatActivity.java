@@ -344,6 +344,11 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
                startActivity(intent);
                return true;
 
+           case R.id.mark_favourite :
+
+           persistChat();
+
+
             default :
 
               return super.onOptionsItemSelected(item);
@@ -354,6 +359,17 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
 
     }
+
+
+    private void persistChat()
+    {
+
+
+
+    }
+
+
+
 
     @OnClick(R.id.attachlocation)
     public void startPlacePicker()

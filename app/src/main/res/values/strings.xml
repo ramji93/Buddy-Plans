@@ -35,6 +35,7 @@
     <string name="nav_logout">Log Out</string>
     <string name="favourite_chats">Favourite Chats</string>
     <string name="add_location">Add Location</string>
+    <string name="mark_as_favourite">Mark as Favourite</string>
     <string-array name="nav_item_activity_titles">
         <item>Your Profile</item>
     </string-array>

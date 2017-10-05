@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -75,6 +76,9 @@ public class MyProfileActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
+
+        boolean b = getParent() instanceof MainActivity;
+
 
         Gson gson = new Gson();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -209,28 +213,28 @@ public class MyProfileActivity extends AppCompatActivity {
 
         StorageReference oldRef =  imageStorageReference.child(user.getUid());
 
-        if(oldRef != null)
-        {
-            oldRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    StorageReference imageRef = imageStorageReference.child(user.getUid()).child(ProfilePhoto_new.getLastPathSegment());
-
-                    imageRef.putFile(ProfilePhoto_new).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                            //noinspection VisibleForTests
-                            userreference.child(user.getUid()).child("profileDP").setValue(taskSnapshot.getDownloadUrl().toString());
-                        }
-                    });
-
-                }
-            });
-        }
-
-        else {
-            StorageReference imageRef = imageStorageReference.child(user.getUid()).child(ProfilePhoto_new.getLastPathSegment());
+//         if(oldRef != null)
+//        {
+//            oldRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+//                @Override
+//                public void onSuccess(Void aVoid) {
+//                    StorageReference imageRef = imageStorageReference.child(user.getUid()).child(ProfilePhoto_new.getLastPathSegment());
+//
+//                    imageRef.putFile(ProfilePhoto_new).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                        @Override
+//                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//
+//                            //noinspection VisibleForTests
+//                            userreference.child(user.getUid()).child("profileDP").setValue(taskSnapshot.getDownloadUrl().toString());
+//                        }
+//                    });
+//
+//                }
+//            });
+//        }
+//
+//        else {
+            StorageReference imageRef = imageStorageReference.child(user.getUid()).child("profile");
 
             imageRef.putFile(ProfilePhoto_new).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -241,14 +245,14 @@ public class MyProfileActivity extends AppCompatActivity {
                 }
             });
 
-        }
+//        }
 
         Toast.makeText(this,"Your Profile is being edited ",Toast.LENGTH_LONG).show();
-
 
         finish();
 
     }
+
 
 
 

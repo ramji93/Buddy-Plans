@@ -7,4 +7,12 @@
         android:title="@string/edit_group"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/mark_favourite"
+        android:title="@string/mark_as_favourite"
+        android:icon="@drawable/fav_select"
+        app:showAsAction="always"
+        />
+
+
 </menu>

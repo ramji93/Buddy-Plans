@@ -70,7 +70,7 @@ import static android.Manifest.permission.READ_CONTACTS;
 /**
  * A login screen that offers login via email/password.
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
 
    // @BindView(R.id.welcome_message)
    // TextView userText;
@@ -89,6 +89,8 @@ public class MainActivity extends AppCompatActivity {
     DrawerLayout drawer;
 
     TextView txtName;
+
+    User currentuser;
 
     CircularImageView imgProfile;
 
@@ -178,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
 
                 } else {
 
-                    SignoutFuction();
+
 
                     List<AuthUI.IdpConfig> authProviders = new ArrayList<AuthUI.IdpConfig>();
 
@@ -201,12 +203,12 @@ public class MainActivity extends AppCompatActivity {
             navigationView.getMenu().getItem(i).setChecked(false);
         }
 
-        if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_REQUEST);
-
-        }
+//        if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//                != PackageManager.PERMISSION_GRANTED) {
+//
+//            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_REQUEST);
+//
+//        }
 
     }
 
@@ -236,6 +238,9 @@ public class MainActivity extends AppCompatActivity {
                         navItemIndex = 3;
 
                         drawer.closeDrawers();
+
+                        SignoutFuction();
+
                         AuthUI.getInstance().signOut(MainActivity.this);
 
                         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
@@ -292,6 +297,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void refreshProfileImage()
+    {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String storedPhotoUrl = sharedPreferences.getString("profiledp",currentuser.getProfileDP());
+        Glide.with(this).load(storedPhotoUrl).into(imgProfile);
+    }
+
 
     public void SigninInitialize()
     {
@@ -299,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
 
         String facebook_id = null;
 
-        User currentuser = null;
+        currentuser = null;
 //        List<String> providerId = null;
 //
 //        AccessToken.getCurrentAccessToken()
@@ -330,6 +342,8 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
 
+
+
         if(!sharedPreferences.contains("User"))
         {
 
@@ -343,7 +357,7 @@ public class MainActivity extends AppCompatActivity {
             editor.putString("User",currentUserString);
             editor.commit();
 
-
+            Glide.with(this).load(currentuser.getProfileDP()).into(imgProfile);
         }
 
         else
@@ -352,14 +366,17 @@ public class MainActivity extends AppCompatActivity {
 
             sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
             currentuser = gson.fromJson(sharedPreferences.getString("User", ""), User.class);
+
+            String storedPhotoUrl;
+            storedPhotoUrl = sharedPreferences.getString("profiledp",currentuser.getProfileDP());
+            Glide.with(this).load(storedPhotoUrl).into(imgProfile);
+
         }
 
 
         txtName.setText(mUsername);
 
         if(currentuser.getProfileDP()!=null)
-
-        Glide.with(this).load(currentuser.getProfileDP()).into(imgProfile);
 
         setUpNavigationView();
 
@@ -428,6 +445,8 @@ public class MainActivity extends AppCompatActivity {
                     {
                         editor.putString("profiledp", currentUser.getProfileDP());
 
+                        Glide.with(mContext).load(currentUser.getProfileDP()).into(imgProfile);
+
                         editor.commit();
                     }
 
@@ -462,17 +481,19 @@ public class MainActivity extends AppCompatActivity {
 
         ViewPagerAdapter pagerAdapter =  (ViewPagerAdapter) mViewpager.getAdapter();
 
-       FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        groupsFragment.onDestroy();
+        friendsFragment.onDestroy();
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
        fragmentTransaction.remove(groupsFragment);
        fragmentTransaction.remove(friendsFragment);
        fragmentTransaction.commit();
 
 
+
+
         if(UserCheckListener != null)
         mDatabaseReference.removeEventListener(UserCheckListener);
-
-
-
 
     }
 
@@ -495,6 +516,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        refreshProfileImage();
+
 //        TabLayout.Tab tab = mainTabLayout.getTabAt();
 //        tab.select();
 
@@ -547,6 +570,8 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
 
             case R.id.sign_out_menu:
+
+                SignoutFuction();
 
                 AuthUI.getInstance().signOut(this);
 
