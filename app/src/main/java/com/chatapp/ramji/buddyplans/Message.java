@@ -6,7 +6,7 @@ import java.util.Map;
  * Created by user on 22-02-2017.
  */
 
-public class Message {
+public class Message  {
 
     private String Text;
     private String PhotoContentUrl;

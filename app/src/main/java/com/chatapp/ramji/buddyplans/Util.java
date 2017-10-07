@@ -76,7 +76,7 @@ public class Util {
     }
 
 
-    public static void saveImage(Context context,String downloaduri,String photoContentName) {
+    public static String saveImage(Context context,String downloaduri,String photoContentName) {
 
 
         String appsegment = "/Buddyplans/pictures";
@@ -101,7 +101,7 @@ public class Util {
         final File f=new File(path);
 
         if(f.exists())
-            return;
+            return path;
         else
         {
 
@@ -145,10 +145,10 @@ public class Util {
 
 
 
-
+;;
         }
 
-
+      return path;
 
     }
 }

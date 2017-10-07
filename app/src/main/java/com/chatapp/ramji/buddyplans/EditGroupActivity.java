@@ -282,8 +282,8 @@ public class EditGroupActivity extends AppCompatActivity implements GroupCreateF
             imageStorageReference.child(groupheader.getGroupKey()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-
-                    StorageReference imageRef = imageStorageReference.child(groupheader.getGroupKey()).child(ProfilePhoto_new.getLastPathSegment());
+//TODO : check if photochanged works or not
+                    StorageReference imageRef = imageStorageReference.child(groupheader.getGroupKey());
 
                     imageRef.putFile(ProfilePhoto_new).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override

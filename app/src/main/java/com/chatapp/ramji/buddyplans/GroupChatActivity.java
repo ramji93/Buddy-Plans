@@ -1,6 +1,5 @@
 package com.chatapp.ramji.buddyplans;
 
-import android.*;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -14,11 +13,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -33,23 +29,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.chatapp.ramji.buddyplans.Service.DownloadChatService;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.oliveiradev.image_zoom.lib.widget.ZoomAnimation;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -364,7 +357,10 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     private void persistChat()
     {
 
-
+          Intent serviceIntent = new Intent(this, DownloadChatService.class);
+          ServiceData serviceData = new ServiceData(groupheader.getChatId(),groupheader.getName(),groupheader.getPhotoUrl(),messages_adapter.messages);
+          serviceIntent.putExtra("data",serviceData);
+          startService(serviceIntent);
 
     }
 
