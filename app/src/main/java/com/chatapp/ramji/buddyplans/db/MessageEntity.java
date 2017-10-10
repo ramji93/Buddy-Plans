@@ -27,22 +27,22 @@ public class MessageEntity {
     public Location location;
     public String chatId;
 
-//    public MessageEntity()
-//    {}
-//
-//    public MessageEntity(String Text,String PhotoContentUrl,String PhotoContentName,String userName,long TimeStamp,String PhotoUrl,String Uid,Location location,String chatId)
-//    {
-//        this.Text = Text;
-//        this.PhotoContentUrl = PhotoContentUrl;
-//        this.PhotoContentName = PhotoContentName;
-//        this.userName = userName;
-//        this.TimeStamp = TimeStamp;
-//        this.PhotoUrl = PhotoUrl;
-//        this.Uid = Uid;
-//        this.location = location;
-//        this.chatId = chatId;
-//
-//    }
+    public MessageEntity()
+    {}
+
+    public MessageEntity(String Text,String PhotoContentUrl,String PhotoContentName,String userName,long TimeStamp,String PhotoUrl,String Uid,Location location,String chatId)
+    {
+        this.Text = Text;
+        this.PhotoContentUrl = PhotoContentUrl;
+        this.PhotoContentName = PhotoContentName;
+        this.userName = userName;
+        this.TimeStamp = TimeStamp;
+        this.PhotoUrl = PhotoUrl;
+        this.Uid = Uid;
+        this.location = location;
+        this.chatId = chatId;
+
+    }
 
 
 

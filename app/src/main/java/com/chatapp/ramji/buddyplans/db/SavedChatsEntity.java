@@ -13,21 +13,21 @@ public class SavedChatsEntity {
     public @PrimaryKey @NonNull String chatid;
     public String chatName;
     public String chatProfileImageurl;
-//    public boolean current;
+    public boolean current;
 
-//    public SavedChatsEntity()
-//    {
-//
-//    }
-//
-//    public SavedChatsEntity(String chatid,String chatName,String chatProfileImageurl,boolean current)
-//    {
-//      this.chatid = chatid;
-//      this.chatName = chatName;
-//      this.chatProfileImageurl = chatProfileImageurl;
-//      this.current = current;
-//
-//    }
+    public SavedChatsEntity()
+    {
+
+    }
+
+    public SavedChatsEntity(String chatid,String chatName,String chatProfileImageurl,boolean current)
+    {
+      this.chatid = chatid;
+      this.chatName = chatName;
+      this.chatProfileImageurl = chatProfileImageurl;
+      this.current = current;
+
+    }
 
 }
 
