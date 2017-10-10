@@ -9,4 +9,5 @@
     <dimen name="nav_header_height">180dp</dimen>
     <dimen name="profile_width">75dp</dimen>
     <dimen name="profile_height">75dp</dimen>
+    <dimen name="item_offset">4dp</dimen>
 </resources>

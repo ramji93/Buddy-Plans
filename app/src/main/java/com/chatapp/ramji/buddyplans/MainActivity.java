@@ -190,9 +190,6 @@ public class MainActivity extends AppCompatActivity  {
 
                     startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder().setIsSmartLockEnabled(false).setLogo(R.drawable.ic_whatshot_black_24dp)
                             .setProviders(authProviders).build(), RC_SIGN_IN);
-
-
-
                 }
             }
         };
@@ -233,6 +230,11 @@ public class MainActivity extends AppCompatActivity  {
 
                         break;
 
+                    case R.id.nav_favourites:
+                         navItemIndex = 2;
+                         startActivity(new Intent(MainActivity.this,FavouritesActivity.class));
+                         drawer.closeDrawers();
+                         break;
 
                     case R.id.nav_logout:
                         navItemIndex = 3;
@@ -307,7 +309,6 @@ public class MainActivity extends AppCompatActivity  {
 
     public void SigninInitialize()
     {
-
 
         String facebook_id = null;
 
@@ -516,6 +517,7 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     protected void onStart() {
         super.onStart();
+        if(currentuser!=null)
         refreshProfileImage();
 
 //        TabLayout.Tab tab = mainTabLayout.getTabAt();

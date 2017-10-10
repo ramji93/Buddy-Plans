@@ -39,4 +39,5 @@
     <string-array name="nav_item_activity_titles">
         <item>Your Profile</item>
     </string-array>
+    <string name="title_activity_favourites">FavouritesActivity</string>
 </resources>

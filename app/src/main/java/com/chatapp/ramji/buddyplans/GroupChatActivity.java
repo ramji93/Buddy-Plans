@@ -105,6 +105,8 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     HandlerThread handlerThread;
     Handler mhandler;
     Intent shareIntent = null;
+    Menu menu;
+
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -124,6 +126,15 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         groupheader = (Groupheader) intent.getSerializableExtra("group");
 
         groupChatId = groupheader.getChatId();
+
+        if(groupChatId!=null && menu!=null)
+        {
+          if(PreferenceManager.getDefaultSharedPreferences(this).getString("savedchats","").contains(groupChatId))
+          {
+              menu.getItem(1).setIcon(R.drawable.fav_unselect);
+          }
+
+        }
 
 
         setSupportActionBar(groupChatToolbar);
@@ -277,7 +288,6 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
 
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_PICKER_REQUEST) {
@@ -321,7 +331,18 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
+
+        if(groupChatId!=null)
+        {
+            if(PreferenceManager.getDefaultSharedPreferences(this).getString("savedchats","").contains(groupChatId))
+            {
+                menu.getItem(1).setIcon(R.drawable.fav_unselect);
+            }
+
+        }
+
         inflater.inflate(R.menu.groupchat_menu, menu);
+        this.menu = menu;
         return true;
     }
 
@@ -361,6 +382,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
           ServiceData serviceData = new ServiceData(groupheader.getChatId(),groupheader.getName(),groupheader.getPhotoUrl(),messages_adapter.messages);
           serviceIntent.putExtra("data",serviceData);
           startService(serviceIntent);
+          menu.getItem(1).setIcon(R.drawable.fav_unselect);
 
     }
 

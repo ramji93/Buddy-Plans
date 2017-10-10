@@ -2,6 +2,8 @@ package com.chatapp.ramji.buddyplans.Service;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 
 import com.chatapp.ramji.buddyplans.Location;
@@ -98,6 +100,16 @@ public class DownloadChatService extends IntentService {
 
         mDB.savedchatsModel().insertChats(new SavedChatsEntity(chatId,dbChatname,dbChatProfileImageUrl,true));
         mDB.messageModel().insertMultipleMessages(dbmessageList);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String savedchats = sharedPreferences.getString("savedchats","");
+        if(!savedchats.contains(chatId))
+        {
+         SharedPreferences.Editor editor = sharedPreferences.edit();
+            StringBuffer stringBuffer = new StringBuffer(savedchats);
+            stringBuffer.append(" "+chatId+" ");
+            editor.putString("savedchats",stringBuffer.toString());
+        }
 
 
     }

@@ -19,8 +19,8 @@ import static android.arch.persistence.room.OnConflictStrategy.IGNORE;
 @Dao
 public interface SavedChatsEntityDAO {
 
-    @Query("SELECT * FROM SavedChatsEntity where chatid = :id and current = true")
-    public List<SavedChatsEntity> getSavedChat(String id);
+    @Query("SELECT * FROM SavedChatsEntity where current = true")
+    public List<SavedChatsEntity> getSavedChat();
 
     @Insert(onConflict = IGNORE)
     public void insertChats(SavedChatsEntity chatEntity);
