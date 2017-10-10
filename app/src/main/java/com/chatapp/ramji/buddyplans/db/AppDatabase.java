@@ -1,5 +1,6 @@
 package com.chatapp.ramji.buddyplans.db;
 
+import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
@@ -7,7 +8,7 @@ import android.content.Context;
 /**
  * Created by ramji_v on 10/7/2017.
  */
-
+@Database(entities = {MessageEntity.class, SavedChatsEntity.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase INSTANCE;

@@ -8,6 +8,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.chatapp.ramji.buddyplans.db.SavedChatsEntity;
+
+import java.util.List;
+
 /**
  * Created by user on 09-10-2017.
  */
@@ -16,11 +21,13 @@ public class FavouriteList_Adapter extends RecyclerView.Adapter<FavouriteList_Ad
 
     Context mcontext;
     String[] groupnames;
+    List<SavedChatsEntity> savedChatsEntities;
 
-    public FavouriteList_Adapter(Context context,String[] strings)
+
+    public FavouriteList_Adapter(Context context,List<SavedChatsEntity> entities)
     {
         mcontext = context;
-        groupnames = strings;
+        this.savedChatsEntities = entities;
 
     }
 
@@ -37,14 +44,16 @@ public class FavouriteList_Adapter extends RecyclerView.Adapter<FavouriteList_Ad
     @Override
     public void onBindViewHolder(FavriteViewHolder holder, int position) {
 
-        holder.groupName.setText(groupnames[position]);
+        Glide.with(mcontext).load(savedChatsEntities.get(position).chatProfileImageurl).into(holder.imageView);
+
+        holder.groupName.setText(savedChatsEntities.get(position).chatName);
 
     }
 
 
     @Override
     public int getItemCount() {
-        return groupnames.length;
+        return savedChatsEntities.size();
     }
 
  class FavriteViewHolder extends RecyclerView.ViewHolder

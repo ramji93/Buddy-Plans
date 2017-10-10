@@ -18,9 +18,10 @@ import static android.arch.persistence.room.OnConflictStrategy.IGNORE;
  */
 
 @Dao
-@TypeConverters(Location.class)
+@TypeConverters(LocationConverter.class)
 public interface MessageDAO {
 
+//    @Query("SELECT * FROM MessageEntity WHERE MessageEntity.chatId = :chatid")
     @Query("SELECT * FROM MessageEntity where chatId = :chatid")
     public List<MessageEntity> getMessagesByChatid(String chatid);
 

@@ -112,6 +112,10 @@
             </intent-filter>
         </service>
 
+        <Service android:name="com.chatapp.ramji.buddyplans.service.DownloadChatService"
+            android:enabled="true">
+        </Service>
+
         <provider
             android:name=".CustomFileProvider"
             android:authorities="${applicationId}.my.package.name.provider"

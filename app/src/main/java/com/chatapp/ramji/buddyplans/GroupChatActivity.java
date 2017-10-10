@@ -35,7 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.chatapp.ramji.buddyplans.Service.DownloadChatService;
+import com.chatapp.ramji.buddyplans.service.DownloadChatService;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.oliveiradev.image_zoom.lib.widget.ZoomAnimation;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;

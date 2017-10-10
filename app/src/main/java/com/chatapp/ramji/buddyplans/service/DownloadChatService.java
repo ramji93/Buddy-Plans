@@ -1,10 +1,11 @@
-package com.chatapp.ramji.buddyplans.Service;
+package com.chatapp.ramji.buddyplans.service;
 
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.chatapp.ramji.buddyplans.Location;
 import com.chatapp.ramji.buddyplans.Message;
@@ -12,7 +13,6 @@ import com.chatapp.ramji.buddyplans.ServiceData;
 import com.chatapp.ramji.buddyplans.Util;
 import com.chatapp.ramji.buddyplans.db.AppDatabase;
 import com.chatapp.ramji.buddyplans.db.MessageEntity;
-import com.chatapp.ramji.buddyplans.db.SavedChatsEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +34,7 @@ public class DownloadChatService extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
 
+        Log.d(DownloadChatService.class.getName(),"onHandleIntent begins");
        ServiceData data = (ServiceData) intent.getSerializableExtra("data");
        String chatId = data.chatid;
         List<Message> messages = data.messages;
@@ -86,9 +87,9 @@ public class DownloadChatService extends IntentService {
                 dbChatid = chatId;
             }
 
-            dbmessage = new MessageEntity(dbText,dbphotoContentUrl,dbphotoContentName,dbUserName,dbTimestamp,dbUserPhotoUrl,dbuserid,dbLocation,dbChatid);
+          //  dbmessage = new MessageEntity(dbText,dbphotoContentUrl,dbphotoContentName,dbUserName,dbTimestamp,dbUserPhotoUrl,dbuserid,dbLocation,dbChatid);
 
-            dbmessageList.add(dbmessage);
+          //  dbmessageList.add(dbmessage);
 
         }
 
@@ -98,8 +99,8 @@ public class DownloadChatService extends IntentService {
             dbChatProfileImageUrl  = Util.saveImage(this,data.chatProfileImageUrl,chatId);
         }
 
-        mDB.savedchatsModel().insertChats(new SavedChatsEntity(chatId,dbChatname,dbChatProfileImageUrl,true));
-        mDB.messageModel().insertMultipleMessages(dbmessageList);
+//        mDB.savedchatsModel().insertChats(new SavedChatsEntity(chatId,dbChatname,dbChatProfileImageUrl,true));
+//        mDB.messageModel().insertMultipleMessages(dbmessageList);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String savedchats = sharedPreferences.getString("savedchats","");
@@ -109,6 +110,7 @@ public class DownloadChatService extends IntentService {
             StringBuffer stringBuffer = new StringBuffer(savedchats);
             stringBuffer.append(" "+chatId+" ");
             editor.putString("savedchats",stringBuffer.toString());
+            editor.commit();
         }
 
 

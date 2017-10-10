@@ -1,12 +1,13 @@
 package com.chatapp.ramji.buddyplans;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * Created by user on 22-02-2017.
  */
 
-public class Message  {
+public class Message implements Serializable {
 
     private String Text;
     private String PhotoContentUrl;

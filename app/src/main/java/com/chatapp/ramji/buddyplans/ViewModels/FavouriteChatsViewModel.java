@@ -18,7 +18,7 @@ public class FavouriteChatsViewModel extends AndroidViewModel {
 
     private AppDatabase db;
 
-    List<SavedChatsEntity> chats;
+    public LiveData<List<SavedChatsEntity>> chats;
 
     public FavouriteChatsViewModel(Application application) {
         super(application);

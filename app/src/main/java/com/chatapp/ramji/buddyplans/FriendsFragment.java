@@ -199,7 +199,21 @@ public class FriendsFragment extends Fragment {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-            Friend friend = (Friend) dataSnapshot.getValue(Friend.class);
+            final Friend friend = (Friend) dataSnapshot.getValue(Friend.class);
+
+            FirebaseDatabase.getInstance().getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                   String photourl = dataSnapshot.getValue(String.class);
+                    friend.setPhotourl(photourl);
+                    friendListAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
 
             friendListAdapter.add(friend);
 
@@ -210,7 +224,21 @@ public class FriendsFragment extends Fragment {
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-            Friend friend = (Friend) dataSnapshot.getValue(Friend.class);
+            final Friend friend = (Friend) dataSnapshot.getValue(Friend.class);
+
+            FirebaseDatabase.getInstance().getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String photourl = dataSnapshot.getValue(String.class);
+                    friend.setPhotourl(photourl);
+                    friendListAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
 
            Friend friend1 = friendListAdapter.friendHashMap.get(friend.getUid());
 
