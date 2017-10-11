@@ -332,6 +332,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
 
+        inflater.inflate(R.menu.groupchat_menu, menu);
         if(groupChatId!=null)
         {
             if(PreferenceManager.getDefaultSharedPreferences(this).getString("savedchats","").contains(groupChatId))
@@ -341,7 +342,6 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
         }
 
-        inflater.inflate(R.menu.groupchat_menu, menu);
         this.menu = menu;
         return true;
     }
@@ -379,10 +379,11 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     {
 
           Intent serviceIntent = new Intent(this, DownloadChatService.class);
-          ServiceData serviceData = new ServiceData(groupheader.getChatId(),groupheader.getName(),groupheader.getPhotoUrl(),messages_adapter.messages);
+          ServiceData serviceData = new ServiceData(groupheader.getChatId(),groupheader.getName(),groupheader.getPhotoUrl(),messages_adapter.messages,true);
           serviceIntent.putExtra("data",serviceData);
           startService(serviceIntent);
           menu.getItem(1).setIcon(R.drawable.fav_unselect);
+          Toast.makeText(mContext, "This chat is marked as favourite", Toast.LENGTH_LONG).show();
 
     }
 

@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.chatapp.ramji.buddyplans.db.SavedChatsEntity;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -44,9 +45,21 @@ public class FavouriteList_Adapter extends RecyclerView.Adapter<FavouriteList_Ad
     @Override
     public void onBindViewHolder(FavriteViewHolder holder, int position) {
 
-        Glide.with(mcontext).load(savedChatsEntities.get(position).chatProfileImageurl).into(holder.imageView);
+        //Glide.with(mcontext).load(savedChatsEntities.get(position).chatProfileImageurl).into(holder.imageView);
+
+        File fdir = new File(savedChatsEntities.get(position).chatProfileImageurl);
+
+        if(fdir.exists())
+        Glide.with(mcontext).load(fdir).into(holder.imageView);
 
         holder.groupName.setText(savedChatsEntities.get(position).chatName);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
     }
 

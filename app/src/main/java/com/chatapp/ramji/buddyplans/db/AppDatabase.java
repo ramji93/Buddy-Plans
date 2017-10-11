@@ -5,6 +5,8 @@ import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
+import com.chatapp.ramji.buddyplans.R;
+
 /**
  * Created by ramji_v on 10/7/2017.
  */
@@ -17,10 +19,11 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract SavedChatsEntityDAO savedchatsModel();
 
-    public static AppDatabase getInMemoryDatabase(Context context) {
+    public static AppDatabase getDatabase(Context context) {
         if (INSTANCE == null) {
             INSTANCE =
-                    Room.inMemoryDatabaseBuilder(context.getApplicationContext(), AppDatabase.class)
+//                    Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, context.getString(R.string.db_name))
+                         Room.inMemoryDatabaseBuilder(context.getApplicationContext(), AppDatabase.class)
                             // To simplify the codelab, allow queries on the main thread.
                             // Don't do this on a real app! See PersistenceBasicSample for an example.
                             .allowMainThreadQueries()

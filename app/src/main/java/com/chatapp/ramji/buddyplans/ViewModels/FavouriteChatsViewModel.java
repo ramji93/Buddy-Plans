@@ -3,7 +3,6 @@ package com.chatapp.ramji.buddyplans.ViewModels;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
-import android.arch.persistence.room.Database;
 
 import com.chatapp.ramji.buddyplans.db.AppDatabase;
 import com.chatapp.ramji.buddyplans.db.SavedChatsEntity;
@@ -23,7 +22,7 @@ public class FavouriteChatsViewModel extends AndroidViewModel {
     public FavouriteChatsViewModel(Application application) {
         super(application);
 
-        db = AppDatabase.getInMemoryDatabase(application);
+        db = AppDatabase.getDatabase(application);
 
         chats = db.savedchatsModel().getSavedChat();
     }

@@ -12,20 +12,33 @@ public class LocationConverter {
     @TypeConverter
     public static Location stringtoLocation(String locationstring)
     {
-        String result[] = locationstring.split(":");
-        Location location = new Location(Double.parseDouble(result[0]),Double.parseDouble(result[1]));
-        return location;
+        if(locationstring==null)
+        {
+            return null;
+        }
+        else {
+            String result[] = locationstring.split(":");
+            Location location = new Location(Double.parseDouble(result[0]), Double.parseDouble(result[1]));
+            return location;
+        }
 
     }
 
     @TypeConverter
     public static String locationtoString(Location location)
     {
-        StringBuffer stringBuffer = new StringBuffer("");
-        stringBuffer.append(Double.toString(location.getLatitude()));
-        stringBuffer.append(":");
-        stringBuffer.append(Double.toString(location.getLongitude()));
-        return stringBuffer.toString();
+
+        if(location==null)
+        {
+            return null;
+        }
+        else {
+            StringBuffer stringBuffer = new StringBuffer("");
+            stringBuffer.append(Double.toString(location.getLatitude()));
+            stringBuffer.append(":");
+            stringBuffer.append(Double.toString(location.getLongitude()));
+            return stringBuffer.toString();
+        }
 
     }
 
