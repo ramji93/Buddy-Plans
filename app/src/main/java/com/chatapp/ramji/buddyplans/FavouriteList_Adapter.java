@@ -1,6 +1,7 @@
 package com.chatapp.ramji.buddyplans;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +44,7 @@ public class FavouriteList_Adapter extends RecyclerView.Adapter<FavouriteList_Ad
     }
 
     @Override
-    public void onBindViewHolder(FavriteViewHolder holder, int position) {
+    public void onBindViewHolder(FavriteViewHolder holder, final int position) {
 
         //Glide.with(mcontext).load(savedChatsEntities.get(position).chatProfileImageurl).into(holder.imageView);
 
@@ -57,6 +58,15 @@ public class FavouriteList_Adapter extends RecyclerView.Adapter<FavouriteList_Ad
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(savedChatsEntities.get(position).groupKey != null) {
+
+                    Groupheader group = new Groupheader(savedChatsEntities.get(position).chatName, savedChatsEntities.get(position).chatid, savedChatsEntities.get(position).chatProfileImageurl);
+                    group.setGroupKey(savedChatsEntities.get(position).groupKey);
+                    Intent intent = new Intent(mcontext, GroupChatActivity.class);
+                    intent.putExtra("group", group);
+                    mcontext.startActivity(intent);
+                }
 
             }
         });

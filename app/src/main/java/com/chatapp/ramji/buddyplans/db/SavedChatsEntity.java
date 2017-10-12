@@ -14,20 +14,20 @@ public class SavedChatsEntity {
     public String chatName;
     public String chatProfileImageurl;
     public boolean current;
-    public boolean isgroup;
+    public String groupKey;
 
     public SavedChatsEntity()
     {
 
     }
 
-    public SavedChatsEntity(String chatid,String chatName,String chatProfileImageurl,boolean current,boolean isgroup)
+    public SavedChatsEntity(String chatid,String chatName,String chatProfileImageurl,boolean current,String groupKey)
     {
       this.chatid = chatid;
       this.chatName = chatName;
       this.chatProfileImageurl = chatProfileImageurl;
       this.current = current;
-      this.isgroup = isgroup;
+      this.groupKey = groupKey;
 
     }
 

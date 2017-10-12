@@ -1,5 +1,6 @@
 package com.chatapp.ramji.buddyplans.db;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Insert;
@@ -23,8 +24,10 @@ public interface MessageDAO {
 
 //    @Query("SELECT * FROM MessageEntity WHERE MessageEntity.chatId = :chatid")
     @Query("SELECT * FROM MessageEntity where chatId = :chatid")
-    public List<MessageEntity> getMessagesByChatid(String chatid);
+    public LiveData<List<MessageEntity>> getMessagesByChatid(String chatid);
 
+    @Query("SELECT MAX(TimeStamp) FROM MessageEntity where chatId = :chatid")
+    public Long getLastTimestamp(String chatid);
 
     @Insert
     public void insertMessages(MessageEntity messageEntity);

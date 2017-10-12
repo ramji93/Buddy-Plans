@@ -15,17 +15,17 @@ public class ServiceData implements Serializable {
 
     public String chatProfileImageUrl;
 
-    public boolean isgroup;
+    public String groupKey;
 
     public ArrayList<Message> messages;
 
-    public ServiceData(String chatid,String chatName,String chatProfileImageUrl ,ArrayList<Message> messages,boolean isgroup)
+    public ServiceData(String chatid,String chatName,String chatProfileImageUrl ,ArrayList<Message> messages,String groupKey)
     {
         this.chatid = chatid;
         this.chatName = chatName;
         this.chatProfileImageUrl = chatProfileImageUrl;
         this.messages = messages;
-        this.isgroup = isgroup;
+        this.groupKey = groupKey;
 
     }
 

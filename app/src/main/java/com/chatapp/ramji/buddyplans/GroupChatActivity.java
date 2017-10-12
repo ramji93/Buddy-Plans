@@ -3,6 +3,8 @@ package com.chatapp.ramji.buddyplans;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -35,6 +37,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.chatapp.ramji.buddyplans.ViewModels.ChatViewModel;
+import com.chatapp.ramji.buddyplans.db.MessageEntity;
 import com.chatapp.ramji.buddyplans.service.DownloadChatService;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.oliveiradev.image_zoom.lib.widget.ZoomAnimation;
@@ -48,12 +52,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.mikhaellopez.circularimageview.CircularImageView;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -69,9 +76,13 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     DatabaseReference groupmessageReference;
     FirebaseStorage firebaseStorage;
     StorageReference imageStorageReference;
+    Query groupQuery;
 
     final int LOCATION_REQUEST = 2;
     final int PLACE_PICKER_REQUEST = 100;
+
+    Boolean isfavourite = false;
+    Boolean getfromdb = false;
 
     String groupChatId;
     @BindView(R.id.groupchat_messages)
@@ -106,7 +117,9 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     Handler mhandler;
     Intent shareIntent = null;
     Menu menu;
-
+    ChatViewModel chatViewModel = null;
+    Long dbLastTimestamp;
+    LiveData<List<MessageEntity>> messages;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -127,10 +140,27 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
         groupChatId = groupheader.getChatId();
 
+        chatViewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
+
+        chatViewModel.getSavedChat(groupChatId);
+
+        chatViewModel.getmessages(groupChatId);
+
+        messages = chatViewModel.messages;
+
+        //TODO : OBSERVE LIVEDATA OF MESSAGES
+
+       if (chatViewModel.savedchat.size() > 0  && chatViewModel.lastTimestamp != null)
+        {
+            getfromdb = true;
+            dbLastTimestamp = chatViewModel.lastTimestamp;
+        }
+
         if(groupChatId!=null && menu!=null)
         {
           if(PreferenceManager.getDefaultSharedPreferences(this).getString("savedchats","").contains(groupChatId))
           {
+              isfavourite = true;
               menu.getItem(1).setIcon(R.drawable.fav_unselect);
           }
 
@@ -143,9 +173,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
 
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && transition != null) {
 
             groupLogo.setTransitionName(transition);
         }
@@ -153,7 +181,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         Bitmap bitmap = (Bitmap) intent.getParcelableExtra("image");
         shareIntent = (Intent) intent.getParcelableExtra("shareIntent");
 
-        if(bitmap != null) {
+        if(bitmap != null && transition != null ) {
             groupLogo.setImageBitmap(bitmap);
             supportStartPostponedEnterTransition();
         }
@@ -286,8 +314,6 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
     }
 
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_PICKER_REQUEST) {
@@ -337,6 +363,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         {
             if(PreferenceManager.getDefaultSharedPreferences(this).getString("savedchats","").contains(groupChatId))
             {
+                isfavourite = true;
                 menu.getItem(1).setIcon(R.drawable.fav_unselect);
             }
 
@@ -379,7 +406,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     {
 
           Intent serviceIntent = new Intent(this, DownloadChatService.class);
-          ServiceData serviceData = new ServiceData(groupheader.getChatId(),groupheader.getName(),groupheader.getPhotoUrl(),messages_adapter.messages,true);
+          ServiceData serviceData = new ServiceData(groupheader.getChatId(),groupheader.getName(),groupheader.getPhotoUrl(),messages_adapter.messages,groupheader.getGroupKey());
           serviceIntent.putExtra("data",serviceData);
           startService(serviceIntent);
           menu.getItem(1).setIcon(R.drawable.fav_unselect);
@@ -629,8 +656,16 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
         if(groupChatMessageListener == null)
             groupChatMessageListener = new GroupChatMessageListener();
-        groupmessageReference.addChildEventListener(groupChatMessageListener);
+        if(getfromdb) {
 
+            groupQuery = groupmessageReference.orderByChild("timeStamp").endAt(dbLastTimestamp);
+//           .addChildEventListener(groupChatMessageListener);
+        }
+        else {
+            groupQuery = groupmessageReference.orderByChild("timeStamp");
+        }
+
+        groupQuery.addChildEventListener(groupChatMessageListener);
     }
 
 
@@ -639,7 +674,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         super.onStop();
 
         if(groupChatMessageListener!=null) {
-            groupmessageReference.removeEventListener(groupChatMessageListener);
+            groupQuery.removeEventListener(groupChatMessageListener);
             groupChatMessageListener = null;
             messages_adapter.messages.clear();
 
@@ -675,7 +710,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
                     }
                 });
 
-                Util.getDate(message.getTimeStamp());
+              //  Util.getDate(message.getTimeStamp());
 
                 messages_adapter.notifyDataSetChanged();
 

@@ -20,9 +20,11 @@ import static android.arch.persistence.room.OnConflictStrategy.IGNORE;
 @Dao
 public interface SavedChatsEntityDAO {
 
-//    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.current = true")
-    @Query("SELECT * FROM SavedChatsEntity")
+    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.current = true")
     public LiveData<List<SavedChatsEntity>> getSavedChat();
+
+    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.current = true and SavedChatsEntity.chatid = :chatid")
+    public List<SavedChatsEntity> getSavedChatwithid(String chatid);
 
     @Insert(onConflict = IGNORE)
     public void insertChats(SavedChatsEntity chatEntity);
