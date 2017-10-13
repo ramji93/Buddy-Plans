@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.chatapp.ramji.buddyplans.db.MessageEntity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -45,7 +46,7 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
 
 {
     private Context mContext;
-    ArrayList<Message> messages;
+    ArrayList<MessageEntity> messages;
     String myuid;
     HashMap<String,Message> messageMap = new HashMap<String,Message>();
     private DatabaseReference mDatabaseReference;
@@ -62,7 +63,7 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
     {
 
         mContext = context;
-        messages = new ArrayList<Message>();
+        messages = new ArrayList<MessageEntity>();
         myuid = uid;
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();

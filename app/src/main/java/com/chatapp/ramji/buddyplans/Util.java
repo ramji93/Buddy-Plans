@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.chatapp.ramji.buddyplans.db.MessageEntity;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -151,4 +152,58 @@ public class Util {
       return path;
 
     }
+
+    public static MessageEntity getEntityfromMessage(Message message,String chatId,Context mcontext)
+    {
+
+        MessageEntity dbmessage;
+        String dbphotoContentUrl=null;
+        String dbphotoContentName=null;
+        String dbText=null;
+        String dbUserName=null;
+        long dbTimestamp;
+        String dbuserid=null;
+        String dbUserPhotoUrl=null;
+        Location dbLocation=null;
+        String dbChatid=null;
+
+
+        if(message.getPhotoContentUrl()!=null)
+        {
+            dbphotoContentUrl =  message.getPhotoContentUrl();
+            dbphotoContentName = message.getPhotoContentName();
+        }
+
+        if(message.getText()!=null)
+        {
+            dbText = message.getText();
+        }
+
+        dbUserName = message.getUserName();
+
+        dbTimestamp = message.getTimeStamp();
+
+        dbuserid = message.getUid();
+
+        if(message.getPhotoUrl()!= null)
+        {
+            dbUserPhotoUrl = message.getPhotoUrl();
+        }
+
+        if(message.getLocation()!=null)
+        {
+            dbLocation = message.getLocation();
+        }
+
+        if(chatId!=null) {
+            dbChatid = chatId;
+        }
+
+        dbmessage = new MessageEntity(message.getMessageid(),dbText,dbphotoContentUrl,dbphotoContentName,dbUserName,dbTimestamp,dbUserPhotoUrl,dbuserid,dbLocation,dbChatid);
+
+         return  dbmessage;
+    }
+
+
+
 }

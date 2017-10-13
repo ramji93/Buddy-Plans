@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,6 +18,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -39,6 +41,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.chatapp.ramji.buddyplans.ViewModels.ChatViewModel;
 import com.chatapp.ramji.buddyplans.db.MessageEntity;
+import com.chatapp.ramji.buddyplans.db.SavedChatsEntity;
 import com.chatapp.ramji.buddyplans.service.DownloadChatService;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.oliveiradev.image_zoom.lib.widget.ZoomAnimation;
@@ -60,6 +63,7 @@ import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -146,14 +150,19 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
         chatViewModel.getmessages(groupChatId);
 
-        messages = chatViewModel.messages;
+        chatViewModel.lastTimestamp.observe(this, new Observer<Long>() {
+            @Override
+            public void onChanged(@Nullable Long aLong) {
+                dbLastTimestamp = aLong;
+            }
+        });
 
-        //TODO : OBSERVE LIVEDATA OF MESSAGES
 
-       if (chatViewModel.savedchat.size() > 0  && chatViewModel.lastTimestamp != null)
+
+       if (chatViewModel.savedchat.size() > 0  && dbLastTimestamp != null)
         {
             getfromdb = true;
-            dbLastTimestamp = chatViewModel.lastTimestamp;
+
         }
 
         if(groupChatId!=null && menu!=null)
@@ -165,7 +174,6 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
           }
 
         }
-
 
         setSupportActionBar(groupChatToolbar);
 
@@ -198,7 +206,6 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         });
 
 
-
         groupTitle.setText(groupheader.getName());
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -227,6 +234,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         });
 
 
+
         messages_adapter = new Messages_Adapter(this,currentUser.getUid());
         groupMessagesView.setLayoutManager(new LinearLayoutManager(this){
             @Override
@@ -236,6 +244,19 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         });
 
         groupMessagesView.setAdapter(messages_adapter);
+
+        messages = chatViewModel.messages;
+
+        messages.observe(this, new Observer<List<MessageEntity>>() {
+            @Override
+            public void onChanged(@Nullable List<MessageEntity> messageEntities) {
+                messages_adapter.messages = (ArrayList<MessageEntity>) messageEntities;
+                messages_adapter.notifyDataSetChanged();
+                groupMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
+            }
+        });
+
+        //TODO : OBSERVE LIVEDATA OF MESSAGES
 
         groupmessageReference = firebaseDatabase.getReference().child("Messages").child(groupChatId);
 
@@ -404,11 +425,11 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
     private void persistChat()
     {
-
-          Intent serviceIntent = new Intent(this, DownloadChatService.class);
-          ServiceData serviceData = new ServiceData(groupheader.getChatId(),groupheader.getName(),groupheader.getPhotoUrl(),messages_adapter.messages,groupheader.getGroupKey());
-          serviceIntent.putExtra("data",serviceData);
-          startService(serviceIntent);
+           //// TODO: add persistchat
+//          Intent serviceIntent = new Intent(this, DownloadChatService.class);
+//          ServiceData serviceData = new ServiceData(groupheader.getChatId(),groupheader.getName(),groupheader.getPhotoUrl(),messages_adapter.messages,groupheader.getGroupKey());
+//          serviceIntent.putExtra("data",serviceData);
+//          startService(serviceIntent);
           menu.getItem(1).setIcon(R.drawable.fav_unselect);
           Toast.makeText(mContext, "This chat is marked as favourite", Toast.LENGTH_LONG).show();
 
@@ -691,30 +712,58 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
             final Message message = dataSnapshot.getValue(Message.class);
 
+//            if(message.getTimeStamp()!=null) {
+//
+//                messages_adapter.messages.add(message);
+//
+//                messages_adapter.messageMap.put(dataSnapshot.getKey(),message);
+//
+//                if(message.getPhotoContentUrl() != null)
+//
+//                mhandler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//
+//                        Util.saveImage(GroupChatActivity.this,message.getPhotoContentUrl(),message.getPhotoContentName());
+//
+//
+//                    }
+//                });
+//
+//                messages_adapter.notifyDataSetChanged();
+//
+//                groupMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
+//
+//            }
 
-            if(message.getTimeStamp()!=null) {
+            if(message.getTimeStamp()!=null ) {
 
-                messages_adapter.messages.add(message);
+                if (message.getPhotoContentUrl() != null)
 
-                messages_adapter.messageMap.put(dataSnapshot.getKey(),message);
+                    mhandler.post(new Runnable() {
+                        @Override
+                        public void run() {
 
-                if(message.getPhotoContentUrl() != null)
+                            String contentphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoContentUrl(), message.getPhotoContentName());
+                            String userphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoUrl(), message.getUid());
+                            //// TODO: update the db message with local urls
 
-                mhandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        Util.saveImage(GroupChatActivity.this,message.getPhotoContentUrl(),message.getPhotoContentName());
+                        }
+                    });
 
 
-                    }
-                });
+                message.setMessageid(dataSnapshot.getKey());
 
-              //  Util.getDate(message.getTimeStamp());
+                MessageEntity entity = Util.getEntityfromMessage(message, groupChatId, mContext);
 
-                messages_adapter.notifyDataSetChanged();
+                if(!getfromdb)
+                {
 
-                groupMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
+                    chatViewModel.insertChat(new SavedChatsEntity(groupChatId,groupheader.getName(),groupheader.getPhotoUrl(),true,groupheader.getGroupKey()));
+                    getfromdb = true;
+                }
+
+                chatViewModel.insertMessage(entity);
 
             }
 
@@ -729,42 +778,50 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
           final   Message message = dataSnapshot.getValue(Message.class);
 
 
-            if(message.getTimeStamp()!=null && !messages_adapter.messageMap.containsKey(dataSnapshot.getKey()) ) {
+//            if(message.getTimeStamp()!=null && !messages_adapter.messageMap.containsKey(dataSnapshot.getKey()) ) {
+              if(message.getTimeStamp()!=null ) {
 
-                messages_adapter.messages.add(message);
-
-                messages_adapter.messageMap.put(dataSnapshot.getKey(),message);
-
+//                messages_adapter.messages.add(message);
+//
+//                messages_adapter.messageMap.put(dataSnapshot.getKey(),message);
+//
                 if(message.getPhotoContentUrl() != null)
 
                     mhandler.post(new Runnable() {
                         @Override
                         public void run() {
 
-                            Util.saveImage(GroupChatActivity.this,message.getPhotoContentUrl(),message.getPhotoContentName());
-
+                          String contentphotourl =  Util.saveImage(GroupChatActivity.this,message.getPhotoContentUrl(),message.getPhotoContentName());
+                          String userphotourl =  Util.saveImage(GroupChatActivity.this,message.getPhotoUrl(),message.getUid());
+                            //// TODO: update the db message with local urls
 
                         }
                     });
+//
+//                Util.getDate(message.getTimeStamp());
+//
+//                messages_adapter.notifyDataSetChanged();
+//
+//                groupMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
 
-                Util.getDate(message.getTimeStamp());
+                   message.setMessageid(dataSnapshot.getKey());
 
-                messages_adapter.notifyDataSetChanged();
+                   MessageEntity entity = Util.getEntityfromMessage(message,groupChatId,mContext);
 
-                groupMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
-
-            }
-
-            else if(message.getTimeStamp()!=null && messages_adapter.messageMap.containsKey(dataSnapshot.getKey()))
-            {
-
-                messages_adapter.changeMessage(dataSnapshot.getKey(),message.getTimeStamp());
-
-                messages_adapter.notifyDataSetChanged();
-
-                groupMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
+                  chatViewModel.insertMessage(entity);
 
             }
+
+//            else if(message.getTimeStamp()!=null && messages_adapter.messageMap.containsKey(dataSnapshot.getKey()))
+//            {
+//
+//                messages_adapter.changeMessage(dataSnapshot.getKey(),message.getTimeStamp());
+//
+//                messages_adapter.notifyDataSetChanged();
+//
+//                groupMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
+//
+//            }
 
 
         }

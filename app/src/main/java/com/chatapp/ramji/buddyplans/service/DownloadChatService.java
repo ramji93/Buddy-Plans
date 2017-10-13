@@ -94,7 +94,7 @@ public class DownloadChatService extends IntentService {
                 dbChatid = chatId;
             }
 
-            dbmessage = new MessageEntity(dbText,dbphotoContentUrl,dbphotoContentName,dbUserName,dbTimestamp,dbUserPhotoUrl,dbuserid,dbLocation,dbChatid);
+            dbmessage = new MessageEntity(message.getMessageid(),dbText,dbphotoContentUrl,dbphotoContentName,dbUserName,dbTimestamp,dbUserPhotoUrl,dbuserid,dbLocation,dbChatid);
 
             dbmessageList.add(dbmessage);
 

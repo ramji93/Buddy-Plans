@@ -9,6 +9,7 @@ import java.util.Map;
 
 public class Message implements Serializable {
 
+    private String messageid;
     private String Text;
     private String PhotoContentUrl;
     private String PhotoContentName;
@@ -17,6 +18,14 @@ public class Message implements Serializable {
     private String PhotoUrl;
     private String Uid;
     private Location location;
+
+    public String getMessageid() {
+        return messageid;
+    }
+
+    public void setMessageid(String messageid) {
+        this.messageid = messageid;
+    }
 
     public String getPhotoContentName() {
         return PhotoContentName;

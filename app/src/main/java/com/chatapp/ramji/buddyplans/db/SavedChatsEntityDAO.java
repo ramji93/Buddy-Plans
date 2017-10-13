@@ -12,6 +12,7 @@ import com.chatapp.ramji.buddyplans.Location;
 import java.util.List;
 
 import static android.arch.persistence.room.OnConflictStrategy.IGNORE;
+import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 
 /**
  * Created by ramji_v on 10/7/2017.
@@ -20,13 +21,13 @@ import static android.arch.persistence.room.OnConflictStrategy.IGNORE;
 @Dao
 public interface SavedChatsEntityDAO {
 
-    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.current = true")
+    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.current = 'true'")
     public LiveData<List<SavedChatsEntity>> getSavedChat();
 
-    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.current = true and SavedChatsEntity.chatid = :chatid")
+    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.current = 'true' and SavedChatsEntity.chatid = :chatid")
     public List<SavedChatsEntity> getSavedChatwithid(String chatid);
 
-    @Insert(onConflict = IGNORE)
+    @Insert(onConflict = REPLACE)
     public void insertChats(SavedChatsEntity chatEntity);
 
 

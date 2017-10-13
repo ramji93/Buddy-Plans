@@ -20,7 +20,7 @@ public class ChatViewModel  extends AndroidViewModel {
 
     public List<SavedChatsEntity> savedchat;
 
-    public Long lastTimestamp;
+    public LiveData<Long> lastTimestamp;
 
     public LiveData<List<MessageEntity>> messages;
 
@@ -36,16 +36,25 @@ public class ChatViewModel  extends AndroidViewModel {
     {
         savedchat = db.savedchatsModel().getSavedChatwithid(chatid);
 
-        if(savedchat.size() > 0)
-        {
-            lastTimestamp = db.messageModel().getLastTimestamp(chatid);
-        }
+
+        lastTimestamp = db.messageModel().getLastTimestamp(chatid);
+
     }
 
     public void getmessages(String chatid)
     {
 
         messages = db.messageModel().getMessagesByChatid(chatid);
+    }
+
+    public void insertMessage(MessageEntity messageEntity)
+    {
+          db.messageModel().insertMessages(messageEntity);
+    }
+
+    public void insertChat(SavedChatsEntity savedChatsEntity)
+    {
+        db.savedchatsModel().insertChats(savedChatsEntity);
     }
 
 

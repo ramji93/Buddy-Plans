@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.arch.persistence.room.OnConflictStrategy.IGNORE;
+import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 
 /**
  * Created by ramji_v on 10/7/2017.
@@ -27,12 +28,12 @@ public interface MessageDAO {
     public LiveData<List<MessageEntity>> getMessagesByChatid(String chatid);
 
     @Query("SELECT MAX(TimeStamp) FROM MessageEntity where chatId = :chatid")
-    public Long getLastTimestamp(String chatid);
+    public LiveData<Long> getLastTimestamp(String chatid);
 
-    @Insert
+    @Insert(onConflict = REPLACE)
     public void insertMessages(MessageEntity messageEntity);
 
-    @Insert
+    @Insert(onConflict = REPLACE)
     public void insertMultipleMessages(ArrayList<MessageEntity> messageEntities);
 
 

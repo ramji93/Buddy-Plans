@@ -442,7 +442,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
             final Message loadmessage = new Message(null, myName,uri.toString(),uri.getLastPathSegment(),currentUser.getUid(),null);
             loadmessage.setTimeStamp(System.currentTimeMillis());
 
-            messages_adapter.messages.add(loadmessage);
+//            messages_adapter.messages.add(loadmessage);
 
             messages_adapter.notifyDataSetChanged();
 
@@ -693,7 +693,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
             if(message.getTimeStamp()!=null) {
 
-                messages_adapter.messages.add(message);
+             //   messages_adapter.messages.add(message);
 
                 messages_adapter.messageMap.put(dataSnapshot.getKey(),message);
 
@@ -729,7 +729,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
             if(message.getTimeStamp()!=null && !messages_adapter.messageMap.containsKey(dataSnapshot.getKey()) ) {
 
-                messages_adapter.messages.add(message);
+//                messages_adapter.messages.add(message);
 
                 messages_adapter.messageMap.put(dataSnapshot.getKey(),message);
 
