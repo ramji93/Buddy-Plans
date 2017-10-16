@@ -12,14 +12,6 @@ public class Groupheader implements Serializable{
 
     private String chatId;
 
-    public String getGroupKey() {
-        return groupKey;
-    }
-
-    public void setGroupKey(String groupKey) {
-        this.groupKey = groupKey;
-    }
-
     private String lastMessage;
 
     private Long lastMessageTimestap;
@@ -39,6 +31,8 @@ public class Groupheader implements Serializable{
     public  Groupheader(String name, String chatId, String photoUrl)
     {
 
+
+
         this.name = name;
 
         this.chatId = chatId;
@@ -52,6 +46,14 @@ public class Groupheader implements Serializable{
 
     }
 
+
+    public String getGroupKey() {
+        return groupKey;
+    }
+
+    public void setGroupKey(String groupKey) {
+        this.groupKey = groupKey;
+    }
 
     public Long getLastMessageTimestap() {
         return lastMessageTimestap;

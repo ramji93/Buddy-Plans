@@ -131,7 +131,6 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_chat);
 
-
         ButterKnife.bind(this);
 
         supportPostponeEnterTransition();
@@ -150,14 +149,15 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
         chatViewModel.getmessages(groupChatId);
 
-        chatViewModel.lastTimestamp.observe(this, new Observer<Long>() {
+        dbLastTimestamp = chatViewModel.lastTimestamp;
+
+        chatViewModel.lastTimestampLive.observe(this, new Observer<Long>() {
             @Override
             public void onChanged(@Nullable Long aLong) {
-                dbLastTimestamp = aLong;
+                if(aLong != null)
+                    dbLastTimestamp = aLong;
             }
         });
-
-
 
        if (chatViewModel.savedchat.size() > 0  && dbLastTimestamp != null)
         {
@@ -679,7 +679,8 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
             groupChatMessageListener = new GroupChatMessageListener();
         if(getfromdb) {
 
-            groupQuery = groupmessageReference.orderByChild("timeStamp").endAt(dbLastTimestamp);
+            Long tmp = dbLastTimestamp +1;
+            groupQuery = groupmessageReference.orderByChild("timeStamp").startAt(tmp);
 //           .addChildEventListener(groupChatMessageListener);
         }
         else {
@@ -697,7 +698,6 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         if(groupChatMessageListener!=null) {
             groupQuery.removeEventListener(groupChatMessageListener);
             groupChatMessageListener = null;
-            messages_adapter.messages.clear();
 
         }
 

@@ -24,8 +24,14 @@ public interface SavedChatsEntityDAO {
     @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.current = 'true'")
     public LiveData<List<SavedChatsEntity>> getSavedChat();
 
-    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.current = 'true' and SavedChatsEntity.chatid = :chatid")
+    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.chatid = :chatid")
     public List<SavedChatsEntity> getSavedChatwithid(String chatid);
+
+    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.groupKey != null")
+    public LiveData<SavedChatsEntity> getGroupChatsSaved();
+
+    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.groupKey = null")
+    public LiveData<SavedChatsEntity> getFriendChatsSaved();
 
     @Insert(onConflict = REPLACE)
     public void insertChats(SavedChatsEntity chatEntity);

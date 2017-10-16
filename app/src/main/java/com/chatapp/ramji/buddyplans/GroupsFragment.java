@@ -1,14 +1,20 @@
 package com.chatapp.ramji.buddyplans;
 
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
@@ -20,6 +26,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.bumptech.glide.load.resource.bitmap.GlideBitmapDrawable;
+import com.chatapp.ramji.buddyplans.ViewModels.FavouriteChatsViewModel;
+import com.chatapp.ramji.buddyplans.ViewModels.SavedChatViewModel;
+import com.chatapp.ramji.buddyplans.db.SavedChatsEntity;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -130,6 +139,34 @@ public class GroupsFragment extends Fragment {
 
 
 
+        ConnectivityManager cm =
+                (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        if(!isConnected)
+        {
+
+            SavedChatViewModel viewModel = ViewModelProviders.of(this).get(SavedChatViewModel.class);
+
+            viewModel.getSavedGroupChats();
+
+            viewModel.savedChats_group.observe(this, new Observer<SavedChatsEntity>() {
+                @Override
+                public void onChanged(@Nullable SavedChatsEntity savedChatsEntity) {
+                    Groupheader group = new Groupheader(savedChatsEntity.chatName,savedChatsEntity.chatid,savedChatsEntity.chatProfileImageurl);
+                    group.setGroupKey(savedChatsEntity.groupKey);
+                    groupListAdapter.add(group);
+                    groupListAdapter.notifyDataSetChanged();
+
+                }
+            });
+
+        }
+
+
 
     }
 
@@ -200,6 +237,7 @@ public class GroupsFragment extends Fragment {
 //
 //        if(mGroupListener!=null)
 //            groupListQuery.addChildEventListener(mGroupListener);
+
 
     }
 

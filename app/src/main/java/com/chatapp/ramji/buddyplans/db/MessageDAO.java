@@ -28,7 +28,10 @@ public interface MessageDAO {
     public LiveData<List<MessageEntity>> getMessagesByChatid(String chatid);
 
     @Query("SELECT MAX(TimeStamp) FROM MessageEntity where chatId = :chatid")
-    public LiveData<Long> getLastTimestamp(String chatid);
+    public Long getLastTimestamp(String chatid);
+
+    @Query("SELECT MAX(TimeStamp) FROM MessageEntity where chatId = :chatid")
+    public LiveData<Long> getLastTimestampLive(String chatid);
 
     @Insert(onConflict = REPLACE)
     public void insertMessages(MessageEntity messageEntity);

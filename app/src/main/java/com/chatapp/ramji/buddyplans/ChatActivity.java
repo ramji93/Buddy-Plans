@@ -2,6 +2,9 @@ package com.chatapp.ramji.buddyplans;
 
 import android.Manifest;
 import android.app.Activity;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,6 +17,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -35,6 +39,9 @@ import android.widget.Toast;
 
 
 import com.bumptech.glide.Glide;
+import com.chatapp.ramji.buddyplans.ViewModels.ChatViewModel;
+import com.chatapp.ramji.buddyplans.db.MessageEntity;
+import com.chatapp.ramji.buddyplans.db.SavedChatsEntity;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.oliveiradev.image_zoom.lib.widget.ZoomAnimation;
 import com.google.android.gms.common.ConnectionResult;
@@ -49,12 +56,16 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.mikhaellopez.circularimageview.CircularImageView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -108,6 +119,12 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     Intent shareIntent = null;
     private GoogleApiClient mGoogleApiClient;
     DatabaseReference messageReference;
+
+    Query chatQuery;
+    ChatViewModel chatViewModel = null;
+    Long dbLastTimestamp;
+    LiveData<List<MessageEntity>> messages;
+    boolean getfromdb = false;
 
 
 
@@ -163,6 +180,30 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
         friendUid = friend.getUid();
         chatId = friend.getChatid();
 
+
+        chatViewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
+
+        chatViewModel.getSavedChat(chatId);
+
+        chatViewModel.getmessages(chatId);
+
+        dbLastTimestamp = chatViewModel.lastTimestamp;
+
+        chatViewModel.lastTimestampLive.observe(this, new Observer<Long>() {
+            @Override
+            public void onChanged(@Nullable Long aLong) {
+                if(aLong != null)
+                    dbLastTimestamp = aLong;
+            }
+        });
+
+        if (chatViewModel.savedchat.size() > 0  && dbLastTimestamp != null)
+        {
+            getfromdb = true;
+
+        }
+
+
         messageReference = firebaseDatabase.getReference().child("Messages").child(chatId);
          messages_adapter = new Messages_Adapter(this,myUid);
         chatMessagesView.setLayoutManager(new LinearLayoutManager(this){
@@ -173,6 +214,20 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
         });
 
         chatMessagesView.setAdapter(messages_adapter);
+
+        messages = chatViewModel.messages;
+
+        messages.observe(this, new Observer<List<MessageEntity>>() {
+            @Override
+            public void onChanged(@Nullable List<MessageEntity> messageEntities) {
+                messages_adapter.messages = (ArrayList<MessageEntity>) messageEntities;
+                messages_adapter.notifyDataSetChanged();
+                chatMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
+            }
+        });
+
+        chatReference = firebaseDatabase.getReference().child("Messages").child(chatId);
+
         emojIcon = new EmojIconActions(this, RootView, messageInput, smileyButton);
         emojIcon.ShowEmojIcon();
         emojIcon.setIconsIds(R.drawable.ic_keyboard, R.drawable.ic_smiley);
@@ -647,14 +702,19 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
         if(chatId!=null)
         {
             if(chatMessageListener==null)
-
-            {
-
                 chatMessageListener = new ChatMessageListener();
-                chatReference = firebaseDatabase.getReference().child("Messages").child(chatId);
-                chatReference.addChildEventListener(chatMessageListener);
 
+            if(getfromdb) {
+
+                Long tmp = dbLastTimestamp +1;
+                chatQuery = chatReference.orderByChild("timeStamp").startAt(tmp);
+//           .addChildEventListener(groupChatMessageListener);
             }
+            else {
+                chatQuery = chatReference.orderByChild("timeStamp");
+            }
+
+            chatQuery.addChildEventListener(chatMessageListener);
 
         }
 
@@ -666,9 +726,8 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onStop();
 
         if(chatId!=null && chatMessageListener!=null) {
-            chatReference.removeEventListener(chatMessageListener);
+            chatQuery.removeEventListener(chatMessageListener);
             chatMessageListener = null;
-            messages_adapter.messages.clear();
 
         }
 
@@ -695,25 +754,53 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
              //   messages_adapter.messages.add(message);
 
-                messages_adapter.messageMap.put(dataSnapshot.getKey(),message);
+//                messages_adapter.messageMap.put(dataSnapshot.getKey(),message);
+//
+//                if(message.getPhotoContentUrl() != null)
+//
+//                    mhandler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//
+//                            Util.saveImage(ChatActivity.this,message.getPhotoContentUrl(),message.getPhotoContentName());
+//
+//
+//                        }
+//                    });
+//
+//                Util.getDate(message.getTimeStamp());
+//
+//                messages_adapter.notifyDataSetChanged();
+//
+//                chatMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
 
-                if(message.getPhotoContentUrl() != null)
+                if (message.getPhotoContentUrl() != null)
 
                     mhandler.post(new Runnable() {
                         @Override
                         public void run() {
 
-                            Util.saveImage(ChatActivity.this,message.getPhotoContentUrl(),message.getPhotoContentName());
-
+                            String contentphotourl = Util.saveImage(ChatActivity.this, message.getPhotoContentUrl(), message.getPhotoContentName());
+                            String userphotourl = Util.saveImage(ChatActivity.this, message.getPhotoUrl(), message.getUid());
+                            //// TODO: update the db message with local urls
 
                         }
                     });
 
-                Util.getDate(message.getTimeStamp());
 
-                messages_adapter.notifyDataSetChanged();
+                message.setMessageid(dataSnapshot.getKey());
 
-                chatMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
+                MessageEntity entity = Util.getEntityfromMessage(message, chatId, mContext);
+
+                if(!getfromdb)
+                {
+
+                    chatViewModel.insertChat(new SavedChatsEntity(chatId,friend.getName(),friend.getPhotourl(),true,null));
+                    getfromdb = true;
+                }
+
+                chatViewModel.insertMessage(entity);
+
 
             }
 
@@ -727,42 +814,50 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
             final   Message message = dataSnapshot.getValue(Message.class);
 
-            if(message.getTimeStamp()!=null && !messages_adapter.messageMap.containsKey(dataSnapshot.getKey()) ) {
+            if(message.getTimeStamp()!=null)
+            {
+//            if(message.getTimeStamp()!=null && !messages_adapter.messageMap.containsKey(dataSnapshot.getKey()) ) {
 
 //                messages_adapter.messages.add(message);
 
-                messages_adapter.messageMap.put(dataSnapshot.getKey(),message);
-
+//                messages_adapter.messageMap.put(dataSnapshot.getKey(),message);
+//
                 if(message.getPhotoContentUrl() != null)
 
                     mhandler.post(new Runnable() {
                         @Override
                         public void run() {
 
-                            Util.saveImage(ChatActivity.this,message.getPhotoContentUrl(),message.getPhotoContentName());
-
+                            String contentphotourl =  Util.saveImage(ChatActivity.this,message.getPhotoContentUrl(),message.getPhotoContentName());
+                            String userphotourl =  Util.saveImage(ChatActivity.this,message.getPhotoUrl(),message.getUid());
+                            //// TODO: update the db message with local urls
                         }
                     });
+//
+//                Util.getDate(message.getTimeStamp());
+//
+//                messages_adapter.notifyDataSetChanged();
+//
+//                chatMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
 
-                Util.getDate(message.getTimeStamp());
+                message.setMessageid(dataSnapshot.getKey());
 
-                messages_adapter.notifyDataSetChanged();
+                MessageEntity entity = Util.getEntityfromMessage(message,chatId,mContext);
 
-                chatMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
-
-            }
-
-            else if(message.getTimeStamp()!=null && messages_adapter.messageMap.containsKey(dataSnapshot.getKey()))
-            {
-
-                messages_adapter.changeMessage(dataSnapshot.getKey(),message.getTimeStamp());
-
-                messages_adapter.notifyDataSetChanged();
-
-                chatMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
+                chatViewModel.insertMessage(entity);
 
             }
 
+//            else if(message.getTimeStamp()!=null && messages_adapter.messageMap.containsKey(dataSnapshot.getKey()))
+//            {
+//
+//                messages_adapter.changeMessage(dataSnapshot.getKey(),message.getTimeStamp());
+//
+//                messages_adapter.notifyDataSetChanged();
+//
+//                chatMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
+//
+//            }
 
         }
 
