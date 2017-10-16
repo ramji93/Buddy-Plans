@@ -745,34 +745,14 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
 
         @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+        public void onChildAdded(final DataSnapshot dataSnapshot, String s) {
 
             final Message message = dataSnapshot.getValue(Message.class);
 
+            final boolean m_getfromdb = getfromdb;
 
             if(message.getTimeStamp()!=null) {
 
-             //   messages_adapter.messages.add(message);
-
-//                messages_adapter.messageMap.put(dataSnapshot.getKey(),message);
-//
-//                if(message.getPhotoContentUrl() != null)
-//
-//                    mhandler.post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//
-//                            Util.saveImage(ChatActivity.this,message.getPhotoContentUrl(),message.getPhotoContentName());
-//
-//
-//                        }
-//                    });
-//
-//                Util.getDate(message.getTimeStamp());
-//
-//                messages_adapter.notifyDataSetChanged();
-//
-//                chatMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
 
                 if (message.getPhotoContentUrl() != null)
 
@@ -783,6 +763,22 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
                             String contentphotourl = Util.saveImage(ChatActivity.this, message.getPhotoContentUrl(), message.getPhotoContentName());
                             String userphotourl = Util.saveImage(ChatActivity.this, message.getPhotoUrl(), message.getUid());
                             //// TODO: update the db message with local urls
+
+                            if(!m_getfromdb) {
+                                String groupphotourl = Util.saveImage(ChatActivity.this, friend.getPhotourl(), chatId);
+                                chatViewModel.insertChat(new SavedChatsEntity(chatId,friend.getName(),groupphotourl,true,null,friendUid));
+                                getfromdb = true;
+                            }
+
+                            message.setMessageid(dataSnapshot.getKey());
+
+                            MessageEntity entity = Util.getEntityfromMessage(message, chatId, mContext);
+
+                            entity.setPhotoContentUrl(contentphotourl);
+
+                            entity.setPhotoUrl(userphotourl);
+
+                            chatViewModel.insertMessage(entity);
 
                         }
                     });
@@ -795,7 +791,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
                 if(!getfromdb)
                 {
 
-                    chatViewModel.insertChat(new SavedChatsEntity(chatId,friend.getName(),friend.getPhotourl(),true,null));
+                    chatViewModel.insertChat(new SavedChatsEntity(chatId,friend.getName(),friend.getPhotourl(),true,null,friendUid));
                     getfromdb = true;
                 }
 
@@ -810,17 +806,12 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
 
         @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+        public void onChildChanged(final DataSnapshot dataSnapshot, String s) {
 
             final   Message message = dataSnapshot.getValue(Message.class);
 
             if(message.getTimeStamp()!=null)
             {
-//            if(message.getTimeStamp()!=null && !messages_adapter.messageMap.containsKey(dataSnapshot.getKey()) ) {
-
-//                messages_adapter.messages.add(message);
-
-//                messages_adapter.messageMap.put(dataSnapshot.getKey(),message);
 //
                 if(message.getPhotoContentUrl() != null)
 
@@ -831,14 +822,19 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
                             String contentphotourl =  Util.saveImage(ChatActivity.this,message.getPhotoContentUrl(),message.getPhotoContentName());
                             String userphotourl =  Util.saveImage(ChatActivity.this,message.getPhotoUrl(),message.getUid());
                             //// TODO: update the db message with local urls
+
+                            message.setMessageid(dataSnapshot.getKey());
+
+                            MessageEntity entity = Util.getEntityfromMessage(message, chatId, mContext);
+
+                            entity.setPhotoContentUrl(contentphotourl);
+
+                            entity.setPhotoUrl(userphotourl);
+
+                            chatViewModel.insertMessage(entity);
                         }
                     });
-//
-//                Util.getDate(message.getTimeStamp());
-//
-//                messages_adapter.notifyDataSetChanged();
-//
-//                chatMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
+
 
                 message.setMessageid(dataSnapshot.getKey());
 
@@ -848,16 +844,6 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
             }
 
-//            else if(message.getTimeStamp()!=null && messages_adapter.messageMap.containsKey(dataSnapshot.getKey()))
-//            {
-//
-//                messages_adapter.changeMessage(dataSnapshot.getKey(),message.getTimeStamp());
-//
-//                messages_adapter.notifyDataSetChanged();
-//
-//                chatMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
-//
-//            }
 
         }
 

@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,6 +19,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.preference.PreferenceManager;
+import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -64,7 +67,10 @@ import com.google.gson.Gson;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -117,6 +123,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     EmojIconActions emojIcon;
     TedBottomPicker bottomSheetDialogFragment;
     final int WRITE_REQUEST = 1;
+    final int CALENDAR_REQUEST = 2;
     HandlerThread handlerThread;
     Handler mhandler;
     Intent shareIntent = null;
@@ -154,24 +161,21 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         chatViewModel.lastTimestampLive.observe(this, new Observer<Long>() {
             @Override
             public void onChanged(@Nullable Long aLong) {
-                if(aLong != null)
+                if (aLong != null)
                     dbLastTimestamp = aLong;
             }
         });
 
-       if (chatViewModel.savedchat.size() > 0  && dbLastTimestamp != null)
-        {
+        if (chatViewModel.savedchat.size() > 0 && dbLastTimestamp != null) {
             getfromdb = true;
 
         }
 
-        if(groupChatId!=null && menu!=null)
-        {
-          if(PreferenceManager.getDefaultSharedPreferences(this).getString("savedchats","").contains(groupChatId))
-          {
-              isfavourite = true;
-              menu.getItem(1).setIcon(R.drawable.fav_unselect);
-          }
+        if (groupChatId != null && menu != null) {
+            if (PreferenceManager.getDefaultSharedPreferences(this).getString("savedchats", "").contains(groupChatId)) {
+                isfavourite = true;
+                menu.getItem(1).setIcon(R.drawable.fav_unselect);
+            }
 
         }
 
@@ -189,13 +193,11 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         Bitmap bitmap = (Bitmap) intent.getParcelableExtra("image");
         shareIntent = (Intent) intent.getParcelableExtra("shareIntent");
 
-        if(bitmap != null && transition != null ) {
+        if (bitmap != null && transition != null) {
             groupLogo.setImageBitmap(bitmap);
             supportStartPostponedEnterTransition();
-        }
-
-        else
-        Glide.with(this).load(groupheader.getPhotoUrl()).into(groupLogo);
+        } else
+            Glide.with(this).load(groupheader.getPhotoUrl()).into(groupLogo);
 
 
         groupLogo.setOnClickListener(new View.OnClickListener() {
@@ -234,9 +236,8 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         });
 
 
-
-        messages_adapter = new Messages_Adapter(this,currentUser.getUid());
-        groupMessagesView.setLayoutManager(new LinearLayoutManager(this){
+        messages_adapter = new Messages_Adapter(this, currentUser.getUid());
+        groupMessagesView.setLayoutManager(new LinearLayoutManager(this) {
             @Override
             public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
                 super.smoothScrollToPosition(recyclerView, state, position);
@@ -270,8 +271,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
         mhandler = new Handler(handlerThread.getLooper());
 
-        if(shareIntent!= null)
-        {
+        if (shareIntent != null) {
 
             handleSharedIntent();
 
@@ -280,8 +280,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     }
 
 
-    public void handleSharedIntent()
-    {
+    public void handleSharedIntent() {
 
 
         if (Intent.ACTION_SEND.equals(shareIntent.getAction()) && shareIntent.getType() != null) {
@@ -293,9 +292,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
                 shareIntent = null;
 
-            }
-
-            else if(shareIntent.getType().contains("image")) {
+            } else if (shareIntent.getType().contains("image")) {
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage("Do you want to upload the image in this chat? ");
@@ -315,19 +312,17 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             ((Activity) mContext).finishAndRemoveTask();
-                        }
-                        else
-                        {
+                        } else {
                             ((Activity) mContext).finishAffinity();
                         }
 
 
                     }
                 });
-                AlertDialog dialog =  builder.create();
+                AlertDialog dialog = builder.create();
                 dialog.show();
 
-                Log.d(this.getClass().getName(),"inside onsharedintent");
+                Log.d(this.getClass().getName(), "inside onsharedintent");
 
             }
 
@@ -339,13 +334,13 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Place place = PlacePicker.getPlace(this,data);
+                Place place = PlacePicker.getPlace(this, data);
                 String toastMsg = String.format("Place: %s", place.getId());
                 Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
 
-                com.chatapp.ramji.buddyplans.Location location = new com.chatapp.ramji.buddyplans.Location(place.getLatLng().latitude,place.getLatLng().longitude);
+                com.chatapp.ramji.buddyplans.Location location = new com.chatapp.ramji.buddyplans.Location(place.getLatLng().latitude, place.getLatLng().longitude);
 
-                Message message = new Message(null,myName,null,null,currentUser.getUid(),location);
+                Message message = new Message(null, myName, null, null, currentUser.getUid(), location);
 
                 String messageKey = groupmessageReference.push().getKey();
 
@@ -355,17 +350,15 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
                 groupMessageText.setText("");
 
-                String notificationText = groupheader.getName()+ " : " + myName + " has uploaded a location";
+                String notificationText = groupheader.getName() + " : " + myName + " has uploaded a location";
 
-                GroupNotification groupNotification = new GroupNotification(currentUser.getUid(),myName,groupChatId,notificationText);
+                GroupNotification groupNotification = new GroupNotification(currentUser.getUid(), myName, groupChatId, notificationText);
 
                 firebaseDatabase.getReference("GroupNotifications").push().setValue(groupNotification);
 
                 firebaseDatabase.getReference("/GroupChat/" + groupheader.getGroupKey()).child("lastMessage").setValue(message.getUserName() + " uploaded a location ");
 
                 firebaseDatabase.getReference("/GroupChat/" + groupheader.getGroupKey()).child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
-
-
 
 
             }
@@ -380,10 +373,8 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         MenuInflater inflater = getMenuInflater();
 
         inflater.inflate(R.menu.groupchat_menu, menu);
-        if(groupChatId!=null)
-        {
-            if(PreferenceManager.getDefaultSharedPreferences(this).getString("savedchats","").contains(groupChatId))
-            {
+        if (groupChatId != null) {
+            if (PreferenceManager.getDefaultSharedPreferences(this).getString("savedchats", "").contains(groupChatId)) {
                 isfavourite = true;
                 menu.getItem(1).setIcon(R.drawable.fav_unselect);
             }
@@ -397,54 +388,92 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-       switch (item.getItemId())
-       {
-           case R.id.editgroup_menu :
+        switch (item.getItemId()) {
+            case R.id.editgroup_menu:
 
-               Intent intent = new Intent(this,EditGroupActivity.class);
-               intent.putExtra("group",groupheader);
-               startActivity(intent);
-               return true;
+                Intent intent = new Intent(this, EditGroupActivity.class);
+                intent.putExtra("group", groupheader);
+                startActivity(intent);
+                return true;
 
-           case R.id.mark_favourite :
+            case R.id.mark_favourite:
 
-           persistChat();
-
-
-            default :
-
-              return super.onOptionsItemSelected(item);
+                persistChat();
 
 
-       }
+            default:
 
+                return super.onOptionsItemSelected(item);
+
+
+        }
 
 
     }
 
 
-    private void persistChat()
-    {
-           //// TODO: add persistchat
+    private void persistChat() {
+        //// TODO: add persistchat
 //          Intent serviceIntent = new Intent(this, DownloadChatService.class);
 //          ServiceData serviceData = new ServiceData(groupheader.getChatId(),groupheader.getName(),groupheader.getPhotoUrl(),messages_adapter.messages,groupheader.getGroupKey());
 //          serviceIntent.putExtra("data",serviceData);
 //          startService(serviceIntent);
-          menu.getItem(1).setIcon(R.drawable.fav_unselect);
-          Toast.makeText(mContext, "This chat is marked as favourite", Toast.LENGTH_LONG).show();
+        menu.getItem(1).setIcon(R.drawable.fav_unselect);
+        Toast.makeText(mContext, "This chat is marked as favourite", Toast.LENGTH_LONG).show();
+
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_CALENDAR}, CALENDAR_REQUEST);
+
+            return;
+        } else {
+
+            ContentValues eventValues = new ContentValues();
+
+            eventValues.put("calendar_id", 1); // id, We need to choose from
+            // our mobile for primary
+            // its 1
+            eventValues.put("title", "Meeting with dad");
+
+
+            Calendar c = Calendar.getInstance();
+            long startDate = c.getTimeInMillis();
+
+            c.add(Calendar.MINUTE, 5);
+
+            long endDate = c.getTimeInMillis();
+
+            eventValues.put("dtstart", startDate);
+            eventValues.put("dtend", endDate);
+
+            TimeZone timeZone = TimeZone.getDefault();
+            eventValues.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.getID());
+
+            eventValues.put(CalendarContract.Events.HAS_ALARM, 1);
+
+            ContentResolver cr = this.getContentResolver();
+
+            Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, eventValues);
+        }
+
 
     }
 
 
-
-
     @OnClick(R.id.attachlocation)
-    public void startPlacePicker()
-    {
+    public void startPlacePicker() {
 
         attachMenu.toggle(true);
 
-        if(ContextCompat.checkSelfPermission(this,
+        if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED)
 
@@ -454,7 +483,6 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
             return;
         }
-
 
 
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
@@ -467,19 +495,16 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         }
 
 
-
-
     }
 
-    public void handlePermissions()
-    {
+    public void handlePermissions() {
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},LOCATION_REQUEST
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST
             );
 
 
@@ -489,24 +514,21 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     }
 
 
-
-
     @OnClick(R.id.attachPhoto)
-    public void attachPhoto()
-    {
+    public void attachPhoto() {
 
         attachMenu.toggle(true);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},WRITE_REQUEST);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_REQUEST);
 
             return;
 
         }
 
-        if(bottomSheetDialogFragment==null) {
+        if (bottomSheetDialogFragment == null) {
 
             bottomSheetDialogFragment = new TedBottomPicker.Builder(this)
                     .setOnImageSelectedListener(new TedBottomPicker.OnImageSelectedListener() {
@@ -530,8 +552,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
         }
 
-          bottomSheetDialogFragment.show(getSupportFragmentManager());
-
+        bottomSheetDialogFragment.show(getSupportFragmentManager());
 
 
     }
@@ -587,8 +608,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        if(requestCode==WRITE_REQUEST)
-        {
+        if (requestCode == WRITE_REQUEST) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
@@ -610,11 +630,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
             }
 
 
-
-        }
-
-        else if(requestCode == LOCATION_REQUEST)
-        {
+        } else if (requestCode == LOCATION_REQUEST) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
@@ -623,6 +639,43 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
             }
 
 
+        } else if (requestCode == CALENDAR_REQUEST) {
+            ContentValues eventValues = new ContentValues();
+
+            eventValues.put("calendar_id", 1); // id, We need to choose from
+            // our mobile for primary
+            // its 1
+            eventValues.put("title", "Meeting with dad");
+
+
+            Calendar c = Calendar.getInstance();
+            long startDate = c.getTimeInMillis();
+
+            c.add(Calendar.MINUTE, 5);
+
+            long endDate = c.getTimeInMillis();
+
+            eventValues.put("dtstart", startDate);
+            eventValues.put("dtend", endDate);
+
+            TimeZone timeZone = TimeZone.getDefault();
+            eventValues.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.getID());
+
+            eventValues.put(CalendarContract.Events.HAS_ALARM, 1);
+
+            ContentResolver cr = this.getContentResolver();
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, eventValues);
         }
 
     }
@@ -708,33 +761,11 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
 
         @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+        public void onChildAdded(final DataSnapshot dataSnapshot, String s) {
 
             final Message message = dataSnapshot.getValue(Message.class);
 
-//            if(message.getTimeStamp()!=null) {
-//
-//                messages_adapter.messages.add(message);
-//
-//                messages_adapter.messageMap.put(dataSnapshot.getKey(),message);
-//
-//                if(message.getPhotoContentUrl() != null)
-//
-//                mhandler.post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//
-//                        Util.saveImage(GroupChatActivity.this,message.getPhotoContentUrl(),message.getPhotoContentName());
-//
-//
-//                    }
-//                });
-//
-//                messages_adapter.notifyDataSetChanged();
-//
-//                groupMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
-//
-//            }
+            final boolean m_getfromdb = getfromdb;
 
             if(message.getTimeStamp()!=null ) {
 
@@ -744,13 +775,30 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
                         @Override
                         public void run() {
 
+
+
                             String contentphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoContentUrl(), message.getPhotoContentName());
                             String userphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoUrl(), message.getUid());
                             //// TODO: update the db message with local urls
 
+                            if(!m_getfromdb) {
+                                String groupphotourl = Util.saveImage(GroupChatActivity.this, groupheader.getPhotoUrl(), groupChatId);
+                                chatViewModel.insertChat(new SavedChatsEntity(groupChatId,groupheader.getName(),groupphotourl,true,groupheader.getGroupKey(),null));
+                                getfromdb = true;
+                            }
+
+                            message.setMessageid(dataSnapshot.getKey());
+
+                            MessageEntity entity = Util.getEntityfromMessage(message, groupChatId, mContext);
+
+                            entity.setPhotoContentUrl(contentphotourl);
+
+                            entity.setPhotoUrl(userphotourl);
+
+                            chatViewModel.insertMessage(entity);
+
                         }
                     });
-
 
                 message.setMessageid(dataSnapshot.getKey());
 
@@ -759,7 +807,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
                 if(!getfromdb)
                 {
 
-                    chatViewModel.insertChat(new SavedChatsEntity(groupChatId,groupheader.getName(),groupheader.getPhotoUrl(),true,groupheader.getGroupKey()));
+                    chatViewModel.insertChat(new SavedChatsEntity(groupChatId,groupheader.getName(),groupheader.getPhotoUrl(),true,groupheader.getGroupKey(),null));
                     getfromdb = true;
                 }
 
@@ -773,18 +821,12 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
 
         @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+        public void onChildChanged(final DataSnapshot dataSnapshot, String s) {
 
           final   Message message = dataSnapshot.getValue(Message.class);
 
-
-//            if(message.getTimeStamp()!=null && !messages_adapter.messageMap.containsKey(dataSnapshot.getKey()) ) {
               if(message.getTimeStamp()!=null ) {
 
-//                messages_adapter.messages.add(message);
-//
-//                messages_adapter.messageMap.put(dataSnapshot.getKey(),message);
-//
                 if(message.getPhotoContentUrl() != null)
 
                     mhandler.post(new Runnable() {
@@ -795,14 +837,19 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
                           String userphotourl =  Util.saveImage(GroupChatActivity.this,message.getPhotoUrl(),message.getUid());
                             //// TODO: update the db message with local urls
 
+
+                            message.setMessageid(dataSnapshot.getKey());
+
+                            MessageEntity entity = Util.getEntityfromMessage(message, groupChatId, mContext);
+
+                            entity.setPhotoContentUrl(contentphotourl);
+
+                            entity.setPhotoUrl(userphotourl);
+
+                            chatViewModel.insertMessage(entity);
+
                         }
                     });
-//
-//                Util.getDate(message.getTimeStamp());
-//
-//                messages_adapter.notifyDataSetChanged();
-//
-//                groupMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
 
                    message.setMessageid(dataSnapshot.getKey());
 
@@ -811,17 +858,6 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
                   chatViewModel.insertMessage(entity);
 
             }
-
-//            else if(message.getTimeStamp()!=null && messages_adapter.messageMap.containsKey(dataSnapshot.getKey()))
-//            {
-//
-//                messages_adapter.changeMessage(dataSnapshot.getKey(),message.getTimeStamp());
-//
-//                messages_adapter.notifyDataSetChanged();
-//
-//                groupMessagesView.scrollToPosition(messages_adapter.getItemCount() - 1);
-//
-//            }
 
 
         }

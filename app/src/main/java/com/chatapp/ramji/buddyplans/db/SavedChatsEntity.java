@@ -15,20 +15,21 @@ public class SavedChatsEntity {
     public String chatProfileImageurl;
     public boolean current;
     public String groupKey;
+    public String friendUid;
 
     public SavedChatsEntity()
     {
 
     }
 
-    public SavedChatsEntity(String chatid,String chatName,String chatProfileImageurl,boolean current,String groupKey)
+    public SavedChatsEntity(String chatid,String chatName,String chatProfileImageurl,boolean current,String groupKey,String friendUid)
     {
       this.chatid = chatid;
       this.chatName = chatName;
       this.chatProfileImageurl = chatProfileImageurl;
       this.current = current;
       this.groupKey = groupKey;
-
+      this.friendUid = friendUid;
     }
 
 }

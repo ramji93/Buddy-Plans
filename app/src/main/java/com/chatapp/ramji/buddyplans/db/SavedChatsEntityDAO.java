@@ -27,11 +27,12 @@ public interface SavedChatsEntityDAO {
     @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.chatid = :chatid")
     public List<SavedChatsEntity> getSavedChatwithid(String chatid);
 
-    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.groupKey != null")
-    public LiveData<SavedChatsEntity> getGroupChatsSaved();
+    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.groupKey IS NOT NULL")
+//    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.chatid = '-KnguNtDh138_IrLLrfK'")
+    public LiveData<List<SavedChatsEntity>> getGroupChatsSaved();
 
-    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.groupKey = null")
-    public LiveData<SavedChatsEntity> getFriendChatsSaved();
+    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.groupKey IS NULL")
+    public LiveData<List<SavedChatsEntity>> getFriendChatsSaved();
 
     @Insert(onConflict = REPLACE)
     public void insertChats(SavedChatsEntity chatEntity);

@@ -40,6 +40,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -149,18 +150,28 @@ public class GroupsFragment extends Fragment {
         if(!isConnected)
         {
 
+            if(mGroupListener!=null) {
+                groupListQuery.removeEventListener(mGroupListener);
+                mGroupListener=null;
+            }
+
             SavedChatViewModel viewModel = ViewModelProviders.of(this).get(SavedChatViewModel.class);
 
             viewModel.getSavedGroupChats();
 
-            viewModel.savedChats_group.observe(this, new Observer<SavedChatsEntity>() {
+            viewModel.savedChats_group.observe(this, new Observer<List<SavedChatsEntity>>() {
                 @Override
-                public void onChanged(@Nullable SavedChatsEntity savedChatsEntity) {
-                    Groupheader group = new Groupheader(savedChatsEntity.chatName,savedChatsEntity.chatid,savedChatsEntity.chatProfileImageurl);
-                    group.setGroupKey(savedChatsEntity.groupKey);
-                    groupListAdapter.add(group);
-                    groupListAdapter.notifyDataSetChanged();
+                public void onChanged(@Nullable List<SavedChatsEntity> savedChatsEntities) {
 
+                    if(savedChatsEntities.size()>0) {
+                        for (SavedChatsEntity savedChatsEntity : savedChatsEntities) {
+                            Groupheader group = new Groupheader(savedChatsEntity.chatName, savedChatsEntity.chatid, savedChatsEntity.chatProfileImageurl);
+                            group.setGroupKey(savedChatsEntity.groupKey);
+                            groupListAdapter.add(group);
+                        }
+
+                        groupListAdapter.notifyDataSetChanged();
+                    }
                 }
             });
 

@@ -1,11 +1,15 @@
 package com.chatapp.ramji.buddyplans;
 
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -23,6 +27,8 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.chatapp.ramji.buddyplans.ViewModels.SavedChatViewModel;
+import com.chatapp.ramji.buddyplans.db.SavedChatsEntity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -145,6 +151,44 @@ public class FriendsFragment extends Fragment {
         friendListQuery = friendReference.orderByKey();
         if(mFriendsListener!=null)
             friendListQuery.addChildEventListener(mFriendsListener);
+
+        ConnectivityManager cm =
+                (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        if(!isConnected)
+        {
+
+            if(mFriendsListener!=null) {
+                friendListQuery.removeEventListener(mFriendsListener);
+                mFriendsListener=null;
+            }
+
+            SavedChatViewModel viewModel = ViewModelProviders.of(this).get(SavedChatViewModel.class);
+
+            viewModel.getSavedFriendChats();
+
+            viewModel.savedChats_friend.observe(this, new Observer<List<SavedChatsEntity>>() {
+                @Override
+                public void onChanged(@Nullable List<SavedChatsEntity> savedChatsEntities) {
+
+                    if(savedChatsEntities.size()>0) {
+                        for (SavedChatsEntity savedChatsEntity : savedChatsEntities) {
+                            Friend friend = new Friend(savedChatsEntity.chatName,savedChatsEntity.chatProfileImageurl,true,savedChatsEntity.friendUid);
+                            friend.setChatid(savedChatsEntity.chatid);
+                            friendListAdapter.add(friend);
+                        }
+
+                        friendListAdapter.notifyDataSetChanged();
+                    }
+                }
+            });
+
+        }
+
 
     }
 

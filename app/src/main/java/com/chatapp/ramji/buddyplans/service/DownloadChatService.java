@@ -106,7 +106,7 @@ public class DownloadChatService extends IntentService {
             dbChatProfileImageUrl  = Util.saveImage(this,data.chatProfileImageUrl,chatId);
         }
 
-        mDB.savedchatsModel().insertChats(new SavedChatsEntity(chatId,dbChatname,dbChatProfileImageUrl,true,data.groupKey));
+        mDB.savedchatsModel().insertChats(new SavedChatsEntity(chatId,dbChatname,dbChatProfileImageUrl,true,data.groupKey,null));
         mDB.messageModel().insertMultipleMessages(dbmessageList);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);

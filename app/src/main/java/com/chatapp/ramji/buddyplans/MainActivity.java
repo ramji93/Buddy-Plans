@@ -1,6 +1,8 @@
 package com.chatapp.ramji.buddyplans;
 
 
+import android.*;
+import android.Manifest;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -117,6 +119,7 @@ public class MainActivity extends AppCompatActivity  {
 
     int tab_index = 0;
     final int WRITE_REQUEST = 1;
+    final int CALENDAR_REQUEST = 1;
 
     FirebaseUser user;
 
@@ -148,7 +151,6 @@ public class MainActivity extends AppCompatActivity  {
         setSupportActionBar(mainToolbar);
 
         navHeader = navigationView.getHeaderView(0);
-
 
         txtName = (TextView) navHeader.findViewById(R.id.name);
 
@@ -204,6 +206,13 @@ public class MainActivity extends AppCompatActivity  {
                 != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_REQUEST);
+
+        }
+
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_CALENDAR)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_CALENDAR}, CALENDAR_REQUEST);
 
         }
 

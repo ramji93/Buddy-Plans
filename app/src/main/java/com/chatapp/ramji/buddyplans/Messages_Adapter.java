@@ -137,12 +137,15 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
          {
 
              Uri uri = Uri.parse(messages.get(position).getPhotoContentUrl());
-            if(!uri.getScheme().equalsIgnoreCase("https") && !uri.getScheme().equalsIgnoreCase("http"))
-            {
 
-                holder.Progress.setVisibility(View.VISIBLE);
+             if(uri.getScheme() != null) {
 
-            }
+                 if (!uri.getScheme().equalsIgnoreCase("https") && !uri.getScheme().equalsIgnoreCase("http")) {
+
+                     holder.Progress.setVisibility(View.VISIBLE);
+
+                 }
+             }
 
              holder.contentPhoto.setVisibility(View.VISIBLE);
              holder.mapView.setVisibility(View.GONE);
