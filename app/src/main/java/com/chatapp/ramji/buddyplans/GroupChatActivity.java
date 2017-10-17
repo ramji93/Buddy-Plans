@@ -3,6 +3,8 @@ package com.chatapp.ramji.buddyplans;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -36,9 +38,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -131,6 +135,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     ChatViewModel chatViewModel = null;
     Long dbLastTimestamp;
     LiveData<List<MessageEntity>> messages;
+
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -436,23 +441,40 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
             return;
         } else {
 
+            final Calendar cal = Calendar.getInstance();
+           int mYear = cal.get(Calendar.YEAR);
+            int mMonth = cal.get(Calendar.MONTH);
+            int mDay = cal.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                    new DatePickerDialog.OnDateSetListener() {
+
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+
+                            timePicker(year,monthOfYear,dayOfMonth);
+                        }
+                    }, mYear, mMonth, mDay);
+            datePickerDialog.show();
+
             ContentValues eventValues = new ContentValues();
 
-            eventValues.put("calendar_id", 1); // id, We need to choose from
-            // our mobile for primary
-            // its 1
+            eventValues.put("calendar_id", 3);
             eventValues.put("title", "Meeting with dad");
 
 
             Calendar c = Calendar.getInstance();
+//            long startDate = c.getTimeInMillis();
+
+            c.add(Calendar.MINUTE, 10);
+
             long startDate = c.getTimeInMillis();
-
-            c.add(Calendar.MINUTE, 5);
-
-            long endDate = c.getTimeInMillis();
+            long endDate = startDate + 1000 * 60 * 60;
 
             eventValues.put("dtstart", startDate);
             eventValues.put("dtend", endDate);
+            eventValues.put("allDay", false);
+            eventValues.put("eventStatus", 0);
 
             TimeZone timeZone = TimeZone.getDefault();
             eventValues.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.getID());
@@ -462,11 +484,48 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
             ContentResolver cr = this.getContentResolver();
 
             Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, eventValues);
+
+            long eventID = Long.parseLong(uri.getLastPathSegment());
+
+            Log.d(GroupChatActivity.class.getName(),"event uri: "+ uri.toString());
+
+            ContentValues reminders = new ContentValues();
+            reminders.put(CalendarContract.Reminders.EVENT_ID, eventID);
+            reminders.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
+            reminders.put(CalendarContract.Reminders.MINUTES, 5);
+
+            Uri uri2 = cr.insert(CalendarContract.Reminders.CONTENT_URI, reminders);
+
+            Log.d(GroupChatActivity.class.getName(),"reminder uri: "+ uri2.toString());
+
         }
 
 
     }
 
+
+    public void timePicker(final int year, final int monthOfYear, final int dayOfMonth)
+    {
+        final Calendar c = Calendar.getInstance();
+        int mHour = c.get(Calendar.HOUR_OF_DAY);
+        int mMinute = c.get(Calendar.MINUTE);
+
+        // Launch Time Picker Dialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                new TimePickerDialog.OnTimeSetListener() {
+
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+
+                      Calendar calendar = Calendar.getInstance();
+                        calendar.set(year,monthOfYear+1,dayOfMonth,hourOfDay,minute);
+                        Long rTimestamp = calendar.getTimeInMillis();
+
+                    }
+                }, mHour, mMinute, false);
+        timePickerDialog.show();
+
+    }
 
     @OnClick(R.id.attachlocation)
     public void startPlacePicker() {
