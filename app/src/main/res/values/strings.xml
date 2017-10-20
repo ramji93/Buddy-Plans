@@ -41,4 +41,5 @@
     </string-array>
     <string name="title_activity_favourites">FavouritesActivity</string>
     <string name="db_name">buddydb</string>
+    <string name="proceed_setreminder">Proceed</string>
 </resources>
