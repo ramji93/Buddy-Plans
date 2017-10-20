@@ -2,6 +2,8 @@ package com.chatapp.ramji.buddyplans;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -32,9 +34,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 
@@ -65,6 +71,7 @@ import com.google.gson.Gson;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
@@ -120,11 +127,15 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     private GoogleApiClient mGoogleApiClient;
     DatabaseReference messageReference;
 
+    Menu menu;
     Query chatQuery;
     ChatViewModel chatViewModel = null;
     Long dbLastTimestamp;
     LiveData<List<MessageEntity>> messages;
+    Boolean isfavourite = false;
     boolean getfromdb = false;
+    Calendar remindCalendar;
+    AlertDialog dialog = null;
 
 
 
@@ -200,6 +211,17 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
         if (chatViewModel.savedchat.size() > 0  && dbLastTimestamp != null)
         {
             getfromdb = true;
+
+        }
+
+        if (chatId != null && menu != null) {
+            if(chatViewModel.savedchat.size()>0 ) {
+                if(chatViewModel.savedchat.get(1).favourite==true) {
+                    isfavourite = true;
+                    menu.getItem(0).setIcon(R.drawable.fav_unselect);
+                    menu.getItem(1).setVisible(true);
+                }
+            }
 
         }
 
@@ -326,6 +348,20 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.chat_menu, menu);
+        if (chatId != null) {
+            if(chatViewModel!=null) {
+                if (chatViewModel.savedchat.size() > 0) {
+                    if (chatViewModel.savedchat.get(1).favourite == true) {
+                        isfavourite = true;
+                        menu.getItem(0).setIcon(R.drawable.fav_unselect);
+                        menu.getItem(1).setVisible(true);
+                    }
+                }
+            }
+
+        }
+
+        this.menu = menu;
         return true;
     }
 
@@ -334,19 +370,149 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId())
         {
-            case R.id.addLocation_menu :
+            case R.id.mark_favourite:
 
-                startPlacePicker();
-                return true;
+                onFavouritePress();
 
-            default :
+            case R.id.add_reminder:
+
+                addReminder();
+
+
+            default:
 
                 return super.onOptionsItemSelected(item);
+
 
 
         }
 
     }
+
+    private void addReminder()
+    {
+
+        remindCalendar = Calendar.getInstance();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = getLayoutInflater().inflate(R.layout.setreminder_dialog_layout,null);
+        final EditText title_view = (EditText) view.findViewById(R.id.reminder_title);
+        Button setdate_button =  (Button) view.findViewById(R.id.setdatetime_button);
+        final TextView dateTime_view = (TextView) view.findViewById(R.id.datetime_textview);
+        Button proceed_view = (Button) view.findViewById(R.id.proceed_button);
+        builder.setView(view);
+        dialog = builder.show();
+        setdate_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                datePicker(dateTime_view);
+
+            }
+        });
+
+        proceed_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String datetime = dateTime_view.getText().toString();
+                String title = title_view.getText().toString();
+
+                if(datetime.isEmpty() || datetime == null || datetime.equalsIgnoreCase("") || title.isEmpty() || title == null || title.equalsIgnoreCase("") )
+                {
+                    Toast.makeText(mContext, "Mandatory fields should be entered", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Calendar c = Calendar.getInstance();
+                    c.add(Calendar.MINUTE,5);
+                    long minLong = c.getTimeInMillis();
+
+                    long remLong = remindCalendar.getTimeInMillis();
+
+                    if(remLong < minLong)
+                    {
+                        Toast.makeText(mContext, "Time set should be atleast 5 mins later than current time", Toast.LENGTH_LONG).show();
+                    }
+                    else{
+
+                        //// TODO: add reminder
+                        dialog.dismiss();
+
+                    }
+
+
+                }
+
+            }
+        });
+
+
+
+    }
+
+    private void onFavouritePress()
+    {
+
+        if(isfavourite)
+        {
+            chatViewModel.setNotFavouriteChat(chatId);
+            isfavourite = false;
+
+        }
+
+        else {
+            chatViewModel.setFavouriteChat(chatId);
+            isfavourite = false;
+        }
+
+        invalidateOptionsMenu();
+
+    }
+
+    private void datePicker(final TextView datetimetext){
+
+        // Get Current Date
+
+        int mYear = remindCalendar.get(Calendar.YEAR);
+        int mMonth = remindCalendar.get(Calendar.MONTH);
+        int mDay = remindCalendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                new DatePickerDialog.OnDateSetListener() {
+
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+
+                        remindCalendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+                        remindCalendar.set(Calendar.MONTH,monthOfYear);
+                        remindCalendar.set(Calendar.YEAR,year);
+                        timePicker(datetimetext);
+                    }
+                }, mYear, mMonth, mDay);
+        datePickerDialog.show();
+    }
+
+    private void timePicker(final TextView datetimeText){
+        // Get Current Time
+
+        int mHour = remindCalendar.get(Calendar.HOUR_OF_DAY);
+        int mMinute = remindCalendar.get(Calendar.MINUTE);
+
+        // Launch Time Picker Dialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                new TimePickerDialog.OnTimeSetListener() {
+
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+
+                        remindCalendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
+                        remindCalendar.set(Calendar.MINUTE,minute);
+
+                        datetimeText.setText(remindCalendar.get(Calendar.DAY_OF_MONTH) + "/" + (remindCalendar.get(Calendar.MONTH)+1) + "/" + remindCalendar.get(Calendar.YEAR) + " " +hourOfDay + ":" +  ((minute > 9) ? minute : "0"+minute ) +"  ");
+                    }
+                }, mHour, mMinute, false);
+        timePickerDialog.show();
+    }
+
 
 
     public void handlePermissions()
@@ -766,7 +932,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
                             if(!m_getfromdb) {
                                 String groupphotourl = Util.saveImage(ChatActivity.this, friend.getPhotourl(), chatId);
-                                chatViewModel.insertChat(new SavedChatsEntity(chatId,friend.getName(),groupphotourl,true,null,friendUid));
+                                chatViewModel.insertChat(new SavedChatsEntity(chatId,friend.getName(),groupphotourl,false,null,friendUid));
                                 getfromdb = true;
                             }
 
@@ -791,7 +957,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
                 if(!getfromdb)
                 {
 
-                    chatViewModel.insertChat(new SavedChatsEntity(chatId,friend.getName(),friend.getPhotourl(),true,null,friendUid));
+                    chatViewModel.insertChat(new SavedChatsEntity(chatId,friend.getName(),friend.getPhotourl(),false,null,friendUid));
                     getfromdb = true;
                 }
 

@@ -183,9 +183,12 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         }
 
         if (groupChatId != null && menu != null) {
-            if (PreferenceManager.getDefaultSharedPreferences(this).getString("savedchats", "").contains(groupChatId)) {
-                isfavourite = true;
-                menu.getItem(1).setIcon(R.drawable.fav_unselect);
+           if(chatViewModel.savedchat.size()>0 ) {
+               if(chatViewModel.savedchat.get(1).favourite==true) {
+                   isfavourite = true;
+                   menu.getItem(1).setIcon(R.drawable.fav_unselect);
+                   menu.getItem(2).setVisible(true);
+               }
             }
 
         }
@@ -385,9 +388,14 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
         inflater.inflate(R.menu.groupchat_menu, menu);
         if (groupChatId != null) {
-            if (PreferenceManager.getDefaultSharedPreferences(this).getString("savedchats", "").contains(groupChatId)) {
-                isfavourite = true;
-                menu.getItem(1).setIcon(R.drawable.fav_unselect);
+            if(chatViewModel!=null) {
+                if (chatViewModel.savedchat.size() > 0) {
+                    if (chatViewModel.savedchat.get(1).favourite == true) {
+                        isfavourite = true;
+                        menu.getItem(1).setIcon(R.drawable.fav_unselect);
+                        menu.getItem(2).setVisible(true);
+                    }
+                }
             }
 
         }
@@ -409,7 +417,11 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
             case R.id.mark_favourite:
 
-                persistChat();
+                onFavouritePress();
+
+            case R.id.add_reminder:
+
+                addReminder();
 
 
             default:
@@ -423,7 +435,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     }
 
 
-    private void persistChat()
+    private void addReminder()
     {
 
         remindCalendar = Calendar.getInstance();
@@ -448,8 +460,8 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
             @Override
             public void onClick(View v) {
 
-               String datetime = dateTime_view.getText().toString();
-               String title = title_view.getText().toString();
+                String datetime = dateTime_view.getText().toString();
+                String title = title_view.getText().toString();
 
                 if(datetime.isEmpty() || datetime == null || datetime.equalsIgnoreCase("") || title.isEmpty() || title == null || title.equalsIgnoreCase("") )
                 {
@@ -480,6 +492,25 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         });
 
 
+
+    }
+
+    private void onFavouritePress()
+    {
+
+       if(isfavourite)
+       {
+           chatViewModel.setNotFavouriteChat(groupChatId);
+           isfavourite = false;
+
+       }
+
+       else {
+           chatViewModel.setFavouriteChat(groupChatId);
+           isfavourite = false;
+       }
+
+        invalidateOptionsMenu();
 
     }
 
@@ -919,7 +950,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
                             if(!m_getfromdb) {
                                 String groupphotourl = Util.saveImage(GroupChatActivity.this, groupheader.getPhotoUrl(), groupChatId);
-                                chatViewModel.insertChat(new SavedChatsEntity(groupChatId,groupheader.getName(),groupphotourl,true,groupheader.getGroupKey(),null));
+                                chatViewModel.insertChat(new SavedChatsEntity(groupChatId,groupheader.getName(),groupphotourl,false,groupheader.getGroupKey(),null));
                                 getfromdb = true;
                             }
 
@@ -943,7 +974,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
                 if(!getfromdb)
                 {
 
-                    chatViewModel.insertChat(new SavedChatsEntity(groupChatId,groupheader.getName(),groupheader.getPhotoUrl(),true,groupheader.getGroupKey(),null));
+                    chatViewModel.insertChat(new SavedChatsEntity(groupChatId,groupheader.getName(),groupheader.getPhotoUrl(),false,groupheader.getGroupKey(),null));
                     getfromdb = true;
                 }
 

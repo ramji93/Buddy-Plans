@@ -13,7 +13,7 @@ public class SavedChatsEntity {
     public @PrimaryKey @NonNull String chatid;
     public String chatName;
     public String chatProfileImageurl;
-    public boolean current;
+    public boolean favourite;
     public String groupKey;
     public String friendUid;
 
@@ -22,12 +22,12 @@ public class SavedChatsEntity {
 
     }
 
-    public SavedChatsEntity(String chatid,String chatName,String chatProfileImageurl,boolean current,String groupKey,String friendUid)
+    public SavedChatsEntity(String chatid,String chatName,String chatProfileImageurl,boolean favourite,String groupKey,String friendUid)
     {
       this.chatid = chatid;
       this.chatName = chatName;
       this.chatProfileImageurl = chatProfileImageurl;
-      this.current = current;
+      this.favourite = favourite;
       this.groupKey = groupKey;
       this.friendUid = friendUid;
     }

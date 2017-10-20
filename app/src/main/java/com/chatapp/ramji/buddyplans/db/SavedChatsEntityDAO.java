@@ -6,6 +6,7 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.TypeConverters;
+import android.arch.persistence.room.Update;
 
 import com.chatapp.ramji.buddyplans.Location;
 
@@ -21,7 +22,7 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface SavedChatsEntityDAO {
 
-    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.current = 'true'")
+    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.favourite = 1")
     public LiveData<List<SavedChatsEntity>> getSavedChat();
 
     @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.chatid = :chatid")
@@ -36,6 +37,9 @@ public interface SavedChatsEntityDAO {
 
     @Insert(onConflict = REPLACE)
     public void insertChats(SavedChatsEntity chatEntity);
+
+    @Update
+    public void updateFavouriteChat(SavedChatsEntity chatEntity);
 
 
 }
