@@ -216,7 +216,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
         if (chatId != null && menu != null) {
             if(chatViewModel.savedchat.size()>0 ) {
-                if(chatViewModel.savedchat.get(1).favourite==true) {
+                if(chatViewModel.savedchat.get(0).favourite==true) {
                     isfavourite = true;
                     menu.getItem(0).setIcon(R.drawable.fav_unselect);
                     menu.getItem(1).setVisible(true);
@@ -351,7 +351,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
         if (chatId != null) {
             if(chatViewModel!=null) {
                 if (chatViewModel.savedchat.size() > 0) {
-                    if (chatViewModel.savedchat.get(1).favourite == true) {
+                    if (chatViewModel.savedchat.get(0).favourite == true) {
                         isfavourite = true;
                         menu.getItem(0).setIcon(R.drawable.fav_unselect);
                         menu.getItem(1).setVisible(true);
@@ -373,10 +373,12 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
             case R.id.mark_favourite:
 
                 onFavouritePress();
+                break;
 
             case R.id.add_reminder:
 
                 addReminder();
+                break;
 
 
             default:
@@ -386,7 +388,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
 
         }
-
+        return true;
     }
 
     private void addReminder()
@@ -435,6 +437,11 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
                     else{
 
                         //// TODO: add reminder
+                        Reminder reminder = new Reminder(myUid,friendUid,title,Long.toString(remLong),myName);
+
+                        firebaseDatabase.getReference().child("Reminders").push().setValue(reminder);
+
+
                         dialog.dismiss();
 
                     }
@@ -461,8 +468,10 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
         else {
             chatViewModel.setFavouriteChat(chatId);
-            isfavourite = false;
+            isfavourite = true;
         }
+
+        chatViewModel.refreshchat(chatId);
 
         invalidateOptionsMenu();
 

@@ -27,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -90,6 +91,7 @@ public class GroupCreateActivity extends AppCompatActivity implements GroupCreat
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Create New Group");
         getSupportActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         recyclerView1.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true));
         recyclerView2.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true));
         friendListAdapter = new GroupCreateFriendListAdapter(this);
@@ -315,11 +317,25 @@ public class GroupCreateActivity extends AppCompatActivity implements GroupCreat
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-            Friend friend = (Friend) dataSnapshot.getValue(Friend.class);
+            final Friend friend = (Friend) dataSnapshot.getValue(Friend.class);
 
-            friendListAdapter.add(friend);
+            firebaseDatabase.getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-            friendListAdapter.notifyDataSetChanged();
+                    friend.setPhotourl((String) dataSnapshot.getValue());
+                    friendListAdapter.add(friend);
+
+                    friendListAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+
 
         }
 

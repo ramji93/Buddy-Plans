@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.text.format.DateUtils;
+import android.util.Log;
 
 import com.chatapp.ramji.buddyplans.service.AddEventReminderService;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -14,6 +15,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by user on 09-07-2017.
@@ -26,12 +28,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         if (remoteMessage.getData().size() > 0) {
 
-            HashMap<String,String> reminderData = (HashMap<String, String>) remoteMessage.getData();
-            String title = reminderData.get("title");
-            Long eventTime = Long.getLong(reminderData.get("time"));
-            String sender = reminderData.get("sender");
-            String chatid = reminderData.get("chatid");
+            Map<String,String> data = remoteMessage.getData();
+            String title = data.get("title");
+            String eventTimeString = data.get("time");
+            String sender = data.get("sender");
+           // String chatid = reminderData.get("chatid");
 
+            String group = data.get("groupchat");
+
+            Long eventTime = Long.parseLong(eventTimeString);
+            Log.d(MyFirebaseMessagingService.class.getSimpleName(),"inside onmeonMessageReceived()");
 
             Calendar cal = Calendar.getInstance();
             int day = cal.get(Calendar.DAY_OF_MONTH);
@@ -57,7 +63,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             PendingIntent reminderintent = PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-            Notification n = new Notification.Builder(this).setContentTitle(sender + "has added an event")
+            Notification n = new Notification.Builder(this).setContentTitle(sender + " sent an reminder")
                       .setContentText(title + timeString)
                       .setSmallIcon(R.drawable.ic_whatshot_black_24dp)
                       .setAutoCancel(true)

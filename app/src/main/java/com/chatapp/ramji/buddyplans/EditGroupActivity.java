@@ -17,6 +17,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -99,6 +100,10 @@ public class EditGroupActivity extends AppCompatActivity implements GroupCreateF
         setContentView(R.layout.activity_edit_group);
         ButterKnife.bind(this);
 
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Edit Group");
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent intent = getIntent();
         groupheader = (Groupheader) intent.getSerializableExtra("group");
 
@@ -328,7 +333,7 @@ public class EditGroupActivity extends AppCompatActivity implements GroupCreateF
         Toast.makeText(this,"Group is being edited ",Toast.LENGTH_LONG).show();
 
 
-        finish();
+        onBackPressed();
 
 
 
@@ -415,8 +420,9 @@ public class EditGroupActivity extends AppCompatActivity implements GroupCreateF
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-            HashMap<String,Boolean> hashMap = (HashMap<String, Boolean>) dataSnapshot.getValue();
-            Boolean bool = hashMap.get("current");
+            HashMap<String,Boolean> hashMap  = (HashMap<String, Boolean>) dataSnapshot.getValue();
+
+            boolean bool = hashMap.get("current");
 
             String memberuid = dataSnapshot.getKey();
 
@@ -475,16 +481,31 @@ public class EditGroupActivity extends AppCompatActivity implements GroupCreateF
            final Friend friend = dataSnapshot.getValue(Friend.class);
 
 
+
+
               groupchatFriendReference =  firebaseDatabase.getReference("GroupMemebers").child(groupheader.getGroupKey()).child(friend.getUid());
-             groupchatFriendReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            groupchatFriendReference.addListenerForSingleValueEvent(new ValueEventListener() {
                  @Override
                  public void onDataChange(DataSnapshot dataSnapshot) {
 
                      if(!dataSnapshot.exists())
                      {
-                         friendListAdapter.add(friend);
-                         friendListAdapter.notifyDataSetChanged();
-                         recyclerView2.smoothScrollToPosition(friendListAdapter.getItemCount()-1);
+                         firebaseDatabase.getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
+                             @Override
+                             public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                 friend.setPhotourl((String) dataSnapshot.getValue());
+                                 friendListAdapter.add(friend);
+                                 friendListAdapter.notifyDataSetChanged();
+                                 recyclerView2.smoothScrollToPosition(friendListAdapter.getItemCount()-1);
+                             }
+
+                             @Override
+                             public void onCancelled(DatabaseError databaseError) {
+
+                             }
+                         });
+
                      }
 
                  }
@@ -519,6 +540,21 @@ public class EditGroupActivity extends AppCompatActivity implements GroupCreateF
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return(super.onOptionsItemSelected(item));
+    }
 
 
 

@@ -117,6 +117,11 @@
             android:name=".service.DownloadChatService"
             android:exported="false"/>
 
+        <service
+            android:name=".service.AddEventReminderService"
+            android:exported="false"
+            />
+
         <provider
             android:name=".CustomFileProvider"
             android:authorities="${applicationId}.my.package.name.provider"

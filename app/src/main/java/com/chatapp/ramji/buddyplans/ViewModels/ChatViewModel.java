@@ -45,6 +45,12 @@ public class ChatViewModel  extends AndroidViewModel {
 
     }
 
+
+    public void refreshchat(String chatid)
+    {
+        savedchat =  db.savedchatsModel().getSavedChatwithid(chatid);
+    }
+
     public void getmessages(String chatid)
     {
 
@@ -65,7 +71,7 @@ public class ChatViewModel  extends AndroidViewModel {
     public void setFavouriteChat(String chatid)
     {
        List<SavedChatsEntity> chats = db.savedchatsModel().getSavedChatwithid(chatid);
-       SavedChatsEntity chat = chats.get(1);
+       SavedChatsEntity chat = chats.get(0);
        chat.favourite = true;
        db.savedchatsModel().updateFavouriteChat(chat);
 
@@ -74,7 +80,7 @@ public class ChatViewModel  extends AndroidViewModel {
     public void setNotFavouriteChat(String chatid)
     {
         List<SavedChatsEntity> chats = db.savedchatsModel().getSavedChatwithid(chatid);
-        SavedChatsEntity chat = chats.get(1);
+        SavedChatsEntity chat = chats.get(0);
         chat.favourite = false;
         db.savedchatsModel().updateFavouriteChat(chat);
 

@@ -184,7 +184,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
         if (groupChatId != null && menu != null) {
            if(chatViewModel.savedchat.size()>0 ) {
-               if(chatViewModel.savedchat.get(1).favourite==true) {
+               if(chatViewModel.savedchat.get(0).favourite==true) {
                    isfavourite = true;
                    menu.getItem(1).setIcon(R.drawable.fav_unselect);
                    menu.getItem(2).setVisible(true);
@@ -366,7 +366,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
                 String notificationText = groupheader.getName() + " : " + myName + " has uploaded a location";
 
-                GroupNotification groupNotification = new GroupNotification(currentUser.getUid(), myName, groupChatId, notificationText);
+                GroupNotification groupNotification = new GroupNotification(currentUser.getUid(), myName,groupheader.getGroupKey(), notificationText);
 
                 firebaseDatabase.getReference("GroupNotifications").push().setValue(groupNotification);
 
@@ -390,7 +390,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         if (groupChatId != null) {
             if(chatViewModel!=null) {
                 if (chatViewModel.savedchat.size() > 0) {
-                    if (chatViewModel.savedchat.get(1).favourite == true) {
+                    if (chatViewModel.savedchat.get(0).favourite == true) {
                         isfavourite = true;
                         menu.getItem(1).setIcon(R.drawable.fav_unselect);
                         menu.getItem(2).setVisible(true);
@@ -481,6 +481,11 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
                     else{
 
                         //// TODO: add reminder
+
+                        GroupReminder reminder = new GroupReminder(currentUser.getUid(),groupChatId,title,Long.toString(remLong),myName,groupheader.getName());
+
+                        firebaseDatabase.getReference().child("GroupReminders").push().setValue(reminder);
+
                         dialog.dismiss();
 
                     }
@@ -509,6 +514,8 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
            chatViewModel.setFavouriteChat(groupChatId);
            isfavourite = false;
        }
+
+        chatViewModel.refreshchat(groupChatId);
 
         invalidateOptionsMenu();
 
@@ -754,7 +761,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
                 String notificationText = groupheader.getName() + " : " + myName + " has uploaded a image";
 
-                GroupNotification groupNotification = new GroupNotification(currentUser.getUid(), myName, groupChatId, notificationText);
+                GroupNotification groupNotification = new GroupNotification(currentUser.getUid(), myName, groupheader.getGroupKey(), notificationText);
 
                 firebaseDatabase.getReference("GroupNotifications").push().setValue(groupNotification);
 
@@ -879,7 +886,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
 
 
-        GroupNotification groupNotification = new GroupNotification(currentUser.getUid(),myName,groupChatId,notificationText);
+        GroupNotification groupNotification = new GroupNotification(currentUser.getUid(),myName,groupheader.getGroupKey(),notificationText);
 
         firebaseDatabase.getReference("GroupNotifications").push().setValue(groupNotification);
 
