@@ -2,6 +2,8 @@ package com.chatapp.ramji.buddyplans.service;
 
 import android.Manifest;
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -42,6 +44,11 @@ public class AddEventReminderService extends IntentService {
         String title = intent.getStringExtra("title");
         String description = intent.getStringExtra("description");
         Long eventTime = intent.getLongExtra("time",0);
+        int notification_id = intent.getIntExtra("notification id",0);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.cancel(notification_id);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -68,7 +75,7 @@ public class AddEventReminderService extends IntentService {
 
 
         long startDate = eventTime;
-        long endDate = startDate + 1000 * 60 * 60;
+        long endDate = startDate + 1000 * 60 * 10;
 
         eventValues.put("dtstart", startDate);
         eventValues.put("dtend", endDate);

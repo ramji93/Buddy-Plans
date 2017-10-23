@@ -68,6 +68,16 @@ public class FavouriteList_Adapter extends RecyclerView.Adapter<FavouriteList_Ad
                     mcontext.startActivity(intent);
                 }
 
+                else {
+
+                    Friend friend = new Friend(savedChatsEntities.get(position).chatName,savedChatsEntities.get(position).chatProfileImageurl,true,savedChatsEntities.get(position).friendUid);
+                    friend.setChatid(savedChatsEntities.get(position).chatid);
+                    Intent intent = new Intent(mcontext, ChatActivity.class);
+                    intent.putExtra("Friend", friend);
+                    mcontext.startActivity(intent);
+                }
+
+
             }
         });
 

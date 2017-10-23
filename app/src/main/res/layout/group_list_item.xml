@@ -37,7 +37,7 @@
         android:layout_marginBottom="8dp"
         />
 
-     <TextView
+     <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          tools:text="Ramji : Can we meet for lunch ?"

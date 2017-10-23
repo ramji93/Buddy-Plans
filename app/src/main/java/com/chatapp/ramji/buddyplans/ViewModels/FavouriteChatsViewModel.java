@@ -24,7 +24,7 @@ public class FavouriteChatsViewModel extends AndroidViewModel {
 
         db = AppDatabase.getDatabase(application);
 
-        chats = db.savedchatsModel().getSavedChat();
+        chats = db.savedchatsModel().getFavouriteChat();
     }
 
 }

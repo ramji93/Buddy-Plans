@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by user on 09-07-2017.
@@ -33,11 +34,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             String eventTimeString = data.get("time");
             String sender = data.get("sender");
            // String chatid = reminderData.get("chatid");
-
+            // TODO: get sender uid to display image   
+   
             String group = data.get("groupchat");
 
             Long eventTime = Long.parseLong(eventTimeString);
-            Log.d(MyFirebaseMessagingService.class.getSimpleName(),"inside onmeonMessageReceived()");
+            Log.d(MyFirebaseMessagingService.class.getSimpleName(),"inside onMessageReceived()");
 
             Calendar cal = Calendar.getInstance();
             int day = cal.get(Calendar.DAY_OF_MONTH);
@@ -49,16 +51,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             if(day==cal.get(Calendar.DAY_OF_MONTH) && month==cal.get(Calendar.MONTH) && year==cal.get(Calendar.YEAR))
 
-            timeString = "At " + cal.get(Calendar.HOUR_OF_DAY)+":"+ cal.get(Calendar.MINUTE)+ " today";
+            timeString = " At " + cal.get(Calendar.HOUR_OF_DAY)+":"+ cal.get(Calendar.MINUTE)+ " today";
 
             else
 
-            timeString = "On " + cal.get(Calendar.DAY_OF_MONTH)+"/"+cal.get(Calendar.MONTH)+"/"+cal.get(Calendar.YEAR)+" "+ cal.get(Calendar.HOUR_OF_DAY)+":"+ cal.get(Calendar.MINUTE);
+            timeString = " On " + cal.get(Calendar.DAY_OF_MONTH)+"/"+cal.get(Calendar.MONTH)+"/"+cal.get(Calendar.YEAR)+" "+ cal.get(Calendar.HOUR_OF_DAY)+":"+ cal.get(Calendar.MINUTE);
+
+            int notificationId = new Random().nextInt();
 
             Intent intent = new Intent(this, AddEventReminderService.class);
             intent.putExtra("title",title);
             intent.putExtra("description","Set by "+sender);
             intent.putExtra("time",eventTime);
+            intent.putExtra("notification id", notificationId);
 
             PendingIntent reminderintent = PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -67,13 +72,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                       .setContentText(title + timeString)
                       .setSmallIcon(R.drawable.ic_whatshot_black_24dp)
                       .setAutoCancel(true)
-                      .addAction(R.drawable.add_reminder,"Add Reminder",reminderintent).build();
+                      .addAction(R.drawable.add_reminder,"Save Reminder",reminderintent).build();
 
             NotificationManager notificationManager =
                     (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-            notificationManager.notify((int) Calendar.getInstance().getTimeInMillis(), n);
 
+            notificationManager.notify(notificationId, n);
 
         }
 

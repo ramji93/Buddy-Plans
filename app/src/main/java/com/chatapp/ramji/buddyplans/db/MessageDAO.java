@@ -24,7 +24,7 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 public interface MessageDAO {
 
 //    @Query("SELECT * FROM MessageEntity WHERE MessageEntity.chatId = :chatid")
-    @Query("SELECT * FROM MessageEntity where chatId = :chatid")
+    @Query("SELECT * FROM MessageEntity where chatId = :chatid ORDER BY TimeStamp ASC")
     public LiveData<List<MessageEntity>> getMessagesByChatid(String chatid);
 
     @Query("SELECT MAX(TimeStamp) FROM MessageEntity where chatId = :chatid")

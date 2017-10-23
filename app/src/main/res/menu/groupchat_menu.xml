@@ -21,5 +21,10 @@
         android:visible="false"
         />
 
+    <item
+        android:id="@+id/exitgroup_menu"
+        android:title="@string/exit_group"
+        app:showAsAction="never"/>
+
 
 </menu>

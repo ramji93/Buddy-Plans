@@ -40,6 +40,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -297,10 +298,16 @@ public class GroupsFragment extends Fragment {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if(dataSnapshot.exists())
                     {
+                        HashMap<String,Boolean> hashMap  = (HashMap<String, Boolean>) dataSnapshot.getValue();
 
-                        groupListAdapter.add(group);
+                        boolean bool = hashMap.get("current");
 
-                        groupListAdapter.notifyDataSetChanged();
+                        if(bool) {
+
+                            groupListAdapter.add(group);
+
+                            groupListAdapter.notifyDataSetChanged();
+                        }
 
                     }
                 }
@@ -346,16 +353,23 @@ public class GroupsFragment extends Fragment {
 //
 //                        friendListAdapter.notifyDataSetChanged();
 
-                         Groupheader group1 =  groupListAdapter.grouphashmap.get(group.getGroupKey());
+                        HashMap<String,Boolean> hashMap  = (HashMap<String, Boolean>) dataSnapshot.getValue();
 
-                         groupListAdapter.groups.remove(group1);
+                        boolean bool = hashMap.get("current");
 
-                         groupListAdapter.grouphashmap.remove(group.getGroupKey());
+                        if(bool) {
 
-                         groupListAdapter.add(group);
+                            Groupheader group1 = groupListAdapter.grouphashmap.get(group.getGroupKey());
 
-                         groupListAdapter.notifyDataSetChanged();
+                            groupListAdapter.groups.remove(group1);
 
+                            groupListAdapter.grouphashmap.remove(group.getGroupKey());
+
+                            groupListAdapter.add(group);
+
+                            groupListAdapter.notifyDataSetChanged();
+
+                        }
 
 
                     }

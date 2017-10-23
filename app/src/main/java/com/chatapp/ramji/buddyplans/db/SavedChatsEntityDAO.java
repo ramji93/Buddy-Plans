@@ -23,7 +23,7 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 public interface SavedChatsEntityDAO {
 
     @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.favourite = 1")
-    public LiveData<List<SavedChatsEntity>> getSavedChat();
+    public LiveData<List<SavedChatsEntity>> getFavouriteChat();
 
     @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.chatid = :chatid")
     public List<SavedChatsEntity> getSavedChatwithid(String chatid);

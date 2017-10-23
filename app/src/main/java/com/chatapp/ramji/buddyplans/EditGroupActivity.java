@@ -508,7 +508,38 @@ public class EditGroupActivity extends AppCompatActivity implements GroupCreateF
 
                      }
 
+                     else{
+
+                         HashMap<String,Boolean> hashMap  = (HashMap<String, Boolean>) dataSnapshot.getValue();
+
+                         boolean bool = hashMap.get("current");
+
+                         if(!bool) {
+
+                             firebaseDatabase.getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
+                                 @Override
+                                 public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                     friend.setPhotourl((String) dataSnapshot.getValue());
+                                     friendListAdapter.add(friend);
+                                     friendListAdapter.notifyDataSetChanged();
+                                     recyclerView2.smoothScrollToPosition(friendListAdapter.getItemCount() - 1);
+                                 }
+
+                                 @Override
+                                 public void onCancelled(DatabaseError databaseError) {
+
+                                 }
+                             });
+
+                         }
+
+
+                     }
+
                  }
+
+
 
                  @Override
                  public void onCancelled(DatabaseError databaseError) {

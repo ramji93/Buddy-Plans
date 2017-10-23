@@ -413,15 +413,22 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
                 Intent intent = new Intent(this, EditGroupActivity.class);
                 intent.putExtra("group", groupheader);
                 startActivity(intent);
-                return true;
+               break;
 
             case R.id.mark_favourite:
 
                 onFavouritePress();
+                break;
 
             case R.id.add_reminder:
 
                 addReminder();
+                break;
+
+            case R.id.exitgroup_menu:
+
+                exitGroup();
+                break;
 
 
             default:
@@ -431,7 +438,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
         }
 
-
+          return true;
     }
 
 
@@ -1057,4 +1064,31 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         handlerThread.quit();
         super.onDestroy();
     }
+
+    private void exitGroup()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Do you want to exit the group?")
+                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        firebaseDatabase.getReference().child("GroupMemebers").child(groupheader.getGroupKey()).child(currentUser.getUid()).child("current").setValue("false");
+                        chatViewModel.setNotFavouriteChat(groupChatId);
+                        finish();
+                    }
+                })
+                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        return;
+                    }
+                });
+
+        builder.create().show();
+
+
+    }
+
 }
