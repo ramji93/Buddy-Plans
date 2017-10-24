@@ -1073,7 +1073,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        firebaseDatabase.getReference().child("GroupMemebers").child(groupheader.getGroupKey()).child(currentUser.getUid()).child("current").setValue("false");
+                        firebaseDatabase.getReference().child("GroupMemebers").child(groupheader.getGroupKey()).child(currentUser.getUid()).child("current").setValue(false);
                         chatViewModel.setNotFavouriteChat(groupChatId);
                         finish();
                     }

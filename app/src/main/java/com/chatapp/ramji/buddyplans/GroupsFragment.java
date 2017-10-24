@@ -42,6 +42,7 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -298,7 +299,15 @@ public class GroupsFragment extends Fragment {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if(dataSnapshot.exists())
                     {
-                        HashMap<String,Boolean> hashMap  = (HashMap<String, Boolean>) dataSnapshot.getValue();
+                        HashMap<String,Boolean> hashMap;
+                        try {
+                            hashMap = (HashMap<String, Boolean>) dataSnapshot.getValue();
+                        }
+                        catch (ClassCastException e)
+                        {
+                            return;
+                        }
+
 
                         boolean bool = hashMap.get("current");
 

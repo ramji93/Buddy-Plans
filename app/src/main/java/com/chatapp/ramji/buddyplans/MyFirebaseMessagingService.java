@@ -5,9 +5,13 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.Environment;
 import android.text.format.DateUtils;
 import android.util.Log;
 
+import com.bumptech.glide.BitmapTypeRequest;
+import com.bumptech.glide.Glide;
 import com.chatapp.ramji.buddyplans.service.AddEventReminderService;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -17,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by user on 09-07-2017.
@@ -35,7 +40,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             String sender = data.get("sender");
            // String chatid = reminderData.get("chatid");
             // TODO: get sender uid to display image   
-   
+            String senderid = data.get("senderid");
+
+            String imgpath =  Environment.getExternalStorageDirectory().getPath()+"/Buddyplans/pictures"+"/"+senderid;
+
+            Bitmap bitmap = null;
+            try {
+
+                bitmap = Glide.with(this).load(imgpath).asBitmap().into(100,100).get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+
+
             String group = data.get("groupchat");
 
             Long eventTime = Long.parseLong(eventTimeString);
@@ -68,11 +87,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             PendingIntent reminderintent = PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-            Notification n = new Notification.Builder(this).setContentTitle(sender + " sent an reminder")
+            Notification.Builder builder = new Notification.Builder(this).setContentTitle(sender + " sent an reminder")
                       .setContentText(title + timeString)
                       .setSmallIcon(R.drawable.ic_whatshot_black_24dp)
                       .setAutoCancel(true)
-                      .addAction(R.drawable.add_reminder,"Save Reminder",reminderintent).build();
+                      .addAction(R.drawable.add_reminder,"Save Reminder",reminderintent);
+
+            if(bitmap!= null)
+            builder.setLargeIcon(bitmap);
+
+            Notification n =  builder.build();
 
             NotificationManager notificationManager =
                     (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
