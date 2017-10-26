@@ -14,8 +14,10 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
+import android.support.v4.view.ViewCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -129,11 +131,12 @@ public class FriendsFragment extends Fragment {
                 Friend friend = (Friend) parent.getItemAtPosition(position);
 
 
-                if(friend.getPhotourl()!=null) {
+                if(friend.getPhotourl()!=null && imageView.getDrawable()!=null) {
                     Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
                     intent.putExtra("image", bitmap);
 
                 }
+                intent.putExtra("transition", ViewCompat.getTransitionName(imageView));
                 intent.putExtra("Friend",friend);
 
                 if(shareIntent!= null)
@@ -142,7 +145,12 @@ public class FriendsFragment extends Fragment {
                     shareIntent = null;
                 }
 
-                startActivity(intent);
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation
+                        (
+                                getActivity(),
+                                imageView,
+                                ViewCompat.getTransitionName(imageView));
+                startActivity(intent,options.toBundle());
 
             }
         });

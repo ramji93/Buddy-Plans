@@ -145,6 +145,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
 
+        supportPostponeEnterTransition();
         attachMenu.setClosedOnTouchOutside(true);
 
         setSupportActionBar(toolbar);
@@ -158,6 +159,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
 
         Intent intent = getIntent();
+        String transition = intent.getStringExtra("transition");
         friend = (Friend) intent.getSerializableExtra("Friend");
         Bitmap bitmap = (Bitmap) intent.getParcelableExtra("image");
          shareIntent = (Intent) intent.getParcelableExtra("shareIntent");
@@ -173,6 +175,16 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && transition != null) {
+
+            circularImage.setTransitionName(transition);
+        }
+
+        if (bitmap != null && transition != null) {
+            circularImage.setImageBitmap(bitmap);
+            supportStartPostponedEnterTransition();
+        } else
+            Glide.with(this).load(friend.getPhotourl()).into(circularImage);
 
         circularImage.setOnClickListener(new View.OnClickListener() {
                                              @Override
@@ -958,6 +970,32 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
                         }
                     });
 
+
+                else
+
+                    mhandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            String userphotourl = Util.saveImage(ChatActivity.this, message.getPhotoUrl(), message.getUid());
+                            //// TODO: update the db message with local urls
+
+                            if(!m_getfromdb) {
+                                String groupphotourl = Util.saveImage(ChatActivity.this, friend.getPhotourl(), chatId);
+                                chatViewModel.insertChat(new SavedChatsEntity(chatId,friend.getName(),groupphotourl,false,null,friendUid));
+                                getfromdb = true;
+                            }
+
+                            message.setMessageid(dataSnapshot.getKey());
+
+                            MessageEntity entity = Util.getEntityfromMessage(message, chatId, mContext);
+
+                            entity.setPhotoUrl(userphotourl);
+
+                            chatViewModel.insertMessage(entity);
+
+                        }
+                    });
 
                 message.setMessageid(dataSnapshot.getKey());
 

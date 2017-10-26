@@ -107,7 +107,7 @@ public class GroupsFragment extends Fragment {
 
 
 
-                if(imageView.getDrawable()!=null) {
+                if(imageView.getDrawable()!=null && imageView.getDrawable()!=null) {
                     Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
                     intent.putExtra("image", bitmap);
                 }
