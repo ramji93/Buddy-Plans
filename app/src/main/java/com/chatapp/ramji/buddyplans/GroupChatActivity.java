@@ -141,6 +141,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     LiveData<List<MessageEntity>> messages;
     Calendar remindCalendar;
     AlertDialog dialog = null;
+    String profileDpUrl = null;
 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -231,6 +232,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         currentUser = gson.fromJson(sharedPreferences.getString("User", ""), User.class);
         myName = currentUser.getUserName();
+        profileDpUrl = sharedPreferences.getString("profiledp",currentUser.getProfileDP());
 
         firebaseDatabase = FirebaseDatabase.getInstance();
 
@@ -356,6 +358,9 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
                 Message message = new Message(null, myName, null, null, currentUser.getUid(), location);
 
+                if(profileDpUrl != null)
+                message.setPhotoUrl(profileDpUrl);
+
                 String messageKey = groupmessageReference.push().getKey();
 
                 groupmessageReference.child(messageKey).setValue(message);
@@ -405,9 +410,16 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
     }
 
 
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+
             case R.id.editgroup_menu:
 
                 Intent intent = new Intent(this, EditGroupActivity.class);
@@ -489,7 +501,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
                         //// TODO: add reminder
 
-                        GroupReminder reminder = new GroupReminder(currentUser.getUid(),groupChatId,title,Long.toString(remLong),myName,groupheader.getName());
+                        GroupReminder reminder = new GroupReminder(currentUser.getUid(),groupheader.getGroupKey(),title,Long.toString(remLong),myName,groupheader.getName());
 
                         firebaseDatabase.getReference().child("GroupReminders").push().setValue(reminder);
 
@@ -575,76 +587,76 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
 
 
-    private void persistChat_new() {
-        //// TODO: add persistchat
-//          Intent serviceIntent = new Intent(this, DownloadChatService.class);
-//          ServiceData serviceData = new ServiceData(groupheader.getChatId(),groupheader.getName(),groupheader.getPhotoUrl(),messages_adapter.messages,groupheader.getGroupKey());
-//          serviceIntent.putExtra("data",serviceData);
-//          startService(serviceIntent);
-        menu.getItem(1).setIcon(R.drawable.fav_unselect);
-        Toast.makeText(mContext, "This chat is marked as favourite", Toast.LENGTH_LONG).show();
-
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_CALENDAR}, CALENDAR_REQUEST);
-
-            return;
-        } else {
-
-            ContentValues eventValues = new ContentValues();
-
-            eventValues.put("calendar_id", 3);
-            eventValues.put("title", "Meeting with dad");
-            //// TODO: 18-10-2017 description 
-
-
-            Calendar c = Calendar.getInstance();
+//    private void persistChat_new() {
+//        //// TODO: add persistchat
+////          Intent serviceIntent = new Intent(this, DownloadChatService.class);
+////          ServiceData serviceData = new ServiceData(groupheader.getChatId(),groupheader.getName(),groupheader.getPhotoUrl(),messages_adapter.messages,groupheader.getGroupKey());
+////          serviceIntent.putExtra("data",serviceData);
+////          startService(serviceIntent);
+//        menu.getItem(1).setIcon(R.drawable.fav_unselect);
+//        Toast.makeText(mContext, "This chat is marked as favourite", Toast.LENGTH_LONG).show();
+//
+//
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+//            // TODO: Consider calling
+//            //    ActivityCompat#requestPermissions
+//            // here to request the missing permissions, and then overriding
+//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//            //                                          int[] grantResults)
+//            // to handle the case where the user grants the permission. See the documentation
+//            // for ActivityCompat#requestPermissions for more details.
+//
+//            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_CALENDAR}, CALENDAR_REQUEST);
+//
+//            return;
+//        } else {
+//
+//            ContentValues eventValues = new ContentValues();
+//
+//            eventValues.put("calendar_id", 3);
+//            eventValues.put("title", "Meeting with dad");
+//            //// TODO: 18-10-2017 description
+//
+//
+//            Calendar c = Calendar.getInstance();
+////            long startDate = c.getTimeInMillis();
+//
+//            c.add(Calendar.MINUTE, 10);
+//
 //            long startDate = c.getTimeInMillis();
-
-            c.add(Calendar.MINUTE, 10);
-
-            long startDate = c.getTimeInMillis();
-            long endDate = startDate + 1000 * 60 * 60;
-
-            eventValues.put("dtstart", startDate);
-            eventValues.put("dtend", endDate);
-            eventValues.put("allDay", false);
-            eventValues.put("eventStatus", 0);
-
-            TimeZone timeZone = TimeZone.getDefault();
-            eventValues.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.getID());
-
-            eventValues.put(CalendarContract.Events.HAS_ALARM, 1);
-
-            ContentResolver cr = this.getContentResolver();
-
-            Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, eventValues);
-
-            long eventID = Long.parseLong(uri.getLastPathSegment());
-
-            Log.d(GroupChatActivity.class.getName(),"event uri: "+ uri.toString());
-
-            ContentValues reminders = new ContentValues();
-            reminders.put(CalendarContract.Reminders.EVENT_ID, eventID);
-            reminders.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
-            reminders.put(CalendarContract.Reminders.MINUTES, 5);
-
-            Uri uri2 = cr.insert(CalendarContract.Reminders.CONTENT_URI, reminders);
-
-            Log.d(GroupChatActivity.class.getName(),"reminder uri: "+ uri2.toString());
-
-        }
-
-
-    }
+//            long endDate = startDate + 1000 * 60 * 60;
+//
+//            eventValues.put("dtstart", startDate);
+//            eventValues.put("dtend", endDate);
+//            eventValues.put("allDay", false);
+//            eventValues.put("eventStatus", 0);
+//
+//            TimeZone timeZone = TimeZone.getDefault();
+//            eventValues.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.getID());
+//
+//            eventValues.put(CalendarContract.Events.HAS_ALARM, 1);
+//
+//            ContentResolver cr = this.getContentResolver();
+//
+//            Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, eventValues);
+//
+//            long eventID = Long.parseLong(uri.getLastPathSegment());
+//
+//            Log.d(GroupChatActivity.class.getName(),"event uri: "+ uri.toString());
+//
+//            ContentValues reminders = new ContentValues();
+//            reminders.put(CalendarContract.Reminders.EVENT_ID, eventID);
+//            reminders.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
+//            reminders.put(CalendarContract.Reminders.MINUTES, 5);
+//
+//            Uri uri2 = cr.insert(CalendarContract.Reminders.CONTENT_URI, reminders);
+//
+//            Log.d(GroupChatActivity.class.getName(),"reminder uri: "+ uri2.toString());
+//
+//        }
+//
+//
+//    }
 
 
 
@@ -755,8 +767,8 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
                 @SuppressWarnings("VisibleForTests") Message message = new Message(null, myName, taskSnapshot.getDownloadUrl().toString(), uri.getLastPathSegment(), currentUser.getUid(), null);
 
-                if (currentUser.getProfileDP() != null)
-                    message.setPhotoUrl(currentUser.getProfileDP());
+                if (profileDpUrl != null)
+                    message.setPhotoUrl(profileDpUrl);
 
                 String messageKey = groupmessageReference.push().getKey();
 
@@ -872,8 +884,8 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
         Message message = new Message(groupMessageText.getText().toString(),myName,null,null,currentUser.getUid(),null);
 
-        if(currentUser.getProfileDP()!=null)
-            message.setPhotoUrl(currentUser.getProfileDP());
+        if(profileDpUrl!=null)
+            message.setPhotoUrl(profileDpUrl);
 
         String messageKey = groupmessageReference.push().getKey();
 
@@ -980,6 +992,32 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
                         }
                     });
+
+                else
+
+                mhandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        String userphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoUrl(), message.getUid());
+                        //// TODO: update the db message with local urls
+
+                        if(!m_getfromdb) {
+                            String groupphotourl = Util.saveImage(GroupChatActivity.this,groupheader.getPhotoUrl(), groupChatId);
+                            chatViewModel.insertChat(new SavedChatsEntity(groupChatId,groupheader.getName(),groupphotourl,false,groupheader.getGroupKey(),null));
+                            getfromdb = true;
+                        }
+
+                        message.setMessageid(dataSnapshot.getKey());
+
+                        MessageEntity entity = Util.getEntityfromMessage(message, groupChatId, mContext);
+
+                        entity.setPhotoUrl(userphotourl);
+
+                        chatViewModel.insertMessage(entity);
+
+                    }
+                });
 
                 message.setMessageid(dataSnapshot.getKey());
 

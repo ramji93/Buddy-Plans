@@ -382,6 +382,10 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId())
         {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+
             case R.id.mark_favourite:
 
                 onFavouritePress();

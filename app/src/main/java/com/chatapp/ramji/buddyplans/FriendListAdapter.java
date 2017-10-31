@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,6 +82,8 @@ public class FriendListAdapter extends ArrayAdapter<Friend>
         TextView friendNameView = (TextView) friendListItem.findViewById(R.id.friendName);
 
         CircularImageView imageView = (CircularImageView) friendListItem.findViewById(R.id.friend_item_photo);
+
+        ViewCompat.setTransitionName(imageView,friends.get(position).getName());
 
         Glide.with(context).load(friends.get(position).getPhotourl()).asBitmap().into(imageView);
 
