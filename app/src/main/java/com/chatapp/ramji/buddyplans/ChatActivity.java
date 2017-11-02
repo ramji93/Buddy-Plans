@@ -64,6 +64,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -136,6 +137,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     boolean getfromdb = false;
     Calendar remindCalendar;
     AlertDialog dialog = null;
+    int blocked;
 
 
 
@@ -298,6 +300,29 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
         }
 
+        firebaseDatabase.getReference("Friends").child(friendUid).child(myUid).child("active").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean bool = (boolean) dataSnapshot.getValue();
+                if(bool)
+                {
+                    blocked = 1; //active
+                    invalidateOptionsMenu();
+                }
+                else
+                {
+                    blocked = 2;  //blocked
+                    invalidateOptionsMenu();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
      public void handleSharedIntent()
@@ -373,6 +398,13 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
         }
 
+        if(blocked == 1) {
+            menu.getItem(2).setVisible(true);
+        }
+        if(blocked == 2) {
+            menu.getItem(3).setVisible(true);
+        }
+
         this.menu = menu;
         return true;
     }
@@ -396,6 +428,20 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
                 addReminder();
                 break;
 
+            case R.id.block_friend:
+
+                blockFriend();
+                break;
+
+            case R.id.unblock_friend:
+
+                 unblockFriend();
+                 break;
+
+            case R.id.show_profile:
+
+                 showProfile();
+                 break;
 
             default:
 
@@ -405,6 +451,47 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
         }
         return true;
+    }
+
+    private void showProfile() {
+
+        FirebaseDatabase.getInstance().getReference("Users").child(friendUid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                Intent intent = new Intent(ChatActivity.this,UserActivity.class);
+                intent.putExtra("User",user);
+                startActivity(intent);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void blockFriend()
+    {
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Friends").child(friendUid).child(myUid);
+        ref.child("active").setValue(false);
+        ref.child("lastMessage").setValue(" BLOCKED ");
+        ref.child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
+
+
+    }
+
+    private void unblockFriend()
+    {
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Friends").child(friendUid).child(myUid);
+        ref.child("active").setValue(true);
+        ref.child("lastMessage").setValue(" UNBLOCKED ");
+        ref.child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
+
     }
 
     private void addReminder()

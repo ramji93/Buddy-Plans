@@ -16,5 +16,27 @@
         app:showAsAction="always"
         android:visible="false"
         />
+    <item
+        android:id="@+id/block_friend"
+        android:title="@string/block"
+        app:showAsAction="never"
+        android:visible="false"
+        />
+    <item
+        android:id="@+id/unblock_friend"
+        android:title="@string/unblock"
+        app:showAsAction="never"
+        android:visible="false"
+        />
+    <item
+        android:id="@+id/show_profile"
+        android:title="@string/show_profile"
+        app:showAsAction="never"
+        android:visible="true"
+        />
+
+
+
+
 
 </menu>

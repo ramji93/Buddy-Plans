@@ -16,6 +16,7 @@ public class SavedChatsEntity {
     public boolean favourite;
     public String groupKey;
     public String friendUid;
+    public boolean active;
 
     public SavedChatsEntity()
     {
@@ -30,6 +31,7 @@ public class SavedChatsEntity {
       this.favourite = favourite;
       this.groupKey = groupKey;
       this.friendUid = friendUid;
+      this.active = true;
     }
 
 }

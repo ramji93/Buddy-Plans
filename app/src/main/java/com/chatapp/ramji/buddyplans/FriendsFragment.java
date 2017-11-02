@@ -247,29 +247,38 @@ public class FriendsFragment extends Fragment {
     private class FriendsListener implements ChildEventListener
     {
 
-
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
             final Friend friend = (Friend) dataSnapshot.getValue(Friend.class);
 
-            FirebaseDatabase.getInstance().getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                   String photourl = dataSnapshot.getValue(String.class);
-                    friend.setPhotourl(photourl);
-                    friendListAdapter.notifyDataSetChanged();
-                }
+            if(friend.isActive()) {
+                FirebaseDatabase.getInstance().getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        String photourl = dataSnapshot.getValue(String.class);
+                        friend.setPhotourl(photourl);
+                        friendListAdapter.notifyDataSetChanged();
+                    }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-                }
-            });
+                    }
+                });
 
-            friendListAdapter.add(friend);
 
-            friendListAdapter.notifyDataSetChanged();
+                friendListAdapter.add(friend);
+
+                friendListAdapter.notifyDataSetChanged();
+
+            }
+
+            else {
+
+                //// TODO: make active false in db and make active as offline criteria
+
+            }
 
         }
 
@@ -278,27 +287,38 @@ public class FriendsFragment extends Fragment {
 
             final Friend friend = (Friend) dataSnapshot.getValue(Friend.class);
 
-            FirebaseDatabase.getInstance().getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    String photourl = dataSnapshot.getValue(String.class);
-                    friend.setPhotourl(photourl);
-                    friendListAdapter.notifyDataSetChanged();
-                }
+            if(friend.isActive()) {
+                FirebaseDatabase.getInstance().getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        String photourl = dataSnapshot.getValue(String.class);
+                        friend.setPhotourl(photourl);
+                        friendListAdapter.notifyDataSetChanged();
+                    }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-                }
-            });
+                    }
+                });
+            }
 
            Friend friend1 = friendListAdapter.friendHashMap.get(friend.getUid());
 
+            if (friend1 != null)
             friendListAdapter.friends.remove(friend1);
 
             friendListAdapter.friendHashMap.remove(friend.getUid());
 
+            if(friend.isActive())
             friendListAdapter.add(friend);
+
+            else
+            {
+                //// TODO: make active false in db and make active as offline criteria
+
+
+            }
 
             friendListAdapter.notifyDataSetChanged();
 

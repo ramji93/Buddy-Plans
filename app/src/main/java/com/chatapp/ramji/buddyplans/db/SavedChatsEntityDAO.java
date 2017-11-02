@@ -42,4 +42,6 @@ public interface SavedChatsEntityDAO {
     public void updateFavouriteChat(SavedChatsEntity chatEntity);
 
 
+
+
 }

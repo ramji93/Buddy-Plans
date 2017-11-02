@@ -44,4 +44,7 @@
     <string name="proceed_setreminder">Proceed</string>
     <string name="add_reminder">Add Reminder</string>
     <string name="exit_group">Exit Group</string>
+    <string name="block">Block</string>
+    <string name="unblock">Unblock</string>
+    <string name="show_profile">Show Profile</string>
 </resources>
