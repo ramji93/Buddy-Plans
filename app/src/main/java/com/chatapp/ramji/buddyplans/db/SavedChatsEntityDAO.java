@@ -39,7 +39,7 @@ public interface SavedChatsEntityDAO {
     public void insertChats(SavedChatsEntity chatEntity);
 
     @Update
-    public void updateFavouriteChat(SavedChatsEntity chatEntity);
+    public void updateSavedChat(SavedChatsEntity chatEntity);
 
 
 

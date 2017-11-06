@@ -3,7 +3,6 @@ package com.chatapp.ramji.buddyplans.ViewModels;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModel;
 
 import com.chatapp.ramji.buddyplans.db.AppDatabase;
 import com.chatapp.ramji.buddyplans.db.SavedChatsEntity;
@@ -46,7 +45,7 @@ public class SavedChatViewModel extends AndroidViewModel {
         if(chats.size()>0){
         SavedChatsEntity chat = chats.get(0);
         chat.active = true;
-        db.savedchatsModel().updateFavouriteChat(chat);
+        db.savedchatsModel().updateSavedChat(chat);
     }
 
     }
@@ -57,10 +56,22 @@ public class SavedChatViewModel extends AndroidViewModel {
         if(chats.size()>0) {
             SavedChatsEntity chat = chats.get(0);
             chat.active = false;
-            db.savedchatsModel().updateFavouriteChat(chat);
+            db.savedchatsModel().updateSavedChat(chat);
         }
 
     }
 
+    public void setChatName(String chatid,String chatName)
+    {
+        List<SavedChatsEntity> chats = db.savedchatsModel().getSavedChatwithid(chatid);
+        if(chats.size()>0) {
+            SavedChatsEntity chat = chats.get(0);
+            if(!chat.chatName.contentEquals(chatName));
+            {   chat.chatName = chatName;
+                db.savedchatsModel().updateSavedChat(chat);
+            }
+        }
+
+    }
 
 }

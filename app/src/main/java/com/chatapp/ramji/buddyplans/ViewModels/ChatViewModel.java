@@ -73,7 +73,7 @@ public class ChatViewModel  extends AndroidViewModel {
        List<SavedChatsEntity> chats = db.savedchatsModel().getSavedChatwithid(chatid);
        SavedChatsEntity chat = chats.get(0);
        chat.favourite = true;
-       db.savedchatsModel().updateFavouriteChat(chat);
+       db.savedchatsModel().updateSavedChat(chat);
 
     }
 
@@ -82,7 +82,7 @@ public class ChatViewModel  extends AndroidViewModel {
         List<SavedChatsEntity> chats = db.savedchatsModel().getSavedChatwithid(chatid);
         SavedChatsEntity chat = chats.get(0);
         chat.favourite = false;
-        db.savedchatsModel().updateFavouriteChat(chat);
+        db.savedchatsModel().updateSavedChat(chat);
 
     }
 

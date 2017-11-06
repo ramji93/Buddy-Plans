@@ -56,6 +56,7 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
 
     private final int OTHERS = 1;
     private final int MINE = 2;
+    private final int SYSTEM = 3;
 
 
 
@@ -107,9 +108,14 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
         if(viewType == OTHERS)
             view = LayoutInflater.from(mContext).inflate(R.layout.message_list_item,parent,false);
 
-        else
+        else if(viewType == MINE)
             view = LayoutInflater.from(mContext).inflate(R.layout.message_list_item_right,parent,false);
 
+        else
+        {
+            view = LayoutInflater.from(mContext).inflate(R.layout.sysmessage_list_item,parent,false);
+
+        }
 
         return new Message_ViewHolder(view);
     }
@@ -118,6 +124,11 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
     public void onBindViewHolder(final Message_ViewHolder holder, final int position) {
 
 
+        if(getItemViewType(position)==SYSTEM) {
+            holder.messageContents.setText(messages.get(position).getText());
+            holder.timeView.setText(Util.getDate(messages.get(position).getTimeStamp()));
+            return;
+        }
 
 
         if(mContext instanceof ChatActivity) {
@@ -237,8 +248,6 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
                  }
              });
 
-
-
          }
 
          holder.timeView.setText(Util.getDate(messages.get(position).getTimeStamp()));
@@ -277,7 +286,9 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
 
         }
 
-        return OTHERS;
+        else
+
+        return SYSTEM;
 
     }
 

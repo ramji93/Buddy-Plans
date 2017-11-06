@@ -31,6 +31,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -72,6 +73,7 @@ public class EditGroupActivity extends AppCompatActivity implements GroupCreateF
     FirebaseDatabase firebaseDatabase;
     DatabaseReference friendsReference;
     DatabaseReference groupChatReference;
+    DatabaseReference groupmessageReference;
     DatabaseReference groupMembersReference;
     DatabaseReference groupchatFriendReference;
     StorageReference imageStorageReference;
@@ -271,6 +273,8 @@ public class EditGroupActivity extends AppCompatActivity implements GroupCreateF
         Boolean photochanged = false;
         Boolean namechanged = false;
 
+        groupmessageReference = firebaseDatabase.getReference().child("Messages").child(groupheader.getChatId());
+
         if(ProfilePhoto_new != null )
             photochanged = true;
 
@@ -299,11 +303,16 @@ public class EditGroupActivity extends AppCompatActivity implements GroupCreateF
                         }
                     });
 
-
                 }
             });
 
+            Message message = new Message(currentUser.getUserName() + " has changed group photo ",null,null,null,null,null);
 
+            String messageKey = groupmessageReference.push().getKey();
+
+            groupmessageReference.child(messageKey).setValue(message);
+
+            groupmessageReference.child(messageKey).child("timeStamp").setValue(ServerValue.TIMESTAMP);
 
         }
 
@@ -311,6 +320,14 @@ public class EditGroupActivity extends AppCompatActivity implements GroupCreateF
         {
 
             groupChatReference.child(groupheader.getGroupKey()).child("name").setValue(groupName_new);
+
+            Message message = new Message(currentUser.getUserName() + " has changed group name ",null,null,null,null,null);
+
+            String messageKey = groupmessageReference.push().getKey();
+
+            groupmessageReference.child(messageKey).setValue(message);
+
+            groupmessageReference.child(messageKey).child("timeStamp").setValue(ServerValue.TIMESTAMP);
         }
 
 

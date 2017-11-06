@@ -162,8 +162,6 @@ public class GroupsFragment extends Fragment {
                 mGroupListener=null;
             }
 
-
-
             viewModel.getSavedGroupChats();
 
             viewModel.savedChats_group.observe(this, new Observer<List<SavedChatsEntity>>() {
@@ -278,7 +276,7 @@ public class GroupsFragment extends Fragment {
 
             group.setGroupKey(dataSnapshot.getKey());
 
-            userCheckRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            userCheckRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if(dataSnapshot.exists())
@@ -298,12 +296,22 @@ public class GroupsFragment extends Fragment {
                         if(bool) {
 
                             groupListAdapter.add(group);
+                            viewModel.setChatName(group.getChatId(),group.getName());
                             groupListAdapter.sort(groupComparator);
                             groupListAdapter.notifyDataSetChanged();
                             viewModel.setChatActive(group.getChatId());
                         }
-                        else
+                        else {
+
+                            Groupheader group1 = groupListAdapter.grouphashmap.get(group.getGroupKey());
+
+                            groupListAdapter.groups.remove(group1);
+
+                            groupListAdapter.grouphashmap.remove(group.getGroupKey());
+                            groupListAdapter.notifyDataSetChanged();
                             viewModel.setChatInactive(group.getChatId());
+
+                        }
 
 
                     }
@@ -334,7 +342,6 @@ public class GroupsFragment extends Fragment {
                     if(dataSnapshot.exists())
                     {
 
-
                         HashMap<String,Boolean> hashMap  = (HashMap<String, Boolean>) dataSnapshot.getValue();
 
                         boolean bool = hashMap.get("current");
@@ -342,6 +349,8 @@ public class GroupsFragment extends Fragment {
                         if(bool) {
 
                             Groupheader group1 = groupListAdapter.grouphashmap.get(group.getGroupKey());
+
+                            viewModel.setChatName(group.getChatId(),group.getName());
 
                             groupListAdapter.groups.remove(group1);
 
@@ -356,8 +365,15 @@ public class GroupsFragment extends Fragment {
                             viewModel.setChatActive(group.getChatId());
                         }
 
-                        else
+                        else {
+                            Groupheader group1 = groupListAdapter.grouphashmap.get(group.getGroupKey());
+
+                            groupListAdapter.groups.remove(group1);
+
+                            groupListAdapter.grouphashmap.remove(group.getGroupKey());
                             viewModel.setChatInactive(group.getChatId());
+                            groupListAdapter.notifyDataSetChanged();
+                        }
                     }
                 }
 

@@ -547,8 +547,15 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
                         firebaseDatabase.getReference().child("Reminders").push().setValue(reminder);
 
-
                         dialog.dismiss();
+
+                        Message message = new Message(currentUser.getUserName() + " has added a reminder ",null,null,null,null,null);
+
+                        String messageKey = messageReference.push().getKey();
+
+                        messageReference.child(messageKey).setValue(message);
+
+                        messageReference.child(messageKey).child("timeStamp").setValue(ServerValue.TIMESTAMP);
 
                     }
 

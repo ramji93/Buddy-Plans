@@ -507,6 +507,14 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
                         dialog.dismiss();
 
+                        Message message = new Message(currentUser.getUserName() + " has added a group reminder ",null,null,null,null,null);
+
+                        String messageKey = groupmessageReference.push().getKey();
+
+                        groupmessageReference.child(messageKey).setValue(message);
+
+                        groupmessageReference.child(messageKey).child("timeStamp").setValue(ServerValue.TIMESTAMP);
+
                     }
 
 
@@ -1112,7 +1120,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
                     public void onClick(DialogInterface dialog, int which) {
 
                         firebaseDatabase.getReference().child("GroupMemebers").child(groupheader.getGroupKey()).child(currentUser.getUid()).child("current").setValue(false);
-                        chatViewModel.setNotFavouriteChat(groupChatId);
+
                         finish();
                     }
                 })

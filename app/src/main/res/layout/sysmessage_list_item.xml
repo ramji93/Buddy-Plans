@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:elevation="5dp"
+    android:layout_margin="4dp"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+  >
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_marginRight="16dp"
+    android:layout_marginLeft="16dp"
+    android:background="@drawable/sysmessage_drawable"
+    android:layout_gravity="center_horizontal"
+    android:padding="5dp"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+<hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+    android:id="@+id/message_content"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textSize="12sp"
+    android:maxLines="2"
+    tools:text="Ramji has set group notification"
+    />
+
+    <TextView
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="8dp"
+        android:textColor="@color/colorAccent"
+        android:layout_gravity="right"
+        android:layout_margin="2dp"
+        android:id="@+id/message_time"
+
+        />
+</LinearLayout>
+
+
+
+</LinearLayout>
