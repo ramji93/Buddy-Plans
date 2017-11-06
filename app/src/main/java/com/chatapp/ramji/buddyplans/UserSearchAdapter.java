@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.zip.Inflater;
 
 import butterknife.BindView;

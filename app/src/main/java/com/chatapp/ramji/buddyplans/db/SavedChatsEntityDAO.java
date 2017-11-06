@@ -22,17 +22,17 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface SavedChatsEntityDAO {
 
-    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.favourite = 1")
+    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.favourite = 1 AND SavedChatsEntity.active = 1")
     public LiveData<List<SavedChatsEntity>> getFavouriteChat();
 
     @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.chatid = :chatid")
     public List<SavedChatsEntity> getSavedChatwithid(String chatid);
 
-    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.groupKey IS NOT NULL")
+    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.groupKey IS NOT NULL AND SavedChatsEntity.active = 1")
 //    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.chatid = '-KnguNtDh138_IrLLrfK'")
     public LiveData<List<SavedChatsEntity>> getGroupChatsSaved();
 
-    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.groupKey IS NULL")
+    @Query("SELECT * FROM SavedChatsEntity WHERE SavedChatsEntity.groupKey IS NULL AND SavedChatsEntity.active = 1")
     public LiveData<List<SavedChatsEntity>> getFriendChatsSaved();
 
     @Insert(onConflict = REPLACE)

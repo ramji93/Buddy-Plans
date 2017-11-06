@@ -40,6 +40,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,9 +60,11 @@ public class GroupsFragment extends Fragment {
     ListView GroupLists;
 
     GroupListAdapter groupListAdapter;
+    GroupComparator groupComparator = new GroupComparator();
 
     View rootView;
     Intent shareIntent = null;
+    SavedChatViewModel viewModel;
 
     public GroupsFragment() {
         // Required empty public constructor
@@ -76,6 +79,8 @@ public class GroupsFragment extends Fragment {
 
         if(getActivity().getIntent() != null)
             shareIntent = getActivity().getIntent();
+
+        viewModel = ViewModelProviders.of(this).get(SavedChatViewModel.class);
 
         Gson gson = new Gson();
 
@@ -157,7 +162,7 @@ public class GroupsFragment extends Fragment {
                 mGroupListener=null;
             }
 
-            SavedChatViewModel viewModel = ViewModelProviders.of(this).get(SavedChatViewModel.class);
+
 
             viewModel.getSavedGroupChats();
 
@@ -220,27 +225,6 @@ public class GroupsFragment extends Fragment {
 
 
     }
-
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        groupListQuery = groupReference.orderByKey();
-//
-//        if(mGroupListener!=null)
-//            groupListQuery.addChildEventListener(mGroupListener);
-//
-//    }
-//
-//
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        if(mGroupListener!=null) {
-//            groupListQuery.removeEventListener(mGroupListener);
-//            mGroupListener=null;
-//        }
-//
-//    }
 
     @Override
     public void onStart() {
@@ -314,9 +298,13 @@ public class GroupsFragment extends Fragment {
                         if(bool) {
 
                             groupListAdapter.add(group);
-
+                            groupListAdapter.sort(groupComparator);
                             groupListAdapter.notifyDataSetChanged();
+                            viewModel.setChatActive(group.getChatId());
                         }
+                        else
+                            viewModel.setChatInactive(group.getChatId());
+
 
                     }
                 }
@@ -346,21 +334,6 @@ public class GroupsFragment extends Fragment {
                     if(dataSnapshot.exists())
                     {
 
-//                        groupListAdapter.add(group);
-//
-//                        groupListAdapter.notifyDataSetChanged();
-
-//                        Friend friend = (Friend) dataSnapshot.getValue(Friend.class);
-//
-//                        Friend friend1 = friendListAdapter.friendHashMap.get(friend.getUid());
-//
-//                        friendListAdapter.friends.remove(friend1);
-//
-//                        friendListAdapter.friendHashMap.remove(friend.getUid());
-//
-//                        friendListAdapter.add(friend);
-//
-//                        friendListAdapter.notifyDataSetChanged();
 
                         HashMap<String,Boolean> hashMap  = (HashMap<String, Boolean>) dataSnapshot.getValue();
 
@@ -376,11 +349,15 @@ public class GroupsFragment extends Fragment {
 
                             groupListAdapter.add(group);
 
+                            groupListAdapter.sort(groupComparator);
+
                             groupListAdapter.notifyDataSetChanged();
 
+                            viewModel.setChatActive(group.getChatId());
                         }
 
-
+                        else
+                            viewModel.setChatInactive(group.getChatId());
                     }
                 }
 
@@ -409,4 +386,23 @@ public class GroupsFragment extends Fragment {
 
         }
     }
+
+    class GroupComparator implements Comparator<Groupheader> {
+
+        @Override
+        public int compare(Groupheader o1, Groupheader o2) {
+
+            if(o2.getLastMessageTimestap() == null)
+                return -1;
+            else if( o1.getLastMessageTimestap() == null)
+                return 1;
+            else if(o1.getLastMessageTimestap() > o2.getLastMessageTimestap())
+                return -1;
+            else if(o1.getLastMessageTimestap() < o2.getLastMessageTimestap())
+                return 1;
+            else
+                return 0;
+        }
+    }
+
 }

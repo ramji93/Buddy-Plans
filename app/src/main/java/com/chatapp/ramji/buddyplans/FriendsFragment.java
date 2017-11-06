@@ -43,6 +43,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.zip.Inflater;
 
@@ -64,8 +65,10 @@ public class FriendsFragment extends Fragment {
     ListView FriendLists;
     View rootView;
     Intent shareIntent = null;
+    FriendComparator friendComparator = new FriendComparator();
 
     public static FriendListAdapter friendListAdapter;
+    SavedChatViewModel viewModel;
 
     public FriendsFragment() {
         // Required empty public constructor
@@ -95,6 +98,8 @@ public class FriendsFragment extends Fragment {
 
         MainActivity mainActivity = (MainActivity)  getActivity();
 
+        viewModel = ViewModelProviders.of(this).get(SavedChatViewModel.class);
+
         Gson gson = new Gson();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -122,6 +127,19 @@ public class FriendsFragment extends Fragment {
 
 
         FriendLists.setAdapter(friendListAdapter);
+
+        friendListAdapter.sort(new Comparator<Friend>() {
+            @Override
+            public int compare(Friend o1, Friend o2) {
+                if(o1.getLastMessageTimestap() > o2.getLastMessageTimestap())
+                    return 1;
+                else if(o1.getLastMessageTimestap() < o2.getLastMessageTimestap())
+                    return -1;
+                else
+                    return 0;
+
+            }
+        });
 
         FriendLists.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -156,7 +174,7 @@ public class FriendsFragment extends Fragment {
         });
 
 
-        friendListQuery = friendReference.orderByKey();
+        friendListQuery = friendReference.orderByChild("lastMessageTimestap").limitToLast(3);
         if(mFriendsListener!=null)
             friendListQuery.addChildEventListener(mFriendsListener);
 
@@ -174,8 +192,6 @@ public class FriendsFragment extends Fragment {
                 friendListQuery.removeEventListener(mFriendsListener);
                 mFriendsListener=null;
             }
-
-            SavedChatViewModel viewModel = ViewModelProviders.of(this).get(SavedChatViewModel.class);
 
             viewModel.getSavedFriendChats();
 
@@ -267,16 +283,20 @@ public class FriendsFragment extends Fragment {
                     }
                 });
 
-
                 friendListAdapter.add(friend);
 
+                friendListAdapter.sort(friendComparator);
+
                 friendListAdapter.notifyDataSetChanged();
+
+                viewModel.setChatActive(friend.getChatid());
 
             }
 
             else {
 
                 //// TODO: make active false in db and make active as offline criteria
+                viewModel.setChatInactive(friend.getChatid());
 
             }
 
@@ -310,12 +330,16 @@ public class FriendsFragment extends Fragment {
 
             friendListAdapter.friendHashMap.remove(friend.getUid());
 
-            if(friend.isActive())
-            friendListAdapter.add(friend);
+            if(friend.isActive()) {
+                friendListAdapter.add(friend);
+                friendListAdapter.sort(friendComparator);
+                viewModel.setChatActive(friend.getChatid());
+            }
 
             else
             {
                 //// TODO: make active false in db and make active as offline criteria
+                viewModel.setChatInactive(friend.getChatid());
 
 
             }
@@ -340,5 +364,23 @@ public class FriendsFragment extends Fragment {
         }
     }
 
+
+    class FriendComparator implements Comparator<Friend>{
+
+        @Override
+        public int compare(Friend o1, Friend o2) {
+
+            if(o2.getLastMessageTimestap() == null)
+                return -1;
+            else if( o1.getLastMessageTimestap() == null)
+                return 1;
+            else if(o1.getLastMessageTimestap() > o2.getLastMessageTimestap())
+                return -1;
+            else if(o1.getLastMessageTimestap() < o2.getLastMessageTimestap())
+                return 1;
+            else
+                return 0;
+        }
+    }
 
 }

@@ -191,6 +191,7 @@
         app:layout_anchor="@id/container_frame"
         app:layout_anchorGravity="bottom|end"
         android:id="@+id/useradd"
+        android:visibility="gone"
         />
 
 

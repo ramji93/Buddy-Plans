@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,10 +31,12 @@ public class SearchResultsActivity extends AppCompatActivity {
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference usersReference;
     private Query userQuery;
+    private Query userQuery1;
     private ArrayList<User> userList;
     private UserListener userListener;
     @BindView(R.id.usersearchlist) RecyclerView userSearchList;
     @BindView(R.id.search_results_toolbar) Toolbar toolbar;
+    HashMap<String,String> hashMap;
 
     UserSearchAdapter userSearchAdapter;
 
@@ -46,6 +49,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search_results);
 
         ButterKnife.bind(this);
+        hashMap = new HashMap<String, String>();
         firebaseDatabase = FirebaseDatabase.getInstance();
         usersReference = firebaseDatabase.getReference().child("Users");
         userList = new ArrayList<User>();
@@ -65,7 +69,6 @@ public class SearchResultsActivity extends AppCompatActivity {
         }
 
 
-
         Gson gson = new Gson();
 
 
@@ -83,9 +86,15 @@ public class SearchResultsActivity extends AppCompatActivity {
 
             User user = dataSnapshot.getValue(User.class);
 
-            if(!user.getUid().equalsIgnoreCase(currentUser.getUid())) {
-                userSearchAdapter.userList.add(user);
-                userSearchAdapter.notifyDataSetChanged();
+            if(!hashMap.containsKey(user.getUid())) {
+
+                if (!user.getUid().equalsIgnoreCase(currentUser.getUid())) {
+                    userSearchAdapter.userList.add(user);
+                    hashMap.put(user.getUid(),user.getUid());
+                    userSearchAdapter.notifyDataSetChanged();
+
+                }
+
             }
 
         }
@@ -114,10 +123,18 @@ public class SearchResultsActivity extends AppCompatActivity {
     public void displayResults(String query)
     {
 
+        String query1 = String.valueOf(query.charAt(0));
+        query1 = query1.toUpperCase();
+        query1 = query1.concat(query.substring(1));
 
-        userQuery = usersReference.orderByChild("userName").startAt(query) ;
+        userQuery = usersReference.orderByChild("userName").startAt(query).endAt(query+"\uf8ff");
 
-         userListener = new UserListener();
+        userQuery1 =  usersReference.orderByChild("userName").startAt(query1).endAt(query+"\uf8ff");
+
+
+
+        userListener = new UserListener();
+
 
 
     }
@@ -126,8 +143,11 @@ public class SearchResultsActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        if(userListener!=null)
-        userQuery.addChildEventListener(userListener);
+        if(userListener!=null) {
+            userQuery.addChildEventListener(userListener);
+            userQuery1.addChildEventListener(userListener);
+
+        }
 
 
     }
@@ -137,6 +157,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         super.onStop();
         if(userListener != null) {
             userQuery.removeEventListener(userListener);
+            userQuery1.removeEventListener(userListener);
             userListener = null;
         }
 

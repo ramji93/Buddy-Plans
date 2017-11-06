@@ -40,5 +40,27 @@ public class SavedChatViewModel extends AndroidViewModel {
 
     }
 
+    public void setChatActive(String chatid)
+    {
+        List<SavedChatsEntity> chats = db.savedchatsModel().getSavedChatwithid(chatid);
+        if(chats.size()>0){
+        SavedChatsEntity chat = chats.get(0);
+        chat.active = true;
+        db.savedchatsModel().updateFavouriteChat(chat);
+    }
+
+    }
+
+    public void setChatInactive(String chatid)
+    {
+        List<SavedChatsEntity> chats = db.savedchatsModel().getSavedChatwithid(chatid);
+        if(chats.size()>0) {
+            SavedChatsEntity chat = chats.get(0);
+            chat.active = false;
+            db.savedchatsModel().updateFavouriteChat(chat);
+        }
+
+    }
+
 
 }

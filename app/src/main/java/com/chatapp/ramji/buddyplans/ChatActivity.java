@@ -478,8 +478,9 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Friends").child(friendUid).child(myUid);
         ref.child("active").setValue(false);
-        ref.child("lastMessage").setValue(" BLOCKED ");
-        ref.child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
+        DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("Friends").child(myUid).child(friendUid);
+        ref1.child("lastMessage").setValue(" BLOCKED ");
+        ref1.child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
 
 
     }
@@ -489,10 +490,12 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Friends").child(friendUid).child(myUid);
         ref.child("active").setValue(true);
-        ref.child("lastMessage").setValue(" UNBLOCKED ");
-        ref.child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
+        DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("Friends").child(myUid).child(friendUid);
+        ref1.child("lastMessage").setValue(" UNBLOCKED ");
+        ref1.child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
 
     }
+
 
     private void addReminder()
     {

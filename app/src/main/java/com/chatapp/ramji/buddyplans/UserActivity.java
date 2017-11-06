@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -18,8 +19,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
@@ -56,6 +60,7 @@ public class UserActivity extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase;
     DatabaseReference friendDatabaseReference1;
     DatabaseReference friendDatabaseReference2;
+    User currentUser;
 
 
     @Override
@@ -70,6 +75,15 @@ public class UserActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         user = (User) intent.getSerializableExtra("User");
+
+
+
+        Gson gson = new Gson();
+
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        currentUser = gson.fromJson(sharedPreferences.getString("User",""),User.class);
+
 
         if(user.getFb_id()!=null)
         {
@@ -95,19 +109,27 @@ public class UserActivity extends AppCompatActivity {
 
         //userNameView.setText(user.getUserName());
 
-        if(FriendsFragment.friendListAdapter.friendHashMap.containsKey(user.getUid()))
+        firebaseDatabase.getReference("Friends").child(currentUser.getUid()).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+               if (dataSnapshot.exists()) {
 
-        {
-            constraintLayout.setVisibility(View.VISIBLE);
+                   constraintLayout.setVisibility(View.VISIBLE);
 
-            userAdd.setVisibility(View.INVISIBLE);
+               }
+               else {
 
-//            Snackbar snackbar1 = Snackbar.make(coordinatorLayout, "This user is already in your friends list", Snackbar.LENGTH_LONG);
-//
-//            snackbar1.show();
+                   userAdd.setVisibility(View.VISIBLE);
 
+               }
 
-        }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
     }
@@ -136,6 +158,17 @@ public class UserActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(item.getItemId() == android.R.id.home)
+        {
+            super.onBackPressed();
+        }
+
+        return true;
+    }
+
     @OnClick(R.id.useradd)
     public void addToFriends()
     {
@@ -146,13 +179,7 @@ public class UserActivity extends AppCompatActivity {
 
 
 
-        User currentUser;
 
-        Gson gson = new Gson();
-
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        currentUser = gson.fromJson(sharedPreferences.getString("User",""),User.class);
 
         friendDatabaseReference1 = firebaseDatabase.getReference().child("Friends").child(currentUser.getUid()).child(user.getUid());
 
