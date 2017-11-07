@@ -69,6 +69,7 @@ public class FriendsFragment extends Fragment {
 
     public static FriendListAdapter friendListAdapter;
     SavedChatViewModel viewModel;
+    Boolean tranisition;
 
     public FriendsFragment() {
         // Required empty public constructor
@@ -152,9 +153,12 @@ public class FriendsFragment extends Fragment {
                 if(friend.getPhotourl()!=null && imageView.getDrawable()!=null) {
                     Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
                     intent.putExtra("image", bitmap);
-
+                    intent.putExtra("transition",ViewCompat.getTransitionName(imageView));
+                    tranisition = true;
                 }
-                intent.putExtra("transition", ViewCompat.getTransitionName(imageView));
+
+                else
+                    tranisition = false;
                 intent.putExtra("Friend",friend);
 
                 if(shareIntent!= null)
@@ -163,12 +167,18 @@ public class FriendsFragment extends Fragment {
                     shareIntent = null;
                 }
 
-                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation
-                        (
-                                getActivity(),
-                                imageView,
-                                ViewCompat.getTransitionName(imageView));
-                startActivity(intent,options.toBundle());
+                if(tranisition) {
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation
+                            (
+                                    getActivity(),
+                                    imageView,
+                                    ViewCompat.getTransitionName(imageView));
+                    startActivity(intent, options.toBundle());
+                }
+                  else
+                {
+                    startActivity(intent);
+                }
 
             }
         });

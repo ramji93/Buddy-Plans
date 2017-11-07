@@ -13,8 +13,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.preference.PreferenceManager;
@@ -71,6 +74,7 @@ import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -81,6 +85,8 @@ import butterknife.OnClick;
 import gun0912.tedbottompicker.TedBottomPicker;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
+
+import static android.os.Build.VERSION_CODES.M;
 
 public class ChatActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
@@ -138,7 +144,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     Calendar remindCalendar;
     AlertDialog dialog = null;
     int blocked;
-
+    boolean isConnected;
 
 
     @Override
@@ -189,11 +195,34 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
             Glide.with(this).load(friend.getPhotourl()).into(circularImage);
 
         circularImage.setOnClickListener(new View.OnClickListener() {
-                                             @Override
-                                             public void onClick(View v) {
-                                                 ZoomAnimation.zoom(v, circularImage.getDrawable(), ChatActivity.this, false);
-                                             }
-                                         });
+
+            @Override
+            public void onClick(View v) {
+//                                                ZoomAnimation.zoom(v, circularImage.getDrawable(), ChatActivity.this, false);
+                String path = Environment.getExternalStorageDirectory().getPath()+"/Buddyplans/pictures"+"/"+friend.getChatid();
+
+                File f=new File(path);
+
+                if(f.exists()) {
+
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);
+
+                    if(Build.VERSION.SDK_INT > M)
+                    {
+                        intent.setDataAndType(CustomFileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".my.package.name.provider", f),"image/*");
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        mContext.startActivity(intent);
+                    }
+
+                    else {
+                        intent.setDataAndType(Uri.fromFile(f), "image/*");
+                        mContext.startActivity(intent);
+                    }
+                }
+
+            }
+        });
 
         Gson gson = new Gson();
 
@@ -322,6 +351,23 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
             }
         });
+
+        ConnectivityManager cm =
+                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        if(isConnected) {
+
+            mhandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Util.saveImage(ChatActivity.this, friend.getPhotourl(), friend.getChatid());
+                }
+            });
+        }
 
     }
 
@@ -454,6 +500,25 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void showProfile() {
+
+        if(!Util.checkConnection(mContext))
+        {
+
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setMessage(R.string.nointernet)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+
+                        }
+                    });
+
+            // Create the AlertDialog object and return it
+             builder.create().show();
+
+            return;
+
+        }
 
         FirebaseDatabase.getInstance().getReference("Users").child(friendUid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

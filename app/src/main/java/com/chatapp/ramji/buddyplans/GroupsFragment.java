@@ -65,6 +65,7 @@ public class GroupsFragment extends Fragment {
     View rootView;
     Intent shareIntent = null;
     SavedChatViewModel viewModel;
+    Boolean tranisition;
 
     public GroupsFragment() {
         // Required empty public constructor
@@ -115,8 +116,13 @@ public class GroupsFragment extends Fragment {
                 if(imageView.getDrawable()!=null && imageView.getDrawable()!=null) {
                     Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
                     intent.putExtra("image", bitmap);
+                    intent.putExtra("transition",ViewCompat.getTransitionName(imageView));
+                    tranisition = true;
                 }
-                intent.putExtra("transition",ViewCompat.getTransitionName(imageView));
+
+                else
+                    tranisition = false;
+
                 intent.putExtra("group",group);
 
                 if(shareIntent!= null)
@@ -125,12 +131,20 @@ public class GroupsFragment extends Fragment {
                     shareIntent = null;
                 }
 
-                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation
-                        (
-                                getActivity(),
-                                imageView,
-                                ViewCompat.getTransitionName(imageView));
-                startActivity(intent,options.toBundle());
+
+                if(tranisition) {
+
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation
+                            (
+                                    getActivity(),
+                                    imageView,
+                                    ViewCompat.getTransitionName(imageView));
+                    startActivity(intent, options.toBundle());
+                }
+                else
+                {
+                    startActivity(intent);
+                }
 
             }
         });

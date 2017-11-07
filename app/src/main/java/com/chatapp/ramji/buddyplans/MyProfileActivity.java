@@ -85,12 +85,13 @@ public class MyProfileActivity extends AppCompatActivity {
         user = gson.fromJson(sharedPreferences.getString("User",""),User.class);
 
         String profile_dp_uri = sharedPreferences.getString("profiledp",user.getProfileDP());
+        profilePhotoView.setActivated(true);
+        Glide.with(this).load(Uri.parse(profile_dp_uri)).into(profilePhotoView);
 
         if(user.getFb_id()!=null)
         {
             dividerview.setVisibility(View.VISIBLE);
             fbLayout.setVisibility(View.VISIBLE);
-
 
         }
 
@@ -110,7 +111,7 @@ public class MyProfileActivity extends AppCompatActivity {
 
         firebaseDatabase = FirebaseDatabase.getInstance();
 
-        Glide.with(this).load(Uri.parse(profile_dp_uri)).into(profilePhotoView);
+
 
     }
 
@@ -210,8 +211,6 @@ public class MyProfileActivity extends AppCompatActivity {
         editor.putString("profiledp",ProfilePhoto_new.toString());
 
         editor.commit();
-
-        StorageReference oldRef =  imageStorageReference.child(user.getUid());
 
 //         if(oldRef != null)
 //        {

@@ -5,11 +5,14 @@ import android.*;
 import android.Manifest;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -23,6 +26,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -122,6 +126,8 @@ public class MainActivity extends AppCompatActivity  {
     final int CALENDAR_REQUEST = 1;
 
     FirebaseUser user;
+    HandlerThread handlerThread;
+    Handler mhandler;
 
     public static int navItemIndex = 0;
 
@@ -159,6 +165,12 @@ public class MainActivity extends AppCompatActivity  {
         mAuth = FirebaseAuth.getInstance();
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
+
+        handlerThread = new HandlerThread("handlerThread");
+
+        handlerThread.start();
+
+        mhandler = new Handler(handlerThread.getLooper());
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -393,7 +405,6 @@ public class MainActivity extends AppCompatActivity  {
         setupViewPager(mViewpager);
 
 
-
         mainTabLayout.setupWithViewPager(mViewpager);
 
         mainTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -434,7 +445,7 @@ public class MainActivity extends AppCompatActivity  {
         UserCheckListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                User currentUser = dataSnapshot.getValue(User.class);
+                final User currentUser = dataSnapshot.getValue(User.class);
 
                 if(currentUser == null)
                 {
@@ -448,12 +459,23 @@ public class MainActivity extends AppCompatActivity  {
                 {
                     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
 
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    final SharedPreferences.Editor editor = sharedPreferences.edit();
 
                     if(currentUser.getProfileDP()!=null)
 
                     {
                         editor.putString("profiledp", currentUser.getProfileDP());
+
+                        mhandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+
+                               String url = Util.saveImage(mContext,currentUser.getProfileDP(),mUid);
+                                editor.putString("profiledp",url);
+
+                            }
+                        });
+
 
                         Glide.with(mContext).load(currentUser.getProfileDP()).into(imgProfile);
 
@@ -599,6 +621,24 @@ public class MainActivity extends AppCompatActivity  {
 
             case R.id.add_group:
 
+                if(!Util.checkConnection(mContext))
+                {
+
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    builder.setMessage(R.string.nointernet)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+
+                                }
+                            });
+
+                    // Create the AlertDialog object and return it
+                    builder.create().show();
+
+                    return true;
+
+                }
                 Intent intent = new Intent(this,GroupCreateActivity.class);
                 this.startActivity(intent);
                 return true;
