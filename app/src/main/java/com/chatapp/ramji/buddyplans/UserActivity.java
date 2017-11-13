@@ -180,10 +180,6 @@ public class UserActivity extends AppCompatActivity {
         //1. add new object in friends/user id/
 
 
-
-
-
-
         friendDatabaseReference1 = firebaseDatabase.getReference().child("Friends").child(currentUser.getUid()).child(user.getUid());
 
         Friend friend1 = new Friend(user.getUserName(),user.getProfileDP(),true,user.getUid());

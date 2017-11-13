@@ -85,7 +85,6 @@ public class MyProfileActivity extends AppCompatActivity {
         user = gson.fromJson(sharedPreferences.getString("User",""),User.class);
 
         String profile_dp_uri = sharedPreferences.getString("profiledp",user.getProfileDP());
-        profilePhotoView.setActivated(true);
         Glide.with(this).load(Uri.parse(profile_dp_uri)).into(profilePhotoView);
 
         if(user.getFb_id()!=null)
@@ -166,6 +165,12 @@ public class MyProfileActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        profilePhotoView.setActivated(true);
+        super.onStart();
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
         if(requestCode==WRITE_REQUEST)
@@ -212,27 +217,6 @@ public class MyProfileActivity extends AppCompatActivity {
 
         editor.commit();
 
-//         if(oldRef != null)
-//        {
-//            oldRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-//                @Override
-//                public void onSuccess(Void aVoid) {
-//                    StorageReference imageRef = imageStorageReference.child(user.getUid()).child(ProfilePhoto_new.getLastPathSegment());
-//
-//                    imageRef.putFile(ProfilePhoto_new).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                        @Override
-//                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//
-//                            //noinspection VisibleForTests
-//                            userreference.child(user.getUid()).child("profileDP").setValue(taskSnapshot.getDownloadUrl().toString());
-//                        }
-//                    });
-//
-//                }
-//            });
-//        }
-//
-//        else {
             StorageReference imageRef = imageStorageReference.child(user.getUid()).child("profile");
 
             imageRef.putFile(ProfilePhoto_new).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -252,7 +236,28 @@ public class MyProfileActivity extends AppCompatActivity {
 
     }
 
+    @OnClick(R.id.fb_button)
+    public void viewFbProfile()
+    {
 
+        Intent intent = new Intent();
+
+        try {
+            getPackageManager()
+                    .getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
+            intent = new  Intent(Intent.ACTION_VIEW,
+                    Uri.parse("fb://profile/"+user.getFb_id())); //Trys to make intent with FB's URI
+            intent.setPackage("com.facebook.katana");
+        } catch (Exception e) {
+            intent = new  Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://www.facebook.com/"+user.getFb_id())); //catches and opens a url to the desired page
+        }
+
+
+
+        startActivity(intent);
+
+    }
 
 
 

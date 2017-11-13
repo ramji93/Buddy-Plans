@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -125,6 +126,8 @@ public class Util {
                 fos = new FileOutputStream(f);
                 // Use the compress method on the BitMap object to write image to the OutputStream
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+
+                MediaStore.Images.Media.insertImage(context.getContentResolver(),path,photoContentName,photoContentName);
             }
                 catch (InterruptedException e) {
                     e.printStackTrace();

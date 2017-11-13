@@ -52,7 +52,6 @@ import com.chatapp.ramji.buddyplans.ViewModels.ChatViewModel;
 import com.chatapp.ramji.buddyplans.db.MessageEntity;
 import com.chatapp.ramji.buddyplans.db.SavedChatsEntity;
 import com.github.clans.fab.FloatingActionMenu;
-import com.github.oliveiradev.image_zoom.lib.widget.ZoomAnimation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;

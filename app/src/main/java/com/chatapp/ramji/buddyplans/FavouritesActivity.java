@@ -11,9 +11,12 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.TextView;
 
 import com.chatapp.ramji.buddyplans.ViewModels.FavouriteChatsViewModel;
 import com.chatapp.ramji.buddyplans.db.SavedChatsEntity;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -27,9 +30,11 @@ public class FavouritesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favourites);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final TextView emptytext = (TextView) findViewById(R.id.empty_view);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Favourite Chats");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         favouriteChatsViewModel = ViewModelProviders.of(this).get(FavouriteChatsViewModel.class);
 
@@ -37,6 +42,15 @@ public class FavouritesActivity extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable List<SavedChatsEntity> savedChatsEntities) {
 
+                if(savedChatsEntities.size()==0)
+                {
+                    emptytext.setVisibility(View.VISIBLE);
+                    favouriteList.setVisibility(View.GONE);
+                }
+                else {
+                    emptytext.setVisibility(View.GONE);
+                    favouriteList.setVisibility(View.VISIBLE);
+                }
                 favouriteList.setAdapter(new FavouriteList_Adapter(FavouritesActivity.this,savedChatsEntities));
 
             }

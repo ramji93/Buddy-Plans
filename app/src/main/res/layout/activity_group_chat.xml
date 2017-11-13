@@ -12,6 +12,7 @@
     android:id="@+id/activity_chat_group"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/groupchat_bg"
     tools:context="com.chatapp.ramji.buddyplans.ChatActivity">
 
     <android.support.v7.widget.Toolbar
@@ -21,7 +22,7 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:id="@+id/groupchat_toolbar"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorPrimary"
         app:titleMarginStart="0dp"
         app:title="@string/app_name"
 
@@ -140,6 +141,7 @@
             android:id="@+id/group_message_input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:textSize="@dimen/message_textsize"
             android:maxLength="100"
             app:emojiconSize="28sp" />
 

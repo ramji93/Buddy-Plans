@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -64,6 +65,8 @@ public class GroupCreateActivity extends AppCompatActivity implements GroupCreat
     EmojiconEditText groupNameText;
     @BindView(R.id.groupcreate_smiley)
     ImageView smileyButton;
+    @BindView(R.id.friend_empty)
+    TextView emptyView;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference friendsReference;
     DatabaseReference groupChatReference;
@@ -319,14 +322,16 @@ public class GroupCreateActivity extends AppCompatActivity implements GroupCreat
 
             final Friend friend = (Friend) dataSnapshot.getValue(Friend.class);
 
+            if(friend.isActive())
+
             firebaseDatabase.getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
                     friend.setPhotourl((String) dataSnapshot.getValue());
                     friendListAdapter.add(friend);
-
                     friendListAdapter.notifyDataSetChanged();
+                    emptyView.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -367,6 +372,8 @@ public class GroupCreateActivity extends AppCompatActivity implements GroupCreat
         selectedListAdapter.selectedlist.add(friend);
         selectedListAdapter.notifyDataSetChanged();
         recyclerView1.setVisibility(View.VISIBLE);
+        if(friendListAdapter.friendList.size()==1)
+            emptyView.setVisibility(View.VISIBLE);
 
     }
 
@@ -377,6 +384,7 @@ public class GroupCreateActivity extends AppCompatActivity implements GroupCreat
         friendListAdapter.notifyDataSetChanged();
         if(selectedListAdapter.selectedlist.isEmpty())
            recyclerView1.setVisibility(View.GONE);
+        emptyView.setVisibility(View.GONE);
 
     }
 }

@@ -499,70 +499,67 @@ public class EditGroupActivity extends AppCompatActivity implements GroupCreateF
 
 
 
+              if(friend.isActive()) {
+                  groupchatFriendReference = firebaseDatabase.getReference("GroupMemebers").child(groupheader.getGroupKey()).child(friend.getUid());
+                  groupchatFriendReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                      @Override
+                      public void onDataChange(DataSnapshot dataSnapshot) {
 
-              groupchatFriendReference =  firebaseDatabase.getReference("GroupMemebers").child(groupheader.getGroupKey()).child(friend.getUid());
-            groupchatFriendReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                 @Override
-                 public void onDataChange(DataSnapshot dataSnapshot) {
+                          if (!dataSnapshot.exists()) {
+                              firebaseDatabase.getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
+                                  @Override
+                                  public void onDataChange(DataSnapshot dataSnapshot) {
 
-                     if(!dataSnapshot.exists())
-                     {
-                         firebaseDatabase.getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
-                             @Override
-                             public void onDataChange(DataSnapshot dataSnapshot) {
+                                      friend.setPhotourl((String) dataSnapshot.getValue());
+                                      friendListAdapter.add(friend);
+                                      friendListAdapter.notifyDataSetChanged();
+                                      recyclerView2.smoothScrollToPosition(friendListAdapter.getItemCount() - 1);
+                                  }
 
-                                 friend.setPhotourl((String) dataSnapshot.getValue());
-                                 friendListAdapter.add(friend);
-                                 friendListAdapter.notifyDataSetChanged();
-                                 recyclerView2.smoothScrollToPosition(friendListAdapter.getItemCount()-1);
-                             }
+                                  @Override
+                                  public void onCancelled(DatabaseError databaseError) {
 
-                             @Override
-                             public void onCancelled(DatabaseError databaseError) {
+                                  }
+                              });
 
-                             }
-                         });
+                          } else {
 
-                     }
+                              HashMap<String, Boolean> hashMap = (HashMap<String, Boolean>) dataSnapshot.getValue();
 
-                     else{
+                              boolean bool = hashMap.get("current");
 
-                         HashMap<String,Boolean> hashMap  = (HashMap<String, Boolean>) dataSnapshot.getValue();
+                              if (!bool) {
 
-                         boolean bool = hashMap.get("current");
+                                  firebaseDatabase.getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
+                                      @Override
+                                      public void onDataChange(DataSnapshot dataSnapshot) {
 
-                         if(!bool) {
+                                          friend.setPhotourl((String) dataSnapshot.getValue());
+                                          friendListAdapter.add(friend);
+                                          friendListAdapter.notifyDataSetChanged();
+                                          recyclerView2.smoothScrollToPosition(friendListAdapter.getItemCount() - 1);
+                                      }
 
-                             firebaseDatabase.getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
-                                 @Override
-                                 public void onDataChange(DataSnapshot dataSnapshot) {
+                                      @Override
+                                      public void onCancelled(DatabaseError databaseError) {
 
-                                     friend.setPhotourl((String) dataSnapshot.getValue());
-                                     friendListAdapter.add(friend);
-                                     friendListAdapter.notifyDataSetChanged();
-                                     recyclerView2.smoothScrollToPosition(friendListAdapter.getItemCount() - 1);
-                                 }
+                                      }
+                                  });
 
-                                 @Override
-                                 public void onCancelled(DatabaseError databaseError) {
-
-                                 }
-                             });
-
-                         }
+                              }
 
 
-                     }
+                          }
 
-                 }
+                      }
 
 
+                      @Override
+                      public void onCancelled(DatabaseError databaseError) {
 
-                 @Override
-                 public void onCancelled(DatabaseError databaseError) {
-
-                 }
-             });
+                      }
+                  });
+              }
 
 
         }

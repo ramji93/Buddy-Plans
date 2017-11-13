@@ -55,9 +55,7 @@ import com.bumptech.glide.Glide;
 import com.chatapp.ramji.buddyplans.ViewModels.ChatViewModel;
 import com.chatapp.ramji.buddyplans.db.MessageEntity;
 import com.chatapp.ramji.buddyplans.db.SavedChatsEntity;
-import com.chatapp.ramji.buddyplans.service.DownloadChatService;
 import com.github.clans.fab.FloatingActionMenu;
-import com.github.oliveiradev.image_zoom.lib.widget.ZoomAnimation;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
@@ -663,78 +661,6 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         timePickerDialog.show();
     }
 
-
-
-//    private void persistChat_new() {
-//        //// TODO: add persistchat
-////          Intent serviceIntent = new Intent(this, DownloadChatService.class);
-////          ServiceData serviceData = new ServiceData(groupheader.getChatId(),groupheader.getName(),groupheader.getPhotoUrl(),messages_adapter.messages,groupheader.getGroupKey());
-////          serviceIntent.putExtra("data",serviceData);
-////          startService(serviceIntent);
-//        menu.getItem(1).setIcon(R.drawable.fav_unselect);
-//        Toast.makeText(mContext, "This chat is marked as favourite", Toast.LENGTH_LONG).show();
-//
-//
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-//            // TODO: Consider calling
-//            //    ActivityCompat#requestPermissions
-//            // here to request the missing permissions, and then overriding
-//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//            //                                          int[] grantResults)
-//            // to handle the case where the user grants the permission. See the documentation
-//            // for ActivityCompat#requestPermissions for more details.
-//
-//            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_CALENDAR}, CALENDAR_REQUEST);
-//
-//            return;
-//        } else {
-//
-//            ContentValues eventValues = new ContentValues();
-//
-//            eventValues.put("calendar_id", 3);
-//            eventValues.put("title", "Meeting with dad");
-//            //// TODO: 18-10-2017 description
-//
-//
-//            Calendar c = Calendar.getInstance();
-////            long startDate = c.getTimeInMillis();
-//
-//            c.add(Calendar.MINUTE, 10);
-//
-//            long startDate = c.getTimeInMillis();
-//            long endDate = startDate + 1000 * 60 * 60;
-//
-//            eventValues.put("dtstart", startDate);
-//            eventValues.put("dtend", endDate);
-//            eventValues.put("allDay", false);
-//            eventValues.put("eventStatus", 0);
-//
-//            TimeZone timeZone = TimeZone.getDefault();
-//            eventValues.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.getID());
-//
-//            eventValues.put(CalendarContract.Events.HAS_ALARM, 1);
-//
-//            ContentResolver cr = this.getContentResolver();
-//
-//            Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, eventValues);
-//
-//            long eventID = Long.parseLong(uri.getLastPathSegment());
-//
-//            Log.d(GroupChatActivity.class.getName(),"event uri: "+ uri.toString());
-//
-//            ContentValues reminders = new ContentValues();
-//            reminders.put(CalendarContract.Reminders.EVENT_ID, eventID);
-//            reminders.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
-//            reminders.put(CalendarContract.Reminders.MINUTES, 5);
-//
-//            Uri uri2 = cr.insert(CalendarContract.Reminders.CONTENT_URI, reminders);
-//
-//            Log.d(GroupChatActivity.class.getName(),"reminder uri: "+ uri2.toString());
-//
-//        }
-//
-//
-//    }
 
 
 

@@ -180,14 +180,14 @@
     <!--</android.support.v4.widget.NestedScrollView>-->
 
     <android.support.design.widget.FloatingActionButton
-        android:layout_height="56dp"
-        android:layout_width="56dp"
+        android:layout_height="@dimen/fab_size"
+        android:layout_width="@dimen/fab_size"
 
         android:layout_marginRight="24dp"
         android:layout_marginBottom="24dp"
         app:elevation="8dp"
         app:fabSize="mini"
-        android:src="@drawable/ic_person_add_black_24dp"
+        android:src="@drawable/ic_person_add_black"
         app:layout_anchor="@id/container_frame"
         app:layout_anchorGravity="bottom|end"
         android:id="@+id/useradd"

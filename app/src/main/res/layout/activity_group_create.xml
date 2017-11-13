@@ -58,6 +58,7 @@
                 android:layout_height="40dp"
                 android:src="@drawable/ic_action_name"
                 android:id="@+id/groupcreate_photoicon"
+                android:layout_gravity="center"
                 />
 
             <com.mikhaellopez.circularimageview.CircularImageView
@@ -121,11 +122,23 @@
         android:layout_height="wrap_content">
 
     </android.support.v7.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/friend_empty"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:textSize="16sp"
+        android:textStyle="italic"
+        android:text="@string/no_friends"
+        />
 </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="@dimen/fab_size"
+        android:layout_height="@dimen/fab_size"
         android:id="@+id/create_button"
         app:fabSize="normal"
         app:elevation="8dp"

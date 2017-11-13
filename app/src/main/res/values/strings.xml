@@ -48,4 +48,6 @@
     <string name="unblock">Unblock</string>
     <string name="show_profile">Show Profile</string>
     <string name="nointernet">Internet not available, Check your internet connectivity and try again !</string>
+    <string name="favourite_empty">No favourite chats available</string>
+    <string name="no_friends">No friends available to select from</string>
 </resources>

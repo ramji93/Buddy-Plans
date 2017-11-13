@@ -30,4 +30,15 @@
 
    </android.support.v7.widget.RecyclerView>
 
+    <TextView
+    android:id="@+id/empty_view"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:textSize="16dp"
+        android:textStyle="bold"
+    android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:text="@string/favourite_empty" />
+
 </android.support.design.widget.CoordinatorLayout>

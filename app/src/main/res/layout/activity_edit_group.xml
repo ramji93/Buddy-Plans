@@ -139,8 +139,8 @@
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="@dimen/fab_size"
+        android:layout_height="@dimen/fab_size"
         android:id="@+id/edit_button"
         app:fabSize="normal"
         app:elevation="8dp"

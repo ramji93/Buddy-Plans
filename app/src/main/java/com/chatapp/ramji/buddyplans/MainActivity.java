@@ -202,8 +202,8 @@ public class MainActivity extends AppCompatActivity  {
 
                     authProviders.add(new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build());
 
-                    startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder().setIsSmartLockEnabled(false).setLogo(R.drawable.ic_whatshot_black_24dp)
-                            .setProviders(authProviders).build(), RC_SIGN_IN);
+                    startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder().setIsSmartLockEnabled(false).setLogo(R.drawable.auth_logo)
+                            .setProviders(authProviders).setTheme(R.style.AppTheme).build(), RC_SIGN_IN);
                 }
             }
         };

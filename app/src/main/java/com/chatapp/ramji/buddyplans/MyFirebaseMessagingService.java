@@ -90,7 +90,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             Notification.Builder builder = new Notification.Builder(this).setContentTitle(((group!=null ) ?  "Group Reminder" : "Reminder") + " from " + sender)
                       .setContentText(title + timeString + " ~ " + "sent by " + sender + ((group!=null ) ? " in " + group : "" ))
-                      .setSmallIcon(R.drawable.ic_whatshot_black_24dp)
+                      .setSmallIcon(R.mipmap.ic_launcher)
                       .setAutoCancel(true)
                       .addAction(R.drawable.add_reminder,"Save Reminder",reminderintent);
 

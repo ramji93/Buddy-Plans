@@ -18,7 +18,7 @@
 
     <item
         android:id="@+id/add_group"
-        android:icon="@drawable/ic_add_black_24dp"
+        android:icon="@drawable/ic_add_24dp"
         android:orderInCategory="0"
         app:showAsAction="always"
         android:title="New Group"
