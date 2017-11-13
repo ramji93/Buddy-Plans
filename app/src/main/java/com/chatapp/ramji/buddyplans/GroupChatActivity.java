@@ -571,7 +571,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
 
                         //// TODO: add reminder
 
-                        GroupReminder reminder = new GroupReminder(currentUser.getUid(),groupheader.getGroupKey(),title,Long.toString(remLong),myName,groupheader.getName());
+                        GroupReminder reminder = new GroupReminder(currentUser.getUid(),groupheader.getGroupKey(),title,Long.toString(remLong),myName,groupheader.getName(),groupChatId);
 
                         firebaseDatabase.getReference().child("GroupReminders").push().setValue(reminder);
 
@@ -835,7 +835,7 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
         StorageReference imageRef = imageStorageReference.child(uri.getLastPathSegment());
 
 
-        final Snackbar snackbar = Snackbar.make(rootView, "Uploading the image", Snackbar.LENGTH_LONG);
+        final Snackbar snackbar = Snackbar.make(rootView,(isConnected ? "Uploading the image" : "Image will be uploaded once connection resumes"),(isConnected ? 10000 : 3000));
         snackbar.show();
 
         imageRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -851,6 +851,8 @@ public class GroupChatActivity extends AppCompatActivity implements ActivityComp
                 String messageKey = groupmessageReference.push().getKey();
 
                 groupmessageReference.child(messageKey).setValue(message);
+
+                snackbar.dismiss();
 
                 groupmessageReference.child(messageKey).child("timeStamp").setValue(ServerValue.TIMESTAMP);
 

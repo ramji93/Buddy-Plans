@@ -18,6 +18,8 @@ public class GroupReminder {
 
     public String groupchat;
 
+    public String chatid;
+
 
 
     public GroupReminder() {
@@ -25,7 +27,7 @@ public class GroupReminder {
 
     }
 
-    public GroupReminder(String senderId, String groupId, String title, String timestamp, String sendername,String groupchat) {
+    public GroupReminder(String senderId, String groupId, String title, String timestamp, String sendername,String groupchat,String chatid) {
 
         this.senderId = senderId;
         this.groupId = groupId;
@@ -33,6 +35,8 @@ public class GroupReminder {
         this.timestamp = timestamp;
         this.sendername = sendername;
         this.groupchat = groupchat;
+        this.chatid = chatid;
+
     }
 
 

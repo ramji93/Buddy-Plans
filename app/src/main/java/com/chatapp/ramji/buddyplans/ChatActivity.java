@@ -608,7 +608,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
                     else{
 
                         //// TODO: add reminder
-                        Reminder reminder = new Reminder(myUid,friendUid,title,Long.toString(remLong),myName);
+                        Reminder reminder = new Reminder(myUid,friendUid,title,Long.toString(remLong),myName,chatId);
 
                         firebaseDatabase.getReference().child("Reminders").push().setValue(reminder);
 
@@ -843,14 +843,14 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
             StorageReference imageRef = imageStorageReference.child(uri.getLastPathSegment());
 
-            final Snackbar snackbar = Snackbar.make(RootView,"Uploading the image",Snackbar.LENGTH_LONG);
+            final Snackbar snackbar = Snackbar.make(RootView,(isConnected ? "Uploading the image" : "Image will be uploaded once connection resumes"),(isConnected ? 10000 : 3000));
             snackbar.show();
 
 
             final Message loadmessage = new Message(null, myName,uri.toString(),uri.getLastPathSegment(),currentUser.getUid(),null);
             loadmessage.setTimeStamp(System.currentTimeMillis());
 
-//            messages_adapter.messages.add(loadmessage);
+//            messages_adapter.messages.add(Util.loadmessage);
 
             messages_adapter.notifyDataSetChanged();
 
@@ -861,20 +861,16 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
 
                     @SuppressWarnings("VisibleForTests") Message message = new Message(null, myName, taskSnapshot.getDownloadUrl().toString(),uri.getLastPathSegment(),currentUser.getUid(),null);
 
-
-
                     if (currentUser.getProfileDP() != null)
                         message.setPhotoUrl(currentUser.getProfileDP());
-
-
 
                     String messageKey = messageReference.push().getKey();
 
                     messageReference.child(messageKey).setValue(message);
 
-                    messages_adapter.messages.remove(loadmessage);
+  //                  messages_adapter.messages.remove(loadmessage);
 
-                    messages_adapter.notifyDataSetChanged();
+                    snackbar.dismiss();
 
                     messageReference.child(messageKey).child("timeStamp").setValue(ServerValue.TIMESTAMP);
 

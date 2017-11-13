@@ -41,8 +41,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
            // String chatid = reminderData.get("chatid");
             // TODO: get sender uid to display image   
             String senderid = data.get("senderid");
-
-            String imgpath =  Environment.getExternalStorageDirectory().getPath()+"/Buddyplans/pictures"+"/"+senderid;
+            String chatid = data.get("chatid");
+            String imgpath =  Environment.getExternalStorageDirectory().getPath()+"/Buddyplans/pictures"+"/"+chatid;
 
             Bitmap bitmap = null;
             try {
@@ -68,27 +68,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             String timeString;
 
+            int minute = cal.get(Calendar.MINUTE);
+
             if(day==cal.get(Calendar.DAY_OF_MONTH) && month==cal.get(Calendar.MONTH) && year==cal.get(Calendar.YEAR))
 
-            timeString = " At " + cal.get(Calendar.HOUR_OF_DAY)+":"+ cal.get(Calendar.MINUTE)+ " today";
+            timeString = " At " + cal.get(Calendar.HOUR_OF_DAY)+":"+ ((minute > 9) ? minute : "0"+minute ) + " today";
 
             else
 
-            timeString = " On " + cal.get(Calendar.DAY_OF_MONTH)+"/"+cal.get(Calendar.MONTH)+"/"+cal.get(Calendar.YEAR)+" "+ cal.get(Calendar.HOUR_OF_DAY)+":"+ cal.get(Calendar.MINUTE);
+            timeString = " On " + cal.get(Calendar.DAY_OF_MONTH)+"/"+cal.get(Calendar.MONTH)+"/"+cal.get(Calendar.YEAR)+" "+ cal.get(Calendar.HOUR_OF_DAY)+":"+ ((minute > 9) ? minute : "0"+minute );
 
             int notificationId = new Random().nextInt();
 
             Intent intent = new Intent(this, AddEventReminderService.class);
             intent.putExtra("title",title);
-            intent.putExtra("description","Set by "+sender);
+            intent.putExtra("description","sent by " + sender + ((group!=null ) ? " in " + group : "" ));
             intent.putExtra("time",eventTime);
             intent.putExtra("notification id", notificationId);
 
             PendingIntent reminderintent = PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
 
-
-            Notification.Builder builder = new Notification.Builder(this).setContentTitle(sender + " sent an reminder")
-                      .setContentText(title + timeString)
+            Notification.Builder builder = new Notification.Builder(this).setContentTitle(((group!=null ) ?  "Group Reminder" : "Reminder") + " from " + sender)
+                      .setContentText(title + timeString + " ~ " + "sent by " + sender + ((group!=null ) ? " in " + group : "" ))
                       .setSmallIcon(R.drawable.ic_whatshot_black_24dp)
                       .setAutoCancel(true)
                       .addAction(R.drawable.add_reminder,"Save Reminder",reminderintent);

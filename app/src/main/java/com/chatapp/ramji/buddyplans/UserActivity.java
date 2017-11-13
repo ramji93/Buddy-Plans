@@ -144,8 +144,11 @@ public class UserActivity extends AppCompatActivity {
             try {
                 getPackageManager()
                         .getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
+                String url = "https://www.facebook.com/"+user.getFb_id();
               intent = new  Intent(Intent.ACTION_VIEW,
-                        Uri.parse("fb://page/"+user.getFb_id())); //Trys to make intent with FB's URI
+//                        Uri.parse("fb://page/"+user.getFb_id())); //Trys to make intent with FB's URI
+                      Uri.parse("fb://facewebmodal/f?href="+url));
+                intent.setPackage("com.facebook.katana");
             } catch (Exception e) {
                 intent = new  Intent(Intent.ACTION_VIEW,
                         Uri.parse("https://www.facebook.com/"+user.getFb_id())); //catches and opens a url to the desired page

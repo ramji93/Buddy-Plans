@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -148,15 +147,6 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
          {
 
              Uri uri = Uri.parse(messages.get(position).getPhotoContentUrl());
-
-             if(uri.getScheme() != null) {
-
-                 if (!uri.getScheme().equalsIgnoreCase("https") && !uri.getScheme().equalsIgnoreCase("http")) {
-
-                     holder.Progress.setVisibility(View.VISIBLE);
-
-                 }
-             }
 
              holder.contentPhoto.setVisibility(View.VISIBLE);
              holder.mapView.setVisibility(View.GONE);
@@ -323,7 +313,7 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
         ImageView contentPhoto;
         TextView timeView;
         ImageButton mapView;
-        ProgressBar Progress;
+
 
 
         public Message_ViewHolder(View itemView) {
@@ -336,7 +326,7 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
          contentPhoto = (ImageView) itemView.findViewById(R.id.photoImageView);
             timeView = (TextView) itemView.findViewById(R.id.message_time);
             mapView = (ImageButton) itemView.findViewById(R.id.mapView);
-            Progress = (ProgressBar) itemView.findViewById(R.id.progressBar);
+
 
         }
 
