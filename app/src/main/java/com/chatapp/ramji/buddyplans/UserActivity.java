@@ -49,6 +49,8 @@ public class UserActivity extends AppCompatActivity {
     ImageButton fb_button;
     @BindView(R.id.fb_group)
     LinearLayout fbLayout;
+    @BindView(R.id.mail_group)
+    LinearLayout mailLayout;
     @BindView(R.id.mail_id)
     TextView mailText;
     @BindView(R.id.coordinatorlayout)
@@ -135,7 +137,7 @@ public class UserActivity extends AppCompatActivity {
     }
 
 
-    @OnClick(R.id.fb_button)
+    @OnClick(R.id.fb_group)
     public void viewFbProfile()
     {
 
@@ -157,6 +159,19 @@ public class UserActivity extends AppCompatActivity {
 
 
         startActivity(intent);
+
+    }
+
+    @OnClick(R.id.mail_group)
+    public void sendMail() {
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/html");
+        intent.putExtra(Intent.EXTRA_EMAIL, user.geteMail());
+        intent.putExtra(Intent.EXTRA_SUBJECT, "");
+        intent.putExtra(Intent.EXTRA_TEXT, "");
+
+        startActivity(Intent.createChooser(intent, "Send Email"));
 
     }
 

@@ -236,7 +236,7 @@ public class MyProfileActivity extends AppCompatActivity {
 
     }
 
-    @OnClick(R.id.fb_button)
+    @OnClick(R.id.fb_group)
     public void viewFbProfile()
     {
 

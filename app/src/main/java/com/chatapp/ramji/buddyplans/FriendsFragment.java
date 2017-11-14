@@ -184,7 +184,7 @@ public class FriendsFragment extends Fragment {
         });
 
 
-        friendListQuery = friendReference.orderByChild("lastMessageTimestap").limitToLast(3);
+        friendListQuery = friendReference.orderByChild("lastMessageTimestap");
         if(mFriendsListener!=null)
             friendListQuery.addChildEventListener(mFriendsListener);
 

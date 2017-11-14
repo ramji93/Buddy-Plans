@@ -131,8 +131,24 @@ public class MainActivity extends AppCompatActivity  {
 
     public static int navItemIndex = 0;
 
+    ViewPagerAdapter adapter;
+
     private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+
+        ViewPagerAdapter adapter;
+
+
+
+        if(viewPager.getAdapter()!=null)
+        {
+            adapter = (ViewPagerAdapter) viewPager.getAdapter();
+            adapter.mFragmentList.clear();
+            adapter.mFragmentTitleList.clear();
+
+        }
+        else {
+            adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        }
         friendsFragment = new FriendsFragment();
         groupsFragment = new GroupsFragment();
         adapter.addFragment(groupsFragment, "BUDDIES GROUP");
@@ -398,12 +414,9 @@ public class MainActivity extends AppCompatActivity  {
 
         txtName.setText(mUsername);
 
-        if(currentuser.getProfileDP()!=null)
-
         setUpNavigationView();
 
         setupViewPager(mViewpager);
-
 
         mainTabLayout.setupWithViewPager(mViewpager);
 
@@ -510,22 +523,30 @@ public class MainActivity extends AppCompatActivity  {
 
     public void SignoutFuction()
     {
+        mViewpager.setAdapter(null);
 
         ViewPagerAdapter pagerAdapter =  (ViewPagerAdapter) mViewpager.getAdapter();
 
-        groupsFragment.onDestroy();
-        friendsFragment.onDestroy();
-
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-       fragmentTransaction.remove(groupsFragment);
-       fragmentTransaction.remove(friendsFragment);
-       fragmentTransaction.commit();
-
-
-
-
         if(UserCheckListener != null)
-        mDatabaseReference.removeEventListener(UserCheckListener);
+            mDatabaseReference.removeEventListener(UserCheckListener);
+//
+//        try {
+//            if(groupsFragment!= null)
+//                groupsFragment.onDestroy();
+//            if(friendsFragment!= null)
+//                friendsFragment.onDestroy();
+//        }
+//       catch (Exception e)
+//       {
+//           e.printStackTrace();
+//       }
+
+//        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//       fragmentTransaction.remove(groupsFragment);
+//       fragmentTransaction.remove(friendsFragment);
+//       fragmentTransaction.commit();
+
+
 
     }
 

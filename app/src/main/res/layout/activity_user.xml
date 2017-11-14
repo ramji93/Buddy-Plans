@@ -104,6 +104,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:id="@+id/mail_group"
                     >
 
                 <ImageButton
@@ -111,7 +112,7 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:id="@+id/mail"
-                    android:src="@drawable/ic_mail_black_24dp"
+                    android:src="@drawable/ic_mail_24dp"
                     />
 
                 <TextView
@@ -152,7 +153,7 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:layout_marginLeft="16dp"
-                        android:src="@mipmap/fb_logo"
+                        android:src="@drawable/fb_logo"
                         android:id="@+id/fb_button"
                        />
 
