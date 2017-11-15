@@ -541,10 +541,10 @@ public class MainActivity extends AppCompatActivity  {
 //           e.printStackTrace();
 //       }
 
-//        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-//       fragmentTransaction.remove(groupsFragment);
-//       fragmentTransaction.remove(friendsFragment);
-//       fragmentTransaction.commit();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+       fragmentTransaction.remove(groupsFragment);
+       fragmentTransaction.remove(friendsFragment);
+       fragmentTransaction.commit();
 
 
 
