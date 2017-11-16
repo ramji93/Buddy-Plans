@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Environment;
+import android.support.v7.app.NotificationCompat;
 import android.text.format.DateUtils;
 import android.util.Log;
 
@@ -72,11 +73,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             if(day==cal.get(Calendar.DAY_OF_MONTH) && month==cal.get(Calendar.MONTH) && year==cal.get(Calendar.YEAR))
 
-            timeString = " At " + cal.get(Calendar.HOUR_OF_DAY)+":"+ ((minute > 9) ? minute : "0"+minute ) + " today";
+            timeString = " at " + cal.get(Calendar.HOUR_OF_DAY)+":"+ ((minute > 9) ? minute : "0"+minute ) + " today";
 
             else
 
-            timeString = " On " + cal.get(Calendar.DAY_OF_MONTH)+"/"+cal.get(Calendar.MONTH)+"/"+cal.get(Calendar.YEAR)+" "+ cal.get(Calendar.HOUR_OF_DAY)+":"+ ((minute > 9) ? minute : "0"+minute );
+            timeString = " on " + cal.get(Calendar.DAY_OF_MONTH)+"/"+cal.get(Calendar.MONTH)+"/"+cal.get(Calendar.YEAR)+" "+ cal.get(Calendar.HOUR_OF_DAY)+":"+ ((minute > 9) ? minute : "0"+minute );
 
             int notificationId = new Random().nextInt();
 
@@ -88,9 +89,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             PendingIntent reminderintent = PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
 
-            Notification.Builder builder = new Notification.Builder(this).setContentTitle(((group!=null ) ?  "Group Reminder" : "Reminder") + " from " + sender)
-                      .setContentText(title + timeString + " ~ " + "sent by " + sender + ((group!=null ) ? " in " + group : "" ))
-                      .setSmallIcon(R.mipmap.ic_launcher)
+            String message = "'"+ title + "'" + timeString + " ~ " + "sent by " + sender + ((group!=null ) ? " in " + group : "" );
+
+            android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setContentTitle(((group!=null ) ?  "Group Reminder" : "Friendly Reminder"))
+                      .setContentText(message)
+                      .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                      .setSmallIcon(R.drawable.ic_notification_icon)
                       .setAutoCancel(true)
                       .addAction(R.drawable.add_reminder,"Save Reminder",reminderintent);
 

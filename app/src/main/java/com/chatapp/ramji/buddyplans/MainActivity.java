@@ -128,6 +128,8 @@ public class MainActivity extends AppCompatActivity  {
     FirebaseUser user;
     HandlerThread handlerThread;
     Handler mhandler;
+    Intent shareIntent;
+    Menu menu;
 
     public static int navItemIndex = 0;
 
@@ -171,6 +173,17 @@ public class MainActivity extends AppCompatActivity  {
         ButterKnife.bind(this);
 
         setSupportActionBar(mainToolbar);
+
+        if(getIntent() != null ) {
+
+            if(getIntent().getAction()==Intent.ACTION_SEND) {
+
+                shareIntent = getIntent();
+                Log.d(MainActivity.class.getName(), "share intent");
+                navigationView.setVisibility(View.GONE);
+                mainToolbar.setNavigationIcon(null);
+            }
+        }
 
         navHeader = navigationView.getHeaderView(0);
 
@@ -332,6 +345,9 @@ public class MainActivity extends AppCompatActivity  {
         drawer.addDrawerListener(actionBarDrawerToggle);
 
         //calling sync state is necessary or else your hamburger icon wont show up
+        if(shareIntent!=null)
+        actionBarDrawerToggle.setDrawerIndicatorEnabled(false);
+
         actionBarDrawerToggle.syncState();
 
     }
@@ -425,16 +441,20 @@ public class MainActivity extends AppCompatActivity  {
             public void onTabSelected(TabLayout.Tab tab) {
                 if(tab.getPosition() == 0)
                 {
-                    searchMenuItem.setVisible(false);
-                    addGroupMenuItem.setVisible(true);
+                    if(shareIntent==null) {
+                        searchMenuItem.setVisible(false);
+                        addGroupMenuItem.setVisible(true);
+                    }
                     tab_index = tab.getPosition();
 
                 }
 
                 else
                 {
-                    searchMenuItem.setVisible(true);
-                    addGroupMenuItem.setVisible(false);
+                    if(shareIntent==null) {
+                        searchMenuItem.setVisible(true);
+                        addGroupMenuItem.setVisible(false);
+                    }
                     tab_index = tab.getPosition();
 
                 }
@@ -572,6 +592,11 @@ public class MainActivity extends AppCompatActivity  {
         if(currentuser!=null)
         refreshProfileImage();
 
+//        if(shareIntent!=null)
+//        {
+//           menu.clear();
+//        }
+
 //        TabLayout.Tab tab = mainTabLayout.getTabAt();
 //        tab.select();
 
@@ -601,21 +626,24 @@ public class MainActivity extends AppCompatActivity  {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
+        if(shareIntent!=null)
+            return true;
+        else {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.menu, menu);
 
-        // Get the SearchView and set the searchable configuration
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+            // Get the SearchView and set the searchable configuration
+            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 
-        searchMenuItem = menu.findItem(R.id.search);
-        addGroupMenuItem = menu.findItem(R.id.add_group);
+            searchMenuItem = menu.findItem(R.id.search);
+            addGroupMenuItem = menu.findItem(R.id.add_group);
 
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        // Assumes current activity is the searchable activity
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
-
-        return true;
+            SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+            // Assumes current activity is the searchable activity
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+            searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+            return true;
+        }
     }
 
     @Override

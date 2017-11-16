@@ -9,12 +9,12 @@
         android:layout_height="wrap_content"
         android:text="Set Reminder"
         android:textSize="24sp"
-        android:textStyle="bold"
         android:gravity="center_horizontal"
         android:padding="5dp"
         android:textColor="@color/tw__composer_white"
-        android:background="#a3b7ce"
+        android:background="@color/colorPrimaryDark"
         />
+    <!--android:background="#a3b7ce"-->
     <EditText
         android:id="@+id/reminder_title"
         android:layout_width="match_parent"
@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:background="#bdddb5"
+        android:background="#bed3f4"
         android:text="Set Date &amp; Time"
         />
 

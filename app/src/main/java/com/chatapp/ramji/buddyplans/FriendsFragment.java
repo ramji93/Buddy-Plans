@@ -18,6 +18,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -94,8 +95,14 @@ public class FriendsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(getActivity().getIntent() != null)
-        shareIntent = getActivity().getIntent();
+        if(getActivity().getIntent() != null ) {
+
+            if(getActivity().getIntent().getAction()==Intent.ACTION_SEND) {
+
+                shareIntent = getActivity().getIntent();
+                Log.d(FriendsFragment.class.getName(), "share intent");
+            }
+        }
 
         MainActivity mainActivity = (MainActivity)  getActivity();
 
@@ -164,7 +171,8 @@ public class FriendsFragment extends Fragment {
                 if(shareIntent!= null)
                 {
                     intent.putExtra("shareIntent",shareIntent);
-                    shareIntent = null;
+//                    shareIntent = null;
+                    tranisition = false;
                 }
 
                 if(tranisition) {
@@ -177,6 +185,8 @@ public class FriendsFragment extends Fragment {
                 }
                   else
                 {
+                    if(shareIntent!=null)
+                    getActivity().finish();
                     startActivity(intent);
                 }
 

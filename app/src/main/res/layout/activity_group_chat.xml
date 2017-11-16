@@ -112,7 +112,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="horizontal"
-        android:elevation="4dp"
+        android:elevation="6dp"
         android:layout_marginLeft="52dp"
         android:background="@drawable/message_textpad_background"
 
@@ -142,7 +142,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="@dimen/message_textsize"
-            android:maxLength="100"
+            android:backgroundTint="@android:color/transparent"
+            android:maxLength="56"
             app:emojiconSize="28sp" />
 
         <ImageButton

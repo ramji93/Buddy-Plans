@@ -132,9 +132,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="52dp"
 
-
         android:background="@drawable/message_textpad_background"
-        android:elevation="4dp"
+        android:elevation="6dp"
 
         android:orientation="horizontal">
 
@@ -162,7 +161,8 @@
             android:layout_weight="1"
             android:hint="say something"
             android:textSize="@dimen/message_textsize"
-            android:maxLength="34"
+            android:maxLength="56"
+            android:backgroundTint="@android:color/transparent"
             app:emojiconSize="28sp" />
 
         <ImageButton

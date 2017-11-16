@@ -403,13 +403,15 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
                  builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
                      public void onClick(DialogInterface dialog, int id) {
 
-                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                             ((Activity) mContext).finishAndRemoveTask();
-                         }
-                         else
-                         {
-                             ((Activity) mContext).finishAffinity();
-                         }
+
+                         finish();
+//                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                             ((Activity) mContext).finishAndRemoveTask();
+//                         }
+//                         else
+//                         {
+//                             ((Activity) mContext).finishAffinity();
+//                         }
 
 
                      }

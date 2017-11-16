@@ -18,6 +18,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,8 +79,16 @@ public class GroupsFragment extends Fragment {
 
         MainActivity mainActivity = (MainActivity)  getActivity();
 
-        if(getActivity().getIntent() != null)
-            shareIntent = getActivity().getIntent();
+        Log.d(GroupsFragment.class.getName(), "inside oncreate");
+
+        if(getActivity().getIntent() != null ) {
+
+            if(getActivity().getIntent().getAction()==Intent.ACTION_SEND) {
+
+                shareIntent = getActivity().getIntent();
+                Log.d(GroupsFragment.class.getName(), "share intent");
+            }
+        }
 
         viewModel = ViewModelProviders.of(this).get(SavedChatViewModel.class);
 
@@ -128,7 +137,8 @@ public class GroupsFragment extends Fragment {
                 if(shareIntent!= null)
                 {
                     intent.putExtra("shareIntent",shareIntent);
-                    shareIntent = null;
+                    tranisition = false;
+//                    shareIntent = null;
                 }
 
 
@@ -143,6 +153,9 @@ public class GroupsFragment extends Fragment {
                 }
                 else
                 {
+                    if(shareIntent!=null)
+                    getActivity().finish();
+
                     startActivity(intent);
                 }
 
@@ -218,7 +231,7 @@ public class GroupsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
+        Log.d(GroupsFragment.class.getName(), "inside oncreateview");
 
         setHasOptionsMenu(false);
         // Inflate the layout for this fragment
