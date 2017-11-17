@@ -31,7 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class UserActivity extends AppCompatActivity {
+public class UserActivity extends BaseActivity {
 
 
     private User user;

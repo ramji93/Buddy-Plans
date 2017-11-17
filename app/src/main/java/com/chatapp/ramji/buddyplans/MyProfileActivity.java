@@ -34,7 +34,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import gun0912.tedbottompicker.TedBottomPicker;
 
-public class MyProfileActivity extends AppCompatActivity {
+public class MyProfileActivity extends BaseActivity {
 
 
     private User user;

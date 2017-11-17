@@ -20,7 +20,7 @@ import org.w3c.dom.Text;
 
 import java.util.List;
 
-public class FavouritesActivity extends AppCompatActivity {
+public class FavouritesActivity extends BaseActivity {
 
     RecyclerView favouriteList;
     FavouriteChatsViewModel favouriteChatsViewModel;

@@ -87,7 +87,7 @@ import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 
 import static android.os.Build.VERSION_CODES.M;
 
-public class ChatActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference chatReference;
@@ -116,6 +116,8 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     TextView chatTitle;
     @BindView(R.id.circular_image)
     CircularImageView circularImage;
+    @BindView(R.id.live_dot)
+    ImageView liveDot;
 
     @BindView(R.id.menu_yellow)
     FloatingActionMenu attachMenu;
@@ -132,6 +134,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     Intent shareIntent = null;
     private GoogleApiClient mGoogleApiClient;
     DatabaseReference messageReference;
+    LiveStatusListener liveStatusListener;
 
     Menu menu;
     Query chatQuery;
@@ -327,6 +330,7 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
             handleSharedIntent();
 
         }
+
 
         firebaseDatabase.getReference("Friends").child(friendUid).child(myUid).child("active").addValueEventListener(new ValueEventListener() {
             @Override
@@ -1090,6 +1094,42 @@ public class ChatActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        liveStatusListener = new LiveStatusListener();
+        firebaseDatabase.getReference().child("Users").child(friendUid).child("online").addValueEventListener(liveStatusListener);
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(liveStatusListener!=null) {
+            firebaseDatabase.getReference().child("Users").child(friendUid).child("online").removeEventListener(liveStatusListener);
+            liveStatusListener = null;
+
+        }
+    }
+
+
+    class LiveStatusListener implements ValueEventListener{
+
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+
+            if(dataSnapshot.getValue() == true)
+                liveDot.setVisibility(View.VISIBLE);
+
+            else
+                liveDot.setVisibility(View.INVISIBLE);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    }
 
     class ChatMessageListener implements ChildEventListener{
 

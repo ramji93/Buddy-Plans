@@ -50,7 +50,7 @@ import gun0912.tedbottompicker.TedBottomPicker;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 
-public class EditGroupActivity extends AppCompatActivity implements GroupCreateFriendListAdapter.FriendSelectListener, GroupEditMembersAdapter.DeleteSelectedItemListener  {
+public class EditGroupActivity extends BaseActivity implements GroupCreateFriendListAdapter.FriendSelectListener, GroupEditMembersAdapter.DeleteSelectedItemListener  {
 
     @BindView(R.id.toolbar_groupedit)
     Toolbar toolbar;

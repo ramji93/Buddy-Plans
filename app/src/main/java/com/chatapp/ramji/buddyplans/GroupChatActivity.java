@@ -93,7 +93,7 @@ import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 import static android.os.Build.VERSION_CODES.M;
 import static java.security.AccessController.getContext;
 
-public class GroupChatActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+public class GroupChatActivity extends BaseActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
 
     FirebaseDatabase firebaseDatabase;

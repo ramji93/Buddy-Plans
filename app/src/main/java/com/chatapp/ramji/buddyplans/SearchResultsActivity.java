@@ -28,7 +28,7 @@ import java.util.HashMap;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SearchResultsActivity extends AppCompatActivity {
+public class SearchResultsActivity extends BaseActivity {
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference usersReference;

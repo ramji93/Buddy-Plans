@@ -47,7 +47,7 @@ import gun0912.tedbottompicker.TedBottomPicker;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 
-public class GroupCreateActivity extends AppCompatActivity implements GroupCreateFriendListAdapter.FriendSelectListener, GroupCreateSelectedListAdapter.DeleteSelectedItemListener {
+public class GroupCreateActivity extends BaseActivity implements GroupCreateFriendListAdapter.FriendSelectListener, GroupCreateSelectedListAdapter.DeleteSelectedItemListener {
 
     @BindView(R.id.toolbar_groupcreate)
     Toolbar toolbar;

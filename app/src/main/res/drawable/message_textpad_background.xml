@@ -7,7 +7,8 @@
     <corners android:radius="20dp"/>
 
     <!--<solid android:color="#399779bc"/>-->
-    <solid android:color="#f4edf9"/>
+    <!--<solid android:color="#f4edf9"/>-->
+    <solid android:color="#f2f5fc"/>
 
     <!--<padding android:bottom="10dp"-->
         <!--android:top="10dp"-->

@@ -7,7 +7,7 @@
     app:contentPadding="7dp"
     app:cardMaxElevation="8dp"
     android:layout_width="match_parent"
-    app:cardBackgroundColor="#d3dded"
+    app:cardBackgroundColor="#e9efce"
     android:layout_height="180dp">
 
     <LinearLayout
