@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -63,6 +64,7 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -665,6 +667,24 @@ public class MainActivity extends AppCompatActivity  {
 
                 editor.commit();
 
+                return true;
+
+            case R.id.invite_menu:
+
+                String message = getString(R.string.invite_message);
+
+                Uri.Builder uribuilder = new Uri.Builder();
+                uribuilder.scheme("https")
+                        .authority("play.google.com")
+                        .appendPath("store")
+                        .appendPath("apps")
+                        .appendPath("details")
+                        .appendQueryParameter("id","com.chatapp.ramji.buddyplans");
+
+                Intent appintent = new Intent(Intent.ACTION_SEND);
+                appintent.setType("text/plain");
+                appintent.putExtra(Intent.EXTRA_TEXT,message + uribuilder.build().toString());
+                startActivity(Intent.createChooser(appintent,"Select an app to send invite"));
                 return true;
 
 

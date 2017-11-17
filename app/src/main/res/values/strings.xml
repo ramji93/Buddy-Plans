@@ -50,4 +50,6 @@
     <string name="nointernet">Internet not available, Check your internet connectivity and try again !</string>
     <string name="favourite_empty">No favourite chats available</string>
     <string name="no_friends">No friends available to select from</string>
+    <string name="invite_others">Invite Others</string>
+    <string name="invite_message">Hey. Check out this cool new app \'Buddy Plans\' in playstore. \n</string>
 </resources>
