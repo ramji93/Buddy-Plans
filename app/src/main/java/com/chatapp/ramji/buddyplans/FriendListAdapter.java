@@ -13,6 +13,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.gson.internal.bind.ReflectiveTypeAdapterFactory;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
@@ -37,15 +38,18 @@ public class FriendListAdapter extends ArrayAdapter<Friend>
 
     HashMap<String,Friend> friendHashMap;
 
+    Boolean isConnected;
+
     public FriendListAdapter(Context context, List<Friend> objects) {
         super(context, R.layout.friend_list_item, objects);
 
         friends = objects;
 
-
         this.context = context;
 
         friendHashMap = new HashMap<String, Friend>();
+
+        isConnected = Util.checkConnection(context);
     }
 
     @NonNull
@@ -85,7 +89,7 @@ public class FriendListAdapter extends ArrayAdapter<Friend>
 
         ViewCompat.setTransitionName(imageView,friends.get(position).getName());
 
-        Glide.with(context).load(friends.get(position).getPhotourl()).asBitmap().into(imageView);
+        Glide.with(context).load(friends.get(position).getPhotourl()).asBitmap().diskCacheStrategy(isConnected ? DiskCacheStrategy.RESULT : DiskCacheStrategy.NONE).into(imageView);
 
         friendNameView.setText(friends.get(position).getName());
 

@@ -30,7 +30,7 @@ public class CircularDeleteView extends View {
     {
         Fillpaint = new Paint();
         Fillpaint.setAntiAlias(true);
-        Fillpaint.setColor(Color.GREEN);
+        Fillpaint.setColor(Color.parseColor("#6e42f4"));
 
     }
 

@@ -149,6 +149,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
     AlertDialog dialog = null;
     String profileDpUrl = null;
     boolean isConnected;
+    ArrayList<String> imageLoadedUsers;
 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -205,6 +206,8 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
 
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        imageLoadedUsers = new ArrayList<String>();
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && transition != null) {
@@ -337,7 +340,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
             mhandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    Util.saveImage(GroupChatActivity.this, groupheader.getPhotoUrl(), groupheader.getChatId());
+                    Util.saveProfileImage(GroupChatActivity.this, groupheader.getPhotoUrl(), groupheader.getChatId());
                 }
             });
         }
@@ -979,7 +982,19 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
 
                             String contentphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoContentUrl(), message.getPhotoContentName());
-                            String userphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoUrl(), message.getUid());
+                            String userphotourl;
+                            if(!imageLoadedUsers.contains(message.getUid())) {
+                                userphotourl = Util.saveProfileImage(GroupChatActivity.this, message.getPhotoUrl(), message.getUid());
+                                imageLoadedUsers.add(message.getUid());
+
+                            }
+
+                            else {
+
+                                userphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoUrl(), message.getUid());
+
+                            }
+
                             //// TODO: update the db message with local urls
 
                             if(!m_getfromdb) {
@@ -1007,7 +1022,18 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
                     @Override
                     public void run() {
 
-                        String userphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoUrl(), message.getUid());
+                        String userphotourl;
+                        if(!imageLoadedUsers.contains(message.getUid())) {
+                            userphotourl = Util.saveProfileImage(GroupChatActivity.this, message.getPhotoUrl(), message.getUid());
+                            imageLoadedUsers.add(message.getUid());
+
+                        }
+
+                        else {
+
+                            userphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoUrl(), message.getUid());
+
+                        }
                         //// TODO: update the db message with local urls
 
                         if(!m_getfromdb) {
@@ -1043,8 +1069,6 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
             }
 
         }
-
-
 
 
         @Override

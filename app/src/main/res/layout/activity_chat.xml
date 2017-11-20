@@ -29,6 +29,10 @@
         app:title="@string/app_name"
         >
 
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
         <com.mikhaellopez.circularimageview.CircularImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -39,6 +43,18 @@
             app:civ_border_color="@android:color/white"
             />
 
+            <ImageView
+                android:id="@+id/live_dot"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:background="@drawable/live_dot"
+                android:visibility="gone"
+                android:layout_gravity="bottom|right"
+                />
+
+
+        </FrameLayout>
+
         <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -48,15 +64,7 @@
             android:id="@+id/chat_title"
             android:paddingLeft="16dp"/>
 
-        <ImageView
-            android:id="@+id/live_dot"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:background="@drawable/live_dot"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:visibility="invisible"
-            />
+
 
     </android.support.v7.widget.Toolbar>
 

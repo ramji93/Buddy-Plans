@@ -149,14 +149,88 @@ public class Util {
                 }
             }
 
-
-
 ;;
         }
 
       return path;
 
     }
+
+
+    public static String saveProfileImage(Context context,String downloaduri,String photoContentName) {
+
+
+        String appsegment = "/Buddyplans/pictures";
+
+        // ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        //File directory = cw.getDir("imageDir", Context.MODE_ENABLE_WRITE_AHEAD_LOGGING);
+
+        String dir = Environment.getExternalStorageDirectory().getPath()+appsegment;
+
+        File fdir = new File(dir);
+
+        boolean create_result = false;
+
+        if(!fdir.exists())
+
+            create_result = fdir.mkdirs();
+
+        String path = Environment.getExternalStorageDirectory().getPath()+appsegment+"/"+photoContentName;
+
+
+
+        final File f=new File(path);
+
+        if(f.exists())
+        {
+            f.delete();
+        }
+
+            Bitmap bitmap = null;
+
+            ImageView im = new ImageView(context);
+
+            FileOutputStream fos = null;
+            try {
+                bitmap =  Glide.with(context).load(downloaduri).asBitmap().into(2048,2048).get();
+
+
+                // bitmap = ((BitmapDrawable)im.getDrawable()).getBitmap();
+
+
+                fos = new FileOutputStream(f);
+                // Use the compress method on the BitMap object to write image to the OutputStream
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+
+                MediaStore.Images.Media.insertImage(context.getContentResolver(),path,photoContentName,photoContentName);
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            catch(IOException e) {
+                e.printStackTrace();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally {
+                try {
+                    if(fos!=null)
+                        fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            ;;
+
+
+        return path;
+
+    }
+
 
     public static MessageEntity getEntityfromMessage(Message message,String chatId,Context mcontext)
     {

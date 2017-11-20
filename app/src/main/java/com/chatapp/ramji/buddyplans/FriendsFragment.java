@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.bumptech.glide.Glide;
 import com.chatapp.ramji.buddyplans.ViewModels.SavedChatViewModel;
 import com.chatapp.ramji.buddyplans.db.SavedChatsEntity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -208,6 +209,7 @@ public class FriendsFragment extends Fragment {
         if(!isConnected)
         {
 
+
             if(mFriendsListener!=null) {
                 friendListQuery.removeEventListener(mFriendsListener);
                 mFriendsListener=null;
@@ -289,7 +291,7 @@ public class FriendsFragment extends Fragment {
             final Friend friend = (Friend) dataSnapshot.getValue(Friend.class);
 
             if(friend.isActive()) {
-                FirebaseDatabase.getInstance().getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
+                FirebaseDatabase.getInstance().getReference("Users").child(friend.getUid()).child("profileDP").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         String photourl = dataSnapshot.getValue(String.class);
@@ -327,26 +329,29 @@ public class FriendsFragment extends Fragment {
 
             final Friend friend = (Friend) dataSnapshot.getValue(Friend.class);
 
-            if(friend.isActive()) {
-                FirebaseDatabase.getInstance().getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        String photourl = dataSnapshot.getValue(String.class);
-                        friend.setPhotourl(photourl);
-                        friendListAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-            }
+//            if(friend.isActive()) {
+//                FirebaseDatabase.getInstance().getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(DataSnapshot dataSnapshot) {
+//                        String photourl = dataSnapshot.getValue(String.class);
+//                        friend.setPhotourl(photourl);
+//                        friendListAdapter.notifyDataSetChanged();
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(DatabaseError databaseError) {
+//
+//                    }
+//                });
+//            }
 
            Friend friend1 = friendListAdapter.friendHashMap.get(friend.getUid());
 
-            if (friend1 != null)
-            friendListAdapter.friends.remove(friend1);
+            if (friend1 != null) {
+                friendListAdapter.friends.remove(friend1);
+                friend.setPhotourl(friend1.getPhotourl());
+
+            }
 
             friendListAdapter.friendHashMap.remove(friend.getUid());
 

@@ -367,7 +367,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
             mhandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    Util.saveImage(ChatActivity.this, friend.getPhotourl(), friend.getChatid());
+                    Util.saveProfileImage(ChatActivity.this, friend.getPhotourl(), friend.getChatid());
                 }
             });
         }
@@ -1118,11 +1118,14 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
 
-            if(dataSnapshot.getValue() == true)
-                liveDot.setVisibility(View.VISIBLE);
 
-            else
-                liveDot.setVisibility(View.INVISIBLE);
+            if (dataSnapshot.getValue() != null) {
+                if ((boolean) dataSnapshot.getValue() == true)
+                    liveDot.setVisibility(View.VISIBLE);
+
+                else
+                    liveDot.setVisibility(View.GONE);
+            }
         }
 
         @Override
@@ -1151,7 +1154,6 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
                         public void run() {
 
                             String contentphotourl = Util.saveImage(ChatActivity.this, message.getPhotoContentUrl(), message.getPhotoContentName());
-                            String userphotourl = Util.saveImage(ChatActivity.this, message.getPhotoUrl(), message.getUid());
                             //// TODO: update the db message with local urls
 
                             if(!m_getfromdb) {
@@ -1166,8 +1168,6 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
                             entity.setPhotoContentUrl(contentphotourl);
 
-                            entity.setPhotoUrl(userphotourl);
-
                             chatViewModel.insertMessage(entity);
 
                         }
@@ -1180,7 +1180,6 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
                         @Override
                         public void run() {
 
-                            String userphotourl = Util.saveImage(ChatActivity.this, message.getPhotoUrl(), message.getUid());
                             //// TODO: update the db message with local urls
 
                             if(!m_getfromdb) {
@@ -1192,8 +1191,6 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
                             message.setMessageid(dataSnapshot.getKey());
 
                             MessageEntity entity = Util.getEntityfromMessage(message, chatId, mContext);
-
-                            entity.setPhotoUrl(userphotourl);
 
                             chatViewModel.insertMessage(entity);
 
@@ -1236,7 +1233,6 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
                         public void run() {
 
                             String contentphotourl =  Util.saveImage(ChatActivity.this,message.getPhotoContentUrl(),message.getPhotoContentName());
-                            String userphotourl =  Util.saveImage(ChatActivity.this,message.getPhotoUrl(),message.getUid());
                             //// TODO: update the db message with local urls
 
                             message.setMessageid(dataSnapshot.getKey());
@@ -1244,8 +1240,6 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
                             MessageEntity entity = Util.getEntityfromMessage(message, chatId, mContext);
 
                             entity.setPhotoContentUrl(contentphotourl);
-
-                            entity.setPhotoUrl(userphotourl);
 
                             chatViewModel.insertMessage(entity);
                         }

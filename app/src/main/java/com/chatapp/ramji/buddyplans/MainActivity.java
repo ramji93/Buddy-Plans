@@ -218,6 +218,7 @@ public class MainActivity extends BaseActivity  {
 
                     SigninInitialize();
                     ((MyApplication) getApplication()).userid = mUid;
+                    mFirebaseDatabase.getReference().child("Users").child(mUid).child("online").setValue(true);
 
                     //  userText.setText("welcome " + mUsername);
 
@@ -545,6 +546,10 @@ public class MainActivity extends BaseActivity  {
 
     public void SignoutFuction()
     {
+        mFirebaseDatabase.getReference().child("Users").child(mUid).child("online").setValue(false);
+
+        ((MyApplication) getApplication()).userid = null;
+
         mViewpager.setAdapter(null);
 
         ViewPagerAdapter pagerAdapter =  (ViewPagerAdapter) mViewpager.getAdapter();
@@ -580,6 +585,7 @@ public class MainActivity extends BaseActivity  {
             if (resultCode == RESULT_OK) {
                 // Sign-in succeeded, set up the UI
                 Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show();
+                ((MyApplication) getApplication()).stopActivityTransitionTimer();
             } else if (resultCode == RESULT_CANCELED) {
                 // Sign in was canceled by the user, finish the activity
                 Toast.makeText(this, "Sign in canceled", Toast.LENGTH_SHORT).show();

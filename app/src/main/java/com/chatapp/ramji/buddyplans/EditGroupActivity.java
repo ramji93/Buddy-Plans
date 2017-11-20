@@ -288,11 +288,11 @@ public class EditGroupActivity extends BaseActivity implements GroupCreateFriend
         if(photochanged)
         {
 
-            imageStorageReference.child(groupheader.getGroupKey()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
+//            imageStorageReference.child(groupheader.getGroupKey()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+//                @Override
+//                public void onSuccess(Void aVoid) {
 //TODO : check if photochanged works or not
-                    StorageReference imageRef = imageStorageReference.child(groupheader.getGroupKey());
+                    StorageReference imageRef = imageStorageReference.child(groupheader.getGroupKey()).child("groupphoto");
 
                     imageRef.putFile(ProfilePhoto_new).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
@@ -303,8 +303,6 @@ public class EditGroupActivity extends BaseActivity implements GroupCreateFriend
                         }
                     });
 
-                }
-            });
 
             Message message = new Message(currentUser.getUserName() + " has changed group photo ",null,null,null,null,null);
 

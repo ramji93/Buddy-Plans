@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.HashMap;
@@ -30,6 +31,8 @@ public class GroupListAdapter extends ArrayAdapter<Groupheader> {
 
     HashMap<String,Groupheader> grouphashmap;
 
+    Boolean isConnected;
+
     public GroupListAdapter(Context context, List<Groupheader> objects) {
         super(context, R.layout.group_list_item , objects);
 
@@ -37,6 +40,8 @@ public class GroupListAdapter extends ArrayAdapter<Groupheader> {
         groups = objects;
 
         grouphashmap = new HashMap<String, Groupheader>();
+
+        isConnected = Util.checkConnection(context);
     }
 
     @Override
@@ -85,7 +90,7 @@ public class GroupListAdapter extends ArrayAdapter<Groupheader> {
 
         if(groups.get(position).getPhotoUrl()!=null)
 
-        Glide.with(mcontext).load(groups.get(position).getPhotoUrl()).asBitmap().into(groupPhotoView);
+        Glide.with(mcontext).load(groups.get(position).getPhotoUrl()).asBitmap().diskCacheStrategy(isConnected ? DiskCacheStrategy.RESULT : DiskCacheStrategy.NONE).into(groupPhotoView);
 
         TextView lastmessage = (TextView) groupItemView.findViewById(R.id.lastmessage);
 
