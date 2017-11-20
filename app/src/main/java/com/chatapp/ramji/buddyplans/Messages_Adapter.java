@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.chatapp.ramji.buddyplans.db.MessageEntity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -52,6 +53,7 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
     FirebaseDatabase mFirebaseDatabase;
     private ValueEventListener FriendCheckListener;
     private String Uid;
+//    ArrayList<String> imageLoadedUsers;
 
     private final int OTHERS = 1;
     private final int MINE = 2;
@@ -72,6 +74,7 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
         User currentuser = gson.fromJson(sharedPreferences.getString("User", ""), User.class);
         Uid = currentuser.getUid();
+//        imageLoadedUsers = new ArrayList<String>();
 
         FriendCheckListener  = new ValueEventListener() {
         @Override
@@ -80,10 +83,13 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
 
             if(authorfriend != null)
             {
+                if(authorfriend.isActive()) {
 
-                Intent intent = new Intent(mContext,ChatActivity.class);
-                intent.putExtra("Friend",authorfriend);
-                mContext.startActivity(intent);
+                    Intent intent = new Intent(mContext, ChatActivity.class);
+                    intent.putExtra("Friend", authorfriend);
+                    mContext.startActivity(intent);
+
+                }
 
             }
 
@@ -138,8 +144,17 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
 
             holder.author.setText(messages.get(position).getUserName());
 
-            if (messages.get(position).getPhotoUrl() != null)
-                Glide.with(mContext).load(messages.get(position).getPhotoUrl()).into(holder.userPhoto);
+            if (messages.get(position).getPhotoUrl() != null) {
+
+//                if(!imageLoadedUsers.contains(messages.get(position).getUid())) {
+//                    Glide.with(mContext).load(messages.get(position).getPhotoUrl()).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.userPhoto);
+//                    imageLoadedUsers.add(messages.get(position).getUid());
+//                }
+//                else
+//                    Glide.with(mContext).load(messages.get(position).getPhotoUrl()).into(holder.userPhoto);
+                Glide.with(mContext).load(messages.get(position).getPhotoUrl()).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.userPhoto);
+
+            }
         }
 
 

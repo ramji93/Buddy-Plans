@@ -25,6 +25,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -77,6 +78,7 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 import org.w3c.dom.Text;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -150,6 +152,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
     String profileDpUrl = null;
     boolean isConnected;
     ArrayList<String> imageLoadedUsers;
+    Boolean imageLoadedIntoMediaStore = false;
 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -230,11 +233,28 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
             public void onClick(View v) {
 //                ZoomAnimation.zoom(v, groupLogo.getDrawable(), GroupChatActivity.this, false);
 
-                String path = Environment.getExternalStorageDirectory().getPath()+"/Buddyplans/pictures"+"/"+groupheader.getChatId();
+                final String path = Environment.getExternalStorageDirectory().getPath()+"/Buddyplans/pictures"+"/"+groupheader.getChatId();
 
                 File f=new File(path);
 
                 if(f.exists()) {
+
+                      if(!imageLoadedIntoMediaStore) {
+
+                          imageLoadedIntoMediaStore = true;
+
+                          mhandler.post(new Runnable() {
+                              @Override
+                              public void run() {
+                                  try {
+                                      MediaStore.Images.Media.insertImage(GroupChatActivity.this.getContentResolver(), path, groupheader.getChatId(), groupheader.getChatId());
+                                  } catch (FileNotFoundException e) {
+                                      e.printStackTrace();
+                                  }
+                              }
+                          });
+
+                      }
 
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_VIEW);

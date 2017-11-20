@@ -202,7 +202,7 @@ public class Util {
                 // Use the compress method on the BitMap object to write image to the OutputStream
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
 
-                MediaStore.Images.Media.insertImage(context.getContentResolver(),path,photoContentName,photoContentName);
+                //MediaStore.Images.Media.insertImage(context.getContentResolver(),path,photoContentName,photoContentName);
             }
             catch (InterruptedException e) {
                 e.printStackTrace();

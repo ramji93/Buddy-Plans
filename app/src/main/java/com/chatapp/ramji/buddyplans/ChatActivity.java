@@ -21,6 +21,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -74,6 +75,7 @@ import com.google.gson.Gson;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -147,6 +149,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
     AlertDialog dialog = null;
     int blocked;
     boolean isConnected;
+    Boolean imageLoadedIntoMediaStore = false;
 
 
     @Override
@@ -201,11 +204,28 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
             @Override
             public void onClick(View v) {
 //                                                ZoomAnimation.zoom(v, circularImage.getDrawable(), ChatActivity.this, false);
-                String path = Environment.getExternalStorageDirectory().getPath()+"/Buddyplans/pictures"+"/"+friend.getChatid();
+                final String path = Environment.getExternalStorageDirectory().getPath()+"/Buddyplans/pictures"+"/"+friend.getChatid();
 
                 File f=new File(path);
 
                 if(f.exists()) {
+
+                    if(!imageLoadedIntoMediaStore) {
+
+                        imageLoadedIntoMediaStore = true;
+
+                        mhandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    MediaStore.Images.Media.insertImage(ChatActivity.this.getContentResolver(), path, friend.getChatid(), friend.getChatid());
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+
+                    }
 
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_VIEW);
