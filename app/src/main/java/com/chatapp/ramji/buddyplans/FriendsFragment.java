@@ -222,6 +222,9 @@ public class FriendsFragment extends Fragment {
                 public void onChanged(@Nullable List<SavedChatsEntity> savedChatsEntities) {
 
                     if(savedChatsEntities.size()>0) {
+
+                        friendListAdapter.clear();
+
                         for (SavedChatsEntity savedChatsEntity : savedChatsEntities) {
                             Friend friend = new Friend(savedChatsEntity.chatName,savedChatsEntity.chatProfileImageurl,true,savedChatsEntity.friendUid);
                             friend.setChatid(savedChatsEntity.chatid);
@@ -329,21 +332,7 @@ public class FriendsFragment extends Fragment {
 
             final Friend friend = (Friend) dataSnapshot.getValue(Friend.class);
 
-//            if(friend.isActive()) {
-//                FirebaseDatabase.getInstance().getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(DataSnapshot dataSnapshot) {
-//                        String photourl = dataSnapshot.getValue(String.class);
-//                        friend.setPhotourl(photourl);
-//                        friendListAdapter.notifyDataSetChanged();
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(DatabaseError databaseError) {
-//
-//                    }
-//                });
-//            }
+
 
            Friend friend1 = friendListAdapter.friendHashMap.get(friend.getUid());
 

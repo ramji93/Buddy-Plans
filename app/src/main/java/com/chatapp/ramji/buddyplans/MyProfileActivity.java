@@ -85,7 +85,9 @@ public class MyProfileActivity extends BaseActivity {
         user = gson.fromJson(sharedPreferences.getString("User",""),User.class);
 
         String profile_dp_uri = sharedPreferences.getString("profiledp",user.getProfileDP());
-        Glide.with(this).load(Uri.parse(profile_dp_uri)).into(profilePhotoView);
+        Glide.with(this).load(profile_dp_uri).into(profilePhotoView);
+        profilePhotoView.setActivated(true);
+
 
         if(user.getFb_id()!=null)
         {
@@ -166,7 +168,7 @@ public class MyProfileActivity extends BaseActivity {
 
     @Override
     protected void onStart() {
-        profilePhotoView.setActivated(true);
+
         super.onStart();
     }
 

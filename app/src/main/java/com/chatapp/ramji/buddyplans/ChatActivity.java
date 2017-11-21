@@ -387,7 +387,6 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
         if(isConnected && uri.getScheme() != null) {
 
-
             if (uri.getScheme().equalsIgnoreCase("https") || uri.getScheme().equalsIgnoreCase("http")) {
 
                 mhandler.post(new Runnable() {

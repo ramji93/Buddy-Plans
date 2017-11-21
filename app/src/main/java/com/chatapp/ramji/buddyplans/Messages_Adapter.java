@@ -166,7 +166,7 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
 //                }
 //                else
 //                    Glide.with(mContext).load(messages.get(position).getPhotoUrl()).into(holder.userPhoto);
-                Glide.with(mContext).load(messages.get(position).getPhotoUrl()).asBitmap().into(holder.userPhoto);
+                Glide.with(mContext).load(messages.get(position).getPhotoUrl()).into(holder.userPhoto);
 
             }
         }

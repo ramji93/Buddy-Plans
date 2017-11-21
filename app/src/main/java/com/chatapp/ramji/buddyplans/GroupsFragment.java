@@ -197,6 +197,9 @@ public class GroupsFragment extends Fragment {
                 public void onChanged(@Nullable List<SavedChatsEntity> savedChatsEntities) {
 
                     if(savedChatsEntities.size()>0) {
+
+                        groupListAdapter.clear();
+
                         for (SavedChatsEntity savedChatsEntity : savedChatsEntities) {
                             Groupheader group = new Groupheader(savedChatsEntity.chatName, savedChatsEntity.chatid, savedChatsEntity.chatProfileImageurl);
                             group.setGroupKey(savedChatsEntity.groupKey);

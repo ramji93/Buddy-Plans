@@ -369,26 +369,7 @@ public class MainActivity extends BaseActivity  {
         String facebook_id = null;
 
         currentuser = null;
-//        List<String> providerId = null;
-//
-//        AccessToken.getCurrentAccessToken()
-//
-//        providerId = user.getProviders();
-//
-//        for(String str: providerId)
-//
-//        {
-//            Log.d("providerid is ", str);
-//        }
 
-//        user.getToken(false).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
-//            @Override
-//            public void onSuccess(GetTokenResult getTokenResult) {
-//
-//               Log.d("Token is ",getTokenResult.getToken());
-//
-//            }
-//        });
 
         if(AccessToken.getCurrentAccessToken()!=null) {
 
@@ -429,6 +410,7 @@ public class MainActivity extends BaseActivity  {
             Glide.with(this).load(storedPhotoUrl).into(imgProfile);
 
         }
+
 
 
         txtName.setText(mUsername);
@@ -506,8 +488,9 @@ public class MainActivity extends BaseActivity  {
                             @Override
                             public void run() {
 
-                               String url = Util.saveImage(mContext,currentUser.getProfileDP(),mUid);
+                               String url = Util.saveProfileImage(mContext,currentUser.getProfileDP(),mUid);
                                 editor.putString("profiledp",url);
+                                editor.commit();
 
                             }
                         });

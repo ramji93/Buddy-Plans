@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.common.images.ImageManager;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Date;
@@ -28,6 +30,22 @@ public class MyApplication extends Application {
         super.attachBaseContext(base);
         MultiDex.install(this);
     }
+
+    @Override
+    public void onCreate() {
+
+        Glide.get(getApplicationContext()).clearMemory();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Glide.get(getApplicationContext()).clearDiskCache();
+            }
+        }).start();
+        super.onCreate();
+
+
+    }
+
 
     public void startActivityTransitionTimer() {
 //        this.mActivityTransitionTimer = new Timer();
