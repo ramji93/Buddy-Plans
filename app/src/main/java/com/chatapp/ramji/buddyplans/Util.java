@@ -83,7 +83,7 @@ public class Util {
     public static String saveImage(Context context,String downloaduri,String photoContentName) {
 
 
-        String appsegment = "/Buddyplans/pictures";
+        String appsegment = context.getString(R.string.appsegment);
 
        // ContextWrapper cw = new ContextWrapper(getApplicationContext());
         //File directory = cw.getDir("imageDir", Context.MODE_ENABLE_WRITE_AHEAD_LOGGING);
@@ -160,7 +160,7 @@ public class Util {
     public static String saveProfileImage(Context context,String downloaduri,String photoContentName) {
 
 
-        String appsegment = "/Buddyplans/pictures";
+        String appsegment = context.getString(R.string.appsegment);
 
         // ContextWrapper cw = new ContextWrapper(getApplicationContext());
         //File directory = cw.getDir("imageDir", Context.MODE_ENABLE_WRITE_AHEAD_LOGGING);

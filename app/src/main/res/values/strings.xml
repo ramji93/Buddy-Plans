@@ -52,4 +52,5 @@
     <string name="no_friends">No friends available to select from</string>
     <string name="invite_others">Invite Others</string>
     <string name="invite_message">Hey. Check out this cool new app \'Buddy Plans\' in playstore. \n</string>
+    <string name="appsegment">/Buddyplans/pictures</string>
 </resources>

@@ -54,6 +54,7 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
     private ValueEventListener FriendCheckListener;
     private String Uid;
 //    ArrayList<String> imageLoadedUsers;
+    private int ClickPosition;
 
     private final int OTHERS = 1;
     private final int MINE = 2;
@@ -86,6 +87,19 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
                 if(authorfriend.isActive()) {
 
                     Intent intent = new Intent(mContext, ChatActivity.class);
+
+                    if(authorfriend.getChatid()!=null)
+                    {
+                      String path =  Environment.getExternalStorageDirectory().getPath()+mContext.getString(R.string.appsegment)+"/"+authorfriend.getChatid();
+                      File f = new File(path);
+                      if(f.exists())
+                          authorfriend.setPhotourl(path);
+                      else
+                          authorfriend.setPhotourl(messages.get(ClickPosition).getPhotoUrl());
+                    }
+                    else
+                        authorfriend.setPhotourl(messages.get(ClickPosition).getPhotoUrl());
+
                     intent.putExtra("Friend", authorfriend);
                     mContext.startActivity(intent);
 
@@ -152,7 +166,7 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
 //                }
 //                else
 //                    Glide.with(mContext).load(messages.get(position).getPhotoUrl()).into(holder.userPhoto);
-                Glide.with(mContext).load(messages.get(position).getPhotoUrl()).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.userPhoto);
+                Glide.with(mContext).load(messages.get(position).getPhotoUrl()).asBitmap().into(holder.userPhoto);
 
             }
         }
@@ -267,6 +281,8 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
                     String author_uid = messages.get(position).getUid();
 
                     mDatabaseReference = mFirebaseDatabase.getReference("Friends").child(Uid).child(author_uid);
+
+                    ClickPosition = position;
 
                     mDatabaseReference.addListenerForSingleValueEvent(FriendCheckListener);
 

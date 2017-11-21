@@ -76,6 +76,7 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -382,14 +383,21 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
         isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
 
-        if(isConnected) {
+        Uri uri = Uri.parse(friend.getPhotourl());
 
-            mhandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Util.saveProfileImage(ChatActivity.this, friend.getPhotourl(), friend.getChatid());
-                }
-            });
+        if(isConnected && uri.getScheme() != null) {
+
+
+            if (uri.getScheme().equalsIgnoreCase("https") || uri.getScheme().equalsIgnoreCase("http")) {
+
+                mhandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Util.saveProfileImage(ChatActivity.this, friend.getPhotourl(), friend.getChatid());
+                    }
+                });
+            }
+
         }
 
     }
