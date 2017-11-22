@@ -32,4 +32,9 @@ public class BaseActivity extends AppCompatActivity {
         ((MyApplication)this.getApplication()).startActivityTransitionTimer();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        ((MyApplication)this.getApplication()).startActivityTransitionTimer();
+    }
 }

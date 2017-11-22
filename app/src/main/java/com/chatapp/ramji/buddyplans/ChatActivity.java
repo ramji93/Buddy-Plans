@@ -353,6 +353,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
         }
 
 
+
         firebaseDatabase.getReference("Friends").child(friendUid).child(myUid).child("active").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -1099,6 +1100,10 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
         }
 
+        liveStatusListener = new LiveStatusListener();
+        firebaseDatabase.getReference().child("Users").child(friendUid).child("online").addValueEventListener(liveStatusListener);
+
+
     }
 
 
@@ -1109,6 +1114,12 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
         if(chatId!=null && chatMessageListener!=null) {
             chatQuery.removeEventListener(chatMessageListener);
             chatMessageListener = null;
+
+        }
+
+        if(liveStatusListener!=null) {
+            firebaseDatabase.getReference().child("Users").child(friendUid).child("online").removeEventListener(liveStatusListener);
+            liveStatusListener = null;
 
         }
 
@@ -1124,19 +1135,14 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
     @Override
     public void onResume() {
         super.onResume();
-        liveStatusListener = new LiveStatusListener();
-        firebaseDatabase.getReference().child("Users").child(friendUid).child("online").addValueEventListener(liveStatusListener);
+
 
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if(liveStatusListener!=null) {
-            firebaseDatabase.getReference().child("Users").child(friendUid).child("online").removeEventListener(liveStatusListener);
-            liveStatusListener = null;
 
-        }
     }
 
 
