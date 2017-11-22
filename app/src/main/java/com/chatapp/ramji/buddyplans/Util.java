@@ -79,6 +79,16 @@ public class Util {
 
     }
 
+    public static String getUserPath(Context context,String uid) {
+
+        String appsegment = context.getString(R.string.appsegment);
+
+        String path = Environment.getExternalStorageDirectory().getPath()+appsegment+"/"+uid;
+
+        return path;
+
+    }
+
 
     public static String saveImage(Context context,String downloaduri,String photoContentName) {
 
@@ -128,6 +138,8 @@ public class Util {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
 
                 MediaStore.Images.Media.insertImage(context.getContentResolver(),path,photoContentName,photoContentName);
+
+
             }
                 catch (InterruptedException e) {
                     e.printStackTrace();

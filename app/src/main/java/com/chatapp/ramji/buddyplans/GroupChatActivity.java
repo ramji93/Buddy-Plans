@@ -69,6 +69,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -993,6 +994,30 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
             if(message.getTimeStamp()!=null ) {
 
+                if(!imageLoadedUsers.contains(message.getUid()) && (message.getUid()!=null)) {
+                    FirebaseDatabase.getInstance().getReference().child("Users").child(message.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(final DataSnapshot dataSnapshot) {
+                         new Thread(new Runnable() {
+                             @Override
+                             public void run() {
+                                 Util.saveProfileImage(GroupChatActivity.this,dataSnapshot.getValue(String.class), message.getUid());
+                                 imageLoadedUsers.add(message.getUid());
+                             }
+                         }).start();
+
+
+//                            messages_adapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+
                 if (message.getPhotoContentUrl() != null)
 
                     mhandler.post(new Runnable() {
@@ -1003,17 +1028,18 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
                             String contentphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoContentUrl(), message.getPhotoContentName());
                             String userphotourl;
-                            if(!imageLoadedUsers.contains(message.getUid())) {
-                                userphotourl = Util.saveProfileImage(GroupChatActivity.this, message.getPhotoUrl(), message.getUid());
-                                imageLoadedUsers.add(message.getUid());
+//                            if(!imageLoadedUsers.contains(message.getUid())) {
 
-                            }
-
-                            else {
-
-                                userphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoUrl(), message.getUid());
-
-                            }
+                                userphotourl = Util.getUserPath(GroupChatActivity.this,message.getUid());
+//                                imageLoadedUsers.add(message.getUid());
+//
+//                            }
+//
+//                            else {
+//
+//                                userphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoUrl(), message.getUid());
+//
+//                            }
 
                             //// TODO: update the db message with local urls
 
@@ -1043,17 +1069,17 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
                     public void run() {
 
                         String userphotourl;
-                        if(!imageLoadedUsers.contains(message.getUid())) {
-                            userphotourl = Util.saveProfileImage(GroupChatActivity.this, message.getPhotoUrl(), message.getUid());
-                            imageLoadedUsers.add(message.getUid());
-
-                        }
-
-                        else {
-
-                            userphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoUrl(), message.getUid());
-
-                        }
+//                        if(!imageLoadedUsers.contains(message.getUid())) {
+                            userphotourl = Util.getUserPath(GroupChatActivity.this,message.getUid());
+//                            imageLoadedUsers.add(message.getUid());
+//
+//                        }
+//
+//                        else {
+//
+//                            userphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoUrl(), message.getUid());
+//
+//                        }
                         //// TODO: update the db message with local urls
 
                         if(!m_getfromdb) {
@@ -1105,7 +1131,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
                         public void run() {
 
                           String contentphotourl =  Util.saveImage(GroupChatActivity.this,message.getPhotoContentUrl(),message.getPhotoContentName());
-                          String userphotourl =  Util.saveImage(GroupChatActivity.this,message.getPhotoUrl(),message.getUid());
+                          String userphotourl =  Util.getUserPath(GroupChatActivity.this,message.getUid());
                             //// TODO: update the db message with local urls
 
 
