@@ -17,6 +17,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -188,7 +189,10 @@ public class FriendsFragment extends Fragment {
                 {
                     if(shareIntent!=null)
                     getActivity().finish();
-                    startActivity(intent);
+//                    startActivity(intent);
+                    TaskStackBuilder.create(getContext())
+                            .addNextIntentWithParentStack(intent)
+                            .startActivities();
                 }
 
             }

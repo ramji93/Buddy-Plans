@@ -503,6 +503,14 @@ public class MainActivity extends BaseActivity  {
 
                 }
 
+                String token = FirebaseInstanceId.getInstance().getToken();
+
+                if(token!= null)
+                {
+
+                    mDatabaseReference.child("instanceId").setValue(token);
+                }
+
             }
 
             @Override
@@ -512,16 +520,6 @@ public class MainActivity extends BaseActivity  {
         };
 
         mDatabaseReference.addListenerForSingleValueEvent(UserCheckListener);
-
-        String token = FirebaseInstanceId.getInstance().getToken();
-
-        if(token!= null)
-        {
-
-            mDatabaseReference.child("instanceId").setValue(token);
-        }
-
-
 
 
     }

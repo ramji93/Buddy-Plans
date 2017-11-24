@@ -995,6 +995,8 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
             if(message.getTimeStamp()!=null ) {
 
                 if(!imageLoadedUsers.contains(message.getUid()) && (message.getUid()!=null)) {
+
+                    imageLoadedUsers.add(message.getUid());
                     FirebaseDatabase.getInstance().getReference().child("Users").child(message.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(final DataSnapshot dataSnapshot) {
@@ -1002,10 +1004,9 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
                              @Override
                              public void run() {
                                  Util.saveProfileImage(GroupChatActivity.this,dataSnapshot.getValue(String.class), message.getUid());
-                                 imageLoadedUsers.add(message.getUid());
+
                              }
                          }).start();
-
 
 //                            messages_adapter.notifyDataSetChanged();
                         }

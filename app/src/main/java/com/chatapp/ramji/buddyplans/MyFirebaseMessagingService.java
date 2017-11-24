@@ -95,6 +95,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                       .setContentText(message)
                       .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                       .setSmallIcon(R.drawable.ic_notification_icon)
+                      .setColor(getColor(R.color.colorPrimary))
                       .setAutoCancel(true)
                       .addAction(R.drawable.add_reminder,"Save Reminder",reminderintent);
 
