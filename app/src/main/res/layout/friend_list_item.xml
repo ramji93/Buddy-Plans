@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="Ramji : Can we meet for lunch ?"
-            android:maxLength="36"
+            android:maxLength="45"
             android:id="@+id/lastmessage"
             android:textSize="12sp"
             android:textStyle="italic"
