@@ -356,14 +356,18 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
         isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
 
-        if(isConnected) {
+        Uri uri = Uri.parse(groupheader.getPhotoUrl());
+        if(isConnected && uri.getScheme() != null) {
 
-            mhandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Util.saveProfileImage(GroupChatActivity.this, groupheader.getPhotoUrl(), groupheader.getChatId());
-                }
-            });
+            if (uri.getScheme().equalsIgnoreCase("https") || uri.getScheme().equalsIgnoreCase("http")) {
+
+                mhandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Util.saveProfileImage(GroupChatActivity.this, groupheader.getPhotoUrl(), groupheader.getChatId());
+                    }
+                });
+            }
         }
 
     }
@@ -423,6 +427,9 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
                 Place place = PlacePicker.getPlace(this, data);
@@ -631,8 +638,21 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
        }
 
        else {
-           chatViewModel.setFavouriteChat(groupChatId);
-           isfavourite = false;
+           if(messages_adapter.messages.size()>0) {
+               chatViewModel.setFavouriteChat(groupChatId);
+               isfavourite = false;
+           }
+           else {
+               AlertDialog alertDialog = new AlertDialog.Builder(GroupChatActivity.this).create();
+               alertDialog.setMessage(getString(R.string.fav_alert));
+               alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
+                       new DialogInterface.OnClickListener() {
+                           public void onClick(DialogInterface dialog, int which) {
+                               dialog.dismiss();
+                           }
+                       });
+               alertDialog.show();
+           }
        }
 
         chatViewModel.refreshchat(groupChatId);

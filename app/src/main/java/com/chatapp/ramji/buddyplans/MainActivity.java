@@ -125,7 +125,8 @@ public class MainActivity extends BaseActivity  {
 
     int tab_index = 0;
     final int WRITE_REQUEST = 1;
-    final int CALENDAR_REQUEST = 1;
+    final int CALENDAR_REQUEST = 2;
+    final int CAMERA_REQUEST = 3;
 
     FirebaseUser user;
     HandlerThread handlerThread;
@@ -256,6 +257,13 @@ public class MainActivity extends BaseActivity  {
                 != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_CALENDAR}, CALENDAR_REQUEST);
+
+        }
+
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, CAMERA_REQUEST);
 
         }
 

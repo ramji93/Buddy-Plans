@@ -128,6 +128,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
     EmojIconActions emojIcon;
     TedBottomPicker bottomSheetDialogFragment;
     final int WRITE_REQUEST = 1;
+    final int CAMERA_REQUEST = 3;
     Context mContext = this;
     final int LOCATION_REQUEST = 2;
     final int PLACE_PICKER_REQUEST = 100;
@@ -678,8 +679,21 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
         }
 
         else {
-            chatViewModel.setFavouriteChat(chatId);
-            isfavourite = true;
+            if(messages_adapter.messages.size()>0) {
+                chatViewModel.setFavouriteChat(chatId);
+                isfavourite = true;
+            }
+            else {
+                AlertDialog alertDialog = new AlertDialog.Builder(ChatActivity.this).create();
+                alertDialog.setMessage(getString(R.string.fav_alert));
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.show();
+            }
         }
 
         chatViewModel.refreshchat(chatId);
@@ -824,6 +838,14 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
             return;
 
         }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CAMERA},CAMERA_REQUEST);
+
+            return;
+
+        }
 
         boolean addListener = false;
 
@@ -846,21 +868,14 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
             bottomSheetDialogFragment = new TedBottomPicker.Builder(this)
                     .setOnImageSelectedListener(new TedBottomPicker.OnImageSelectedListener() {
 
-                        private boolean stop = false;
-
-                        public boolean isStop() {
-                            return stop;
-                        }
-
-                        public void setStop(boolean stop) {
-                            this.stop = stop;
-                        }
-
                         @Override
                         public void onImageSelected(final Uri uri) {
 
                             uploadImage(uri);
                         }
+
+
+
                     })
                     .create();
 
@@ -1039,6 +1054,9 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
                 Place place = PlacePicker.getPlace(this,data);
