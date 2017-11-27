@@ -34,6 +34,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
 
+
         Glide.get(getApplicationContext()).clearMemory();
         new Thread(new Runnable() {
             @Override

@@ -4,11 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,6 +23,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.chatapp.ramji.buddyplans.db.MessageEntity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,6 +38,7 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.concurrent.ExecutionException;
 
 import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
@@ -60,9 +67,7 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
     private final int MINE = 2;
     private final int SYSTEM = 3;
 
-
-
-    public Messages_Adapter(Context context,String uid)
+    public Messages_Adapter(Context context, String uid)
     {
 
         mContext = context;
@@ -76,6 +81,8 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
         User currentuser = gson.fromJson(sharedPreferences.getString("User", ""), User.class);
         Uid = currentuser.getUid();
 //        imageLoadedUsers = new ArrayList<String>();
+
+
 
         FriendCheckListener  = new ValueEventListener() {
         @Override
@@ -166,7 +173,12 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
 //                }
 //                else
 //                    Glide.with(mContext).load(messages.get(position).getPhotoUrl()).into(holder.userPhoto);
-                Glide.with(mContext).load(messages.get(position).getPhotoUrl()).into(holder.userPhoto);
+
+
+
+
+                Glide.with(mContext).load("file://"+messages.get(position).getPhotoUrl()).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .into(holder.userPhoto);
 
             }
         }
@@ -254,9 +266,6 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
                 holder.mapView.setBackground( new BitmapDrawable(mContext.getResources(), bitmap));
             }
         }.execute(location);
-
-
-
 
 
              holder.mapView.setOnClickListener(new View.OnClickListener() {

@@ -194,10 +194,15 @@ public class UserActivity extends BaseActivity {
 
         //1. add new object in friends/user id/
 
+        DatabaseReference ChatReference = firebaseDatabase.getReference().child("Messages");
+
+        String chatId = ChatReference.push().getKey();
 
         friendDatabaseReference1 = firebaseDatabase.getReference().child("Friends").child(currentUser.getUid()).child(user.getUid());
 
         Friend friend1 = new Friend(user.getUserName(),user.getProfileDP(),true,user.getUid());
+
+        friend1.setChatid(chatId);
 
         friendDatabaseReference1.setValue(friend1);
 
@@ -207,6 +212,8 @@ public class UserActivity extends BaseActivity {
            friendDatabaseReference2 = firebaseDatabase.getReference().child("Friends").child(user.getUid()).child(currentUser.getUid());
 
            Friend friend2 = new Friend(currentUser.getUserName(),currentUser.getProfileDP(),true,currentUser.getUid());
+
+           friend2.setChatid(chatId);
 
            friendDatabaseReference2.setValue(friend2);
 

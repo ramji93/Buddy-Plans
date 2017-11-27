@@ -366,7 +366,6 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
             });
         }
 
-
     }
 
 

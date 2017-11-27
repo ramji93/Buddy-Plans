@@ -155,8 +155,8 @@ public class MainActivity extends BaseActivity  {
         }
         friendsFragment = new FriendsFragment();
         groupsFragment = new GroupsFragment();
-        adapter.addFragment(groupsFragment, "BUDDIES GROUP");
         adapter.addFragment(friendsFragment, "FRIENDS");
+        adapter.addFragment(groupsFragment, "BUDDIES GROUP");
 
         viewPager.setAdapter(adapter);
 
@@ -217,8 +217,7 @@ public class MainActivity extends BaseActivity  {
                     mUid = user.getUid();
 
                     SigninInitialize();
-                    ((MyApplication) getApplication()).userid = mUid;
-                    mFirebaseDatabase.getReference().child("Users").child(mUid).child("online").setValue(true);
+
 
                     //  userText.setText("welcome " + mUsername);
 
@@ -426,9 +425,10 @@ public class MainActivity extends BaseActivity  {
             public void onTabSelected(TabLayout.Tab tab) {
                 if(tab.getPosition() == 0)
                 {
+
                     if(shareIntent==null) {
-                        searchMenuItem.setVisible(false);
-                        addGroupMenuItem.setVisible(true);
+                        searchMenuItem.setVisible(true);
+                        addGroupMenuItem.setVisible(false);
                     }
                     tab_index = tab.getPosition();
 
@@ -437,8 +437,8 @@ public class MainActivity extends BaseActivity  {
                 else
                 {
                     if(shareIntent==null) {
-                        searchMenuItem.setVisible(true);
-                        addGroupMenuItem.setVisible(false);
+                        searchMenuItem.setVisible(false);
+                        addGroupMenuItem.setVisible(true);
                     }
                     tab_index = tab.getPosition();
 
@@ -502,6 +502,9 @@ public class MainActivity extends BaseActivity  {
                     }
 
                 }
+
+                ((MyApplication) getApplication()).userid = mUid;
+                mDatabaseReference.child("online").setValue(true);
 
                 String token = FirebaseInstanceId.getInstance().getToken();
 
@@ -581,19 +584,7 @@ public class MainActivity extends BaseActivity  {
         if(currentuser!=null)
         refreshProfileImage();
 
-//        if(shareIntent!=null)
-//        {
-//           menu.clear();
-//        }
 
-//        TabLayout.Tab tab = mainTabLayout.getTabAt();
-//        tab.select();
-
-//        mAuth.addAuthStateListener(mAuthListener);
-//        int size = navigationView.getMenu().size();
-//        for (int i = 0; i < size; i++) {
-//            navigationView.getMenu().getItem(i).setChecked(false);
-//        }
 
 
     }
