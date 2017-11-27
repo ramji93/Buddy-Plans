@@ -12,7 +12,7 @@
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">Contacts permissions are needed for providing email
         completions.</string>
-    <string name="sign_out">Sign Out</string>
+    <string name="sign_out">Log Out</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="first_fragment">Groups fragment</string>
