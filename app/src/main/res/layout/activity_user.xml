@@ -107,7 +107,7 @@
                     android:id="@+id/mail_group"
                     >
 
-                <ImageButton
+                <ImageView
                     android:layout_marginLeft="16dp"
                     android:layout_width="32dp"
                     android:layout_height="32dp"

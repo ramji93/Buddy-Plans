@@ -26,13 +26,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.SearchView;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -72,6 +72,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -124,15 +125,17 @@ public class MainActivity extends BaseActivity  {
     private String mUid = null;
 
     int tab_index = 0;
-    final int WRITE_REQUEST = 1;
-    final int CALENDAR_REQUEST = 2;
-    final int CAMERA_REQUEST = 3;
+//    final int WRITE_REQUEST = 1;
+//    final int CALENDAR_REQUEST = 2;
+//    final int CAMERA_REQUEST = 3;
+      final int PERMISSION_REQUEST = 4;
+
 
     FirebaseUser user;
     HandlerThread handlerThread;
     Handler mhandler;
     Intent shareIntent;
-    Menu menu;
+    SearchView searchView;
 
     public static int navItemIndex = 0;
 
@@ -212,8 +215,8 @@ public class MainActivity extends BaseActivity  {
 
 
                 if (user != null) {
-                    Log.d("main activity","user id is "+user.getUid());
-                    Log.d("main activity","user photo url is "+user.getPhotoUrl());
+//                    Log.d("main activity","user id is "+user.getUid());
+//                    Log.d("main activity","user photo url is "+user.getPhotoUrl());
                     mUsername = user.getDisplayName();
                     mUid = user.getUid();
 
@@ -246,26 +249,31 @@ public class MainActivity extends BaseActivity  {
             navigationView.getMenu().getItem(i).setChecked(false);
         }
 
-        if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_REQUEST);
+        if(ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_CALENDAR)
+                != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED
+                )
+        {
+            ArrayList<String> permissionStrings = new ArrayList<String>();
+
+            if(ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED)
+                permissionStrings.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+            if(ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.WRITE_CALENDAR)
+                    != PackageManager.PERMISSION_GRANTED)
+                permissionStrings.add(android.Manifest.permission.WRITE_CALENDAR);
+
+            if(ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.CAMERA)
+                    != PackageManager.PERMISSION_GRANTED)
+                permissionStrings.add(android.Manifest.permission.CAMERA);
+
+            ActivityCompat.requestPermissions(this, (permissionStrings.toArray(new String[permissionStrings.size()])), PERMISSION_REQUEST);
 
         }
 
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_CALENDAR)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_CALENDAR}, CALENDAR_REQUEST);
-
-        }
-
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, CAMERA_REQUEST);
-
-        }
 
     }
 
@@ -625,8 +633,10 @@ public class MainActivity extends BaseActivity  {
 
             searchMenuItem = menu.findItem(R.id.search);
             addGroupMenuItem = menu.findItem(R.id.add_group);
+            searchMenuItem.setVisible(true);
+            addGroupMenuItem.setVisible(false);
 
-            SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+            searchView = (SearchView) menu.findItem(R.id.search).getActionView();
             // Assumes current activity is the searchable activity
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
             searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
@@ -672,7 +682,6 @@ public class MainActivity extends BaseActivity  {
                 appintent.putExtra(Intent.EXTRA_TEXT,message + uribuilder.build().toString());
                 startActivity(Intent.createChooser(appintent,"Select an app to send invite"));
                 return true;
-
 
             case R.id.add_group:
 
@@ -735,10 +744,17 @@ public class MainActivity extends BaseActivity  {
     }
 
 
-
-
-
-
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        new MaterialShowcaseView.Builder(this)
+                .setTarget(searchView)
+                .setDismissText("GOT IT")
+                .setContentText("Click on the search icon to search for your friends and add them to your friend list")
+                .setDelay(1000) // optional but starting animations immediately in onCreate can make them choppy
+                .singleUse("showcase_1") // provide a unique ID used to ensure it is only shown once
+                .show();
+    }
 }
 
 

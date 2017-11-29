@@ -247,8 +247,10 @@ public class MyProfileActivity extends BaseActivity {
         try {
             getPackageManager()
                     .getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
+            String url = "https://www.facebook.com/"+user.getFb_id();
             intent = new  Intent(Intent.ACTION_VIEW,
-                    Uri.parse("fb://profile/"+user.getFb_id())); //Trys to make intent with FB's URI
+//                        Uri.parse("fb://page/"+user.getFb_id())); //Trys to make intent with FB's URI
+                    Uri.parse("fb://facewebmodal/f?href="+url));
             intent.setPackage("com.facebook.katana");
         } catch (Exception e) {
             intent = new  Intent(Intent.ACTION_VIEW,
@@ -256,7 +258,7 @@ public class MyProfileActivity extends BaseActivity {
         }
 
 
-
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
 
     }

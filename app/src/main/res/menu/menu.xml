@@ -10,7 +10,7 @@
         android:orderInCategory="0"
         android:visible="false"
         app:showAsAction="collapseActionView|ifRoom"
-        app:actionViewClass="android.widget.SearchView"/>
+        app:actionViewClass="android.support.v7.widget.SearchView"/>
     <item
         android:id="@+id/invite_menu"
         android:title="@string/invite_others"
