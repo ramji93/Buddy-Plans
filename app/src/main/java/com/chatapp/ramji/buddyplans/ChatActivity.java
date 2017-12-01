@@ -1060,8 +1060,6 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
                 Place place = PlacePicker.getPlace(this,data);
-                String toastMsg = String.format("Place: %s", place.getId());
-                Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
 
                 com.chatapp.ramji.buddyplans.Location location = new com.chatapp.ramji.buddyplans.Location(place.getLatLng().latitude,place.getLatLng().longitude);
 

@@ -167,7 +167,7 @@ public class UserActivity extends BaseActivity {
 
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/html");
-        intent.putExtra(Intent.EXTRA_EMAIL, user.geteMail());
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{user.geteMail()});
         intent.putExtra(Intent.EXTRA_SUBJECT, "");
         intent.putExtra(Intent.EXTRA_TEXT, "");
 
