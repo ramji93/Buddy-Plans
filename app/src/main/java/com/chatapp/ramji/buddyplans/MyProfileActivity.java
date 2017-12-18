@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -86,7 +87,25 @@ public class MyProfileActivity extends BaseActivity {
         user = gson.fromJson(sharedPreferences.getString("User",""),User.class);
 
         String profile_dp_uri = sharedPreferences.getString("profiledp",user.getProfileDP());
+
+        if(profile_dp_uri!=null)
+
         Glide.with(this).load(profile_dp_uri).into(profilePhotoView);
+
+        else
+        {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Glide.with(this).load(getDrawable(R.drawable.ic_person_black_24dp)).into(profilePhotoView);
+            }
+
+            else{
+                Glide.with(this).load(getResources().getDrawable(R.drawable.ic_person_black_24dp)).into(profilePhotoView);
+            }
+
+        }
+
+
+
         profilePhotoView.setActivated(true);
 
 

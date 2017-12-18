@@ -302,8 +302,10 @@ public class FriendsFragment extends Fragment {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         String photourl = dataSnapshot.getValue(String.class);
-                        friend.setPhotourl(photourl);
-                        friendListAdapter.notifyDataSetChanged();
+                        if(photourl!=null) {
+                            friend.setPhotourl(photourl);
+                            friendListAdapter.notifyDataSetChanged();
+                        }
                     }
 
                     @Override

@@ -12,6 +12,10 @@ public String senderName;
 
 public String groupId;
 
+public String chatId;
+
+public String groupName;
+
 public String text;
 
 
@@ -21,12 +25,14 @@ public String text;
 
     }
 
-    public GroupNotification(String senderId,String senderName,String groupId,String text)
+    public GroupNotification(String senderId,String senderName,String groupId,String chatId,String groupName,String text)
     {
 
         this.senderId = senderId;
         this.senderName = senderName;
         this.groupId = groupId;
+        this.chatId = chatId;
+        this.groupName = groupName;
         this.text = text;
 
 

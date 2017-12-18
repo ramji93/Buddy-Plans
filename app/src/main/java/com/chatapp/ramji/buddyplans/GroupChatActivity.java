@@ -30,6 +30,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -154,6 +156,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
     boolean isConnected;
     ArrayList<String> imageLoadedUsers;
     Boolean imageLoadedIntoMediaStore = false;
+    Bundle bundle = new Bundle();
 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -171,6 +174,17 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
         String transition = intent.getStringExtra("transition");
 
         groupheader = (Groupheader) intent.getSerializableExtra("group");
+
+        bundle = getIntent().getExtras();
+        if (bundle != null && bundle.containsKey("notification")) {
+            groupheader = new Groupheader();
+
+            groupheader.setPhotoUrl(bundle.getString("photourl"));
+            groupheader.setChatId(bundle.getString("chatid"));
+            groupheader.setName(bundle.getString("groupname"));
+            groupheader.setGroupKey(bundle.getString("keyid"));
+
+        }
 
         groupChatId = groupheader.getChatId();
 
@@ -451,7 +465,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
                 String notificationText = groupheader.getName() + " : " + myName + " has uploaded a location";
 
-                GroupNotification groupNotification = new GroupNotification(currentUser.getUid(), myName,groupheader.getGroupKey(), notificationText);
+                GroupNotification groupNotification = new GroupNotification(currentUser.getUid(), myName,groupheader.getGroupKey(),groupChatId,groupheader.getName(), notificationText);
 
                 firebaseDatabase.getReference("GroupNotifications").push().setValue(groupNotification);
 
@@ -829,7 +843,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
                 String notificationText = groupheader.getName() + " : " + myName + " has uploaded a image";
 
-                GroupNotification groupNotification = new GroupNotification(currentUser.getUid(), myName, groupheader.getGroupKey(), notificationText);
+                GroupNotification groupNotification = new GroupNotification(currentUser.getUid(), myName, groupheader.getGroupKey(),groupChatId,groupheader.getName(), notificationText);
 
                 firebaseDatabase.getReference("GroupNotifications").push().setValue(groupNotification);
 
@@ -924,7 +938,22 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
     @Override
     public void onBackPressed() {
-        finish();
+
+        if(bundle.containsKey("notification")) {
+
+            finish();
+
+            Intent upIntent = NavUtils.getParentActivityIntent(this);
+            TaskStackBuilder.create(this)
+                    // Add all of this activity's parents to the back stack
+                    .addNextIntentWithParentStack(upIntent)
+                    // Navigate up to the closest parent
+                    .startActivities();
+
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 
     @OnClick(R.id.groupsend_button)
@@ -954,7 +983,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
 
 
-        GroupNotification groupNotification = new GroupNotification(currentUser.getUid(),myName,groupheader.getGroupKey(),notificationText);
+        GroupNotification groupNotification = new GroupNotification(currentUser.getUid(),myName,groupheader.getGroupKey(),groupChatId,groupheader.getName(),notificationText);
 
         firebaseDatabase.getReference("GroupNotifications").push().setValue(groupNotification);
 
@@ -1005,132 +1034,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
         @Override
         public void onChildAdded(final DataSnapshot dataSnapshot, String s) {
 
-            final Message message = dataSnapshot.getValue(Message.class);
-
-            final boolean m_getfromdb = getfromdb;
-
-            if(message.getTimeStamp()!=null ) {
-
-                if(!imageLoadedUsers.contains(message.getUid()) && (message.getUid()!=null)) {
-
-                    imageLoadedUsers.add(message.getUid());
-                    FirebaseDatabase.getInstance().getReference().child("Users").child(message.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(final DataSnapshot dataSnapshot) {
-                         new Thread(new Runnable() {
-                             @Override
-                             public void run() {
-                                 Util.saveProfileImage(GroupChatActivity.this,dataSnapshot.getValue(String.class), message.getUid());
-
-                             }
-                         }).start();
-
-//                            messages_adapter.notifyDataSetChanged();
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-                }
-
-
-                if (message.getPhotoContentUrl() != null)
-
-                    mhandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-
-
-
-                            String contentphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoContentUrl(), message.getPhotoContentName());
-                            String userphotourl;
-//                            if(!imageLoadedUsers.contains(message.getUid())) {
-
-                                userphotourl = Util.getUserPath(GroupChatActivity.this,message.getUid());
-//                                imageLoadedUsers.add(message.getUid());
-//
-//                            }
-//
-//                            else {
-//
-//                                userphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoUrl(), message.getUid());
-//
-//                            }
-
-                            //// TODO: update the db message with local urls
-
-                            if(!m_getfromdb) {
-                                String groupphotourl = Util.saveImage(GroupChatActivity.this, groupheader.getPhotoUrl(), groupChatId);
-                                chatViewModel.insertChat(new SavedChatsEntity(groupChatId,groupheader.getName(),groupphotourl,false,groupheader.getGroupKey(),null));
-                                getfromdb = true;
-                            }
-
-                            message.setMessageid(dataSnapshot.getKey());
-
-                            MessageEntity entity = Util.getEntityfromMessage(message, groupChatId, mContext);
-
-                            entity.setPhotoContentUrl(contentphotourl);
-
-                            entity.setPhotoUrl(userphotourl);
-
-                            chatViewModel.insertMessage(entity);
-
-                        }
-                    });
-
-                else
-
-                mhandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        String userphotourl;
-//                        if(!imageLoadedUsers.contains(message.getUid())) {
-                            userphotourl = Util.getUserPath(GroupChatActivity.this,message.getUid());
-//                            imageLoadedUsers.add(message.getUid());
-//
-//                        }
-//
-//                        else {
-//
-//                            userphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoUrl(), message.getUid());
-//
-//                        }
-                        //// TODO: update the db message with local urls
-
-                        if(!m_getfromdb) {
-                            String groupphotourl = Util.saveImage(GroupChatActivity.this,groupheader.getPhotoUrl(), groupChatId);
-                            chatViewModel.insertChat(new SavedChatsEntity(groupChatId,groupheader.getName(),groupphotourl,false,groupheader.getGroupKey(),null));
-                            getfromdb = true;
-                        }
-
-                        message.setMessageid(dataSnapshot.getKey());
-
-                        MessageEntity entity = Util.getEntityfromMessage(message, groupChatId, mContext);
-
-                        entity.setPhotoUrl(userphotourl);
-
-                        chatViewModel.insertMessage(entity);
-
-                    }
-                });
-
-                message.setMessageid(dataSnapshot.getKey());
-
-                MessageEntity entity = Util.getEntityfromMessage(message, groupChatId, mContext);
-
-                if(!getfromdb)
-                {
-
-                    chatViewModel.insertChat(new SavedChatsEntity(groupChatId,groupheader.getName(),groupheader.getPhotoUrl(),false,groupheader.getGroupKey(),null));
-                    getfromdb = true;
-                }
-
-                chatViewModel.insertMessage(entity);
-
-            }
+         handleMessage(dataSnapshot);
 
         }
 
@@ -1138,42 +1042,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
         @Override
         public void onChildChanged(final DataSnapshot dataSnapshot, String s) {
 
-          final   Message message = dataSnapshot.getValue(Message.class);
-
-              if(message.getTimeStamp()!=null ) {
-
-                if(message.getPhotoContentUrl() != null)
-
-                    mhandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-
-                          String contentphotourl =  Util.saveImage(GroupChatActivity.this,message.getPhotoContentUrl(),message.getPhotoContentName());
-                          String userphotourl =  Util.getUserPath(GroupChatActivity.this,message.getUid());
-                            //// TODO: update the db message with local urls
-
-
-                            message.setMessageid(dataSnapshot.getKey());
-
-                            MessageEntity entity = Util.getEntityfromMessage(message, groupChatId, mContext);
-
-                            entity.setPhotoContentUrl(contentphotourl);
-
-                            entity.setPhotoUrl(userphotourl);
-
-                            chatViewModel.insertMessage(entity);
-
-                        }
-                    });
-
-                   message.setMessageid(dataSnapshot.getKey());
-
-                   MessageEntity entity = Util.getEntityfromMessage(message,groupChatId,mContext);
-
-                  chatViewModel.insertMessage(entity);
-
-            }
-
+          handleMessage(dataSnapshot);
 
         }
 
@@ -1198,6 +1067,121 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
         handlerThread.quit();
         super.onDestroy();
     }
+
+    public void handleMessage(final DataSnapshot dataSnapshot){
+
+        final Message message = dataSnapshot.getValue(Message.class);
+
+        final boolean m_getfromdb = getfromdb;
+
+        if(message.getTimeStamp()!=null ) {
+
+            if(!imageLoadedUsers.contains(message.getUid()) && (message.getUid()!=null)) {
+
+                imageLoadedUsers.add(message.getUid());
+                FirebaseDatabase.getInstance().getReference().child("Users").child(message.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(final DataSnapshot dataSnapshot) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Util.saveProfileImage(GroupChatActivity.this,dataSnapshot.getValue(String.class), message.getUid());
+
+                            }
+                        }).start();
+
+//                            messages_adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+
+            if (message.getPhotoContentUrl() != null)
+
+                mhandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+
+
+                        String contentphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoContentUrl(), message.getPhotoContentName());
+                        String userphotourl;
+//                            if(!imageLoadedUsers.contains(message.getUid())) {
+
+                        userphotourl = Util.getUserPath(GroupChatActivity.this,message.getUid());
+//
+                        //// TODO: update the db message with local urls
+
+                        if(!m_getfromdb) {
+                            String groupphotourl = Util.saveImage(GroupChatActivity.this, groupheader.getPhotoUrl(), groupChatId);
+                            chatViewModel.insertChat(new SavedChatsEntity(groupChatId,groupheader.getName(),groupphotourl,false,groupheader.getGroupKey(),null));
+                            getfromdb = true;
+                        }
+
+                        message.setMessageid(dataSnapshot.getKey());
+
+                        MessageEntity entity = Util.getEntityfromMessage(message, groupChatId, mContext);
+
+                        entity.setPhotoContentUrl(contentphotourl);
+
+                        entity.setPhotoUrl(userphotourl);
+
+                        chatViewModel.insertMessage(entity);
+
+                    }
+                });
+
+            else
+
+                mhandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        String userphotourl;
+//                        if(!imageLoadedUsers.contains(message.getUid())) {
+                        userphotourl = Util.getUserPath(GroupChatActivity.this,message.getUid());
+//
+                        //// TODO: update the db message with local urls
+
+                        if(!m_getfromdb) {
+                            String groupphotourl = Util.saveImage(GroupChatActivity.this,groupheader.getPhotoUrl(), groupChatId);
+                            chatViewModel.insertChat(new SavedChatsEntity(groupChatId,groupheader.getName(),groupphotourl,false,groupheader.getGroupKey(),null));
+                            getfromdb = true;
+                        }
+
+                        message.setMessageid(dataSnapshot.getKey());
+
+                        MessageEntity entity = Util.getEntityfromMessage(message, groupChatId, mContext);
+
+                        entity.setPhotoUrl(userphotourl);
+
+                        chatViewModel.insertMessage(entity);
+
+                    }
+                });
+
+            message.setMessageid(dataSnapshot.getKey());
+
+            MessageEntity entity = Util.getEntityfromMessage(message, groupChatId, mContext);
+
+            if(!getfromdb)
+            {
+
+                chatViewModel.insertChat(new SavedChatsEntity(groupChatId,groupheader.getName(),groupheader.getPhotoUrl(),false,groupheader.getGroupKey(),null));
+                getfromdb = true;
+            }
+
+            chatViewModel.insertMessage(entity);
+
+        }
+
+    }
+
 
     private void exitGroup()
     {
@@ -1224,5 +1208,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
 
     }
+
+
 
 }

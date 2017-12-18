@@ -408,7 +408,10 @@ public class MainActivity extends BaseActivity  {
             Gson gson = new Gson();
             String currentUserString = gson.toJson(currentuser);
             editor.putString("User",currentUserString);
+
             editor.commit();
+
+
 
             Glide.with(this).load(currentuser.getProfileDP()).into(imgProfile);
         }
@@ -547,6 +550,8 @@ public class MainActivity extends BaseActivity  {
     public void SignoutFuction()
     {
         mFirebaseDatabase.getReference().child("Users").child(mUid).child("online").setValue(false);
+
+        mFirebaseDatabase.getReference().child("Users").child(mUid).child("instanceId").setValue(null);
 
         ((MyApplication) getApplication()).userid = null;
 

@@ -95,10 +95,23 @@
         </activity>
         <activity
             android:name=".ChatActivity"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity"
+            >
+            <intent-filter>
+                <action android:name="com.chatapp.ramji.buddyplans.OPEN_CHAT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            </activity>
         <activity
             android:name=".GroupChatActivity"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity" >
+
+            <intent-filter>
+                <action android:name="com.chatapp.ramji.buddyplans.OPEN_GROUPCHAT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            </activity>
         <activity
             android:name=".GroupCreateActivity"
             android:parentActivityName=".MainActivity" />

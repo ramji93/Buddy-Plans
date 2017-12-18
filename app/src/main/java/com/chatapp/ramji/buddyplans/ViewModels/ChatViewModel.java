@@ -68,13 +68,16 @@ public class ChatViewModel  extends AndroidViewModel {
     }
 
 
-    public void setFavouriteChat(String chatid)
+    public boolean setFavouriteChat(String chatid)
     {
        List<SavedChatsEntity> chats = db.savedchatsModel().getSavedChatwithid(chatid);
-       SavedChatsEntity chat = chats.get(0);
-       chat.favourite = true;
-       db.savedchatsModel().updateSavedChat(chat);
-
+        if(chats.size()>0) {
+            SavedChatsEntity chat = chats.get(0);
+            chat.favourite = true;
+            db.savedchatsModel().updateSavedChat(chat);
+            return true;
+        }
+       return false;
     }
 
     public void setNotFavouriteChat(String chatid)

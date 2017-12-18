@@ -12,6 +12,10 @@ public class NotificationMessage {
 
     public String text;
 
+    public String sendername;
+
+    public String chatid;
+
     public NotificationMessage()
     {
 
@@ -20,14 +24,18 @@ public class NotificationMessage {
     }
 
 
-    public NotificationMessage(String fromparam, String toparam, String textparam)
+    public NotificationMessage(String fromparam,String nameparam, String toparam,String chatparam, String textparam)
     {
 
         from = fromparam;
 
         to = toparam;
 
+        sendername = nameparam;
+
         text = textparam;
+
+        chatid = chatparam;
 
     }
 

@@ -26,6 +26,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -115,7 +117,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
     ChatMessageListener chatMessageListener;
     @BindView(R.id.chat_toolbar)
     Toolbar toolbar;
-   @BindView(R.id.chat_title)
+    @BindView(R.id.chat_title)
     TextView chatTitle;
     @BindView(R.id.circular_image)
     CircularImageView circularImage;
@@ -152,6 +154,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
     int blocked;
     boolean isConnected;
     Boolean imageLoadedIntoMediaStore = false;
+    Bundle bundle = new Bundle();
 
 
     @Override
@@ -169,22 +172,31 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
 
-
         firebaseDatabase = FirebaseDatabase.getInstance();
 
 
         Intent intent = getIntent();
         String transition = intent.getStringExtra("transition");
         friend = (Friend) intent.getSerializableExtra("Friend");
-        Bitmap bitmap = (Bitmap) intent.getParcelableExtra("image");
-         shareIntent = (Intent) intent.getParcelableExtra("shareIntent");
 
-        if(bitmap !=null) {
-            circularImage.setImageBitmap(bitmap);
+        bundle = getIntent().getExtras();
+        if (bundle != null && bundle.containsKey("notification")) {
+               friend = new Friend();
+
+           friend.setPhotourl(bundle.getString("photourl"));
+           friend.setChatid(bundle.getString("chatid"));
+           friend.setName(bundle.getString("sendername"));
+           friend.setUid(bundle.getString("senderid"));
 
         }
 
-        else {
+        Bitmap bitmap = (Bitmap) intent.getParcelableExtra("image");
+        shareIntent = (Intent) intent.getParcelableExtra("shareIntent");
+
+        if (bitmap != null) {
+            circularImage.setImageBitmap(bitmap);
+
+        } else {
 
             Glide.with(this).load(friend.getPhotourl()).into(circularImage);
 
@@ -206,13 +218,13 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
             @Override
             public void onClick(View v) {
 //                                                ZoomAnimation.zoom(v, circularImage.getDrawable(), ChatActivity.this, false);
-                final String path = Environment.getExternalStorageDirectory().getPath()+"/Buddyplans/pictures"+"/"+friend.getChatid();
+                final String path = Environment.getExternalStorageDirectory().getPath() + "/Buddyplans/pictures" + "/" + friend.getChatid();
 
-                File f=new File(path);
+                File f = new File(path);
 
-                if(f.exists()) {
+                if (f.exists()) {
 
-                    if(!imageLoadedIntoMediaStore) {
+                    if (!imageLoadedIntoMediaStore) {
 
                         imageLoadedIntoMediaStore = true;
 
@@ -232,14 +244,11 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_VIEW);
 
-                    if(Build.VERSION.SDK_INT > M)
-                    {
-                        intent.setDataAndType(CustomFileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".my.package.name.provider", f),"image/*");
+                    if (Build.VERSION.SDK_INT > M) {
+                        intent.setDataAndType(CustomFileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".my.package.name.provider", f), "image/*");
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         mContext.startActivity(intent);
-                    }
-
-                    else {
+                    } else {
                         intent.setDataAndType(Uri.fromFile(f), "image/*");
                         mContext.startActivity(intent);
                     }
@@ -270,20 +279,19 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
         chatViewModel.lastTimestampLive.observe(this, new Observer<Long>() {
             @Override
             public void onChanged(@Nullable Long aLong) {
-                if(aLong != null)
+                if (aLong != null)
                     dbLastTimestamp = aLong;
             }
         });
 
-        if (chatViewModel.savedchat.size() > 0  && dbLastTimestamp != null)
-        {
+        if (chatViewModel.savedchat.size() > 0 && dbLastTimestamp != null) {
             getfromdb = true;
 
         }
 
         if (chatId != null && menu != null) {
-            if(chatViewModel.savedchat.size()>0 ) {
-                if(chatViewModel.savedchat.get(0).favourite==true) {
+            if (chatViewModel.savedchat.size() > 0) {
+                if (chatViewModel.savedchat.get(0).favourite == true) {
                     isfavourite = true;
                     menu.getItem(0).setIcon(R.drawable.fav_unselect);
                     menu.getItem(1).setVisible(true);
@@ -294,8 +302,8 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
 
         messageReference = firebaseDatabase.getReference().child("Messages").child(chatId);
-         messages_adapter = new Messages_Adapter(this,myUid);
-        chatMessagesView.setLayoutManager(new LinearLayoutManager(this){
+        messages_adapter = new Messages_Adapter(this, myUid);
+        chatMessagesView.setLayoutManager(new LinearLayoutManager(this) {
             @Override
             public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
                 super.smoothScrollToPosition(recyclerView, state, position);
@@ -346,26 +354,21 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 //        if(friend.getChatid() == null)
 //            createChatId();
 
-        if(shareIntent!= null)
-        {
+        if (shareIntent != null) {
 
             handleSharedIntent();
 
         }
 
 
-
         firebaseDatabase.getReference("Friends").child(friendUid).child(myUid).child("active").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 boolean bool = (boolean) dataSnapshot.getValue();
-                if(bool)
-                {
+                if (bool) {
                     blocked = 1; //active
                     invalidateOptionsMenu();
-                }
-                else
-                {
+                } else {
                     blocked = 2;  //blocked
                     invalidateOptionsMenu();
                 }
@@ -385,59 +388,59 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
         isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
 
-        Uri uri = Uri.parse(friend.getPhotourl());
+        if (friend.getPhotourl() != null) {
 
-        if(isConnected && uri.getScheme() != null) {
+            Uri uri = Uri.parse(friend.getPhotourl());
 
-            if (uri.getScheme().equalsIgnoreCase("https") || uri.getScheme().equalsIgnoreCase("http")) {
+            if (isConnected && uri.getScheme() != null) {
 
-                mhandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Util.saveProfileImage(ChatActivity.this, friend.getPhotourl(), friend.getChatid());
-                    }
-                });
+                if (uri.getScheme().equalsIgnoreCase("https") || uri.getScheme().equalsIgnoreCase("http")) {
+
+                    mhandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Util.saveProfileImage(ChatActivity.this, friend.getPhotourl(), friend.getChatid());
+                        }
+                    });
+                }
+
             }
-
         }
 
     }
 
-     public void handleSharedIntent()
-     {
+    public void handleSharedIntent() {
 
 
-         if (Intent.ACTION_SEND.equals(shareIntent.getAction()) && shareIntent.getType() != null) {
-             if ("text/plain".equals(shareIntent.getType())) {
-                 // Handle text being sent
+        if (Intent.ACTION_SEND.equals(shareIntent.getAction()) && shareIntent.getType() != null) {
+            if ("text/plain".equals(shareIntent.getType())) {
+                // Handle text being sent
 
-                 String sharedText = shareIntent.getStringExtra(Intent.EXTRA_TEXT);
-                  messageInput.setText(sharedText);
+                String sharedText = shareIntent.getStringExtra(Intent.EXTRA_TEXT);
+                messageInput.setText(sharedText);
 
-                 shareIntent = null;
+                shareIntent = null;
 
-             }
+            } else if (shareIntent.getType().contains("image")) {
 
-             else if(shareIntent.getType().contains("image")) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Do you want to upload the image in this chat? ");
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked OK button
 
-                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                 builder.setMessage("Do you want to upload the image in this chat? ");
-                 builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                     public void onClick(DialogInterface dialog, int id) {
-                         // User clicked OK button
+                        Uri imageUri = (Uri) shareIntent.getParcelableExtra(Intent.EXTRA_STREAM);
 
-                         Uri imageUri = (Uri) shareIntent.getParcelableExtra(Intent.EXTRA_STREAM);
+                        uploadImage(imageUri);
+                        shareIntent = null;
 
-                         uploadImage(imageUri);
-                         shareIntent = null;
-
-                     }
-                 });
-                 builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                     public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
 
 
-                         finish();
+                        finish();
 //                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 //                             ((Activity) mContext).finishAndRemoveTask();
 //                         }
@@ -447,18 +450,18 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 //                         }
 
 
-                     }
-                 });
-                 AlertDialog dialog =  builder.create();
-                 dialog.show();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
 
-                 Log.d(this.getClass().getName(),"inside onsharedintent");
+                Log.d(this.getClass().getName(), "inside onsharedintent");
 
-             }
+            }
 
-         }
+        }
 
-     }
+    }
 
 
     @Override
@@ -466,7 +469,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.chat_menu, menu);
         if (chatId != null) {
-            if(chatViewModel!=null) {
+            if (chatViewModel != null) {
                 if (chatViewModel.savedchat.size() > 0) {
                     if (chatViewModel.savedchat.get(0).favourite == true) {
                         isfavourite = true;
@@ -478,10 +481,10 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
         }
 
-        if(blocked == 1) {
+        if (blocked == 1) {
             menu.getItem(2).setVisible(true);
         }
-        if(blocked == 2) {
+        if (blocked == 2) {
             menu.getItem(3).setVisible(true);
         }
 
@@ -492,8 +495,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId())
-        {
+        switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
@@ -515,18 +517,17 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
             case R.id.unblock_friend:
 
-                 unblockFriend();
-                 break;
+                unblockFriend();
+                break;
 
             case R.id.show_profile:
 
-                 showProfile();
-                 break;
+                showProfile();
+                break;
 
             default:
 
                 return super.onOptionsItemSelected(item);
-
 
 
         }
@@ -535,8 +536,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
     private void showProfile() {
 
-        if(!Util.checkConnection(mContext))
-        {
+        if (!Util.checkConnection(mContext)) {
 
 
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -548,7 +548,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
                     });
 
             // Create the AlertDialog object and return it
-             builder.create().show();
+            builder.create().show();
 
             return;
 
@@ -558,8 +558,8 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
-                Intent intent = new Intent(ChatActivity.this,UserActivity.class);
-                intent.putExtra("User",user);
+                Intent intent = new Intent(ChatActivity.this, UserActivity.class);
+                intent.putExtra("User", user);
                 startActivity(intent);
 
             }
@@ -572,8 +572,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
     }
 
-    private void blockFriend()
-    {
+    private void blockFriend() {
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Friends").child(friendUid).child(myUid);
         ref.child("active").setValue(false);
@@ -584,8 +583,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
     }
 
-    private void unblockFriend()
-    {
+    private void unblockFriend() {
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Friends").child(friendUid).child(myUid);
         ref.child("active").setValue(true);
@@ -596,14 +594,13 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
     }
 
 
-    private void addReminder()
-    {
+    private void addReminder() {
 
         remindCalendar = Calendar.getInstance();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View view = getLayoutInflater().inflate(R.layout.setreminder_dialog_layout,null);
+        View view = getLayoutInflater().inflate(R.layout.setreminder_dialog_layout, null);
         final EditText title_view = (EditText) view.findViewById(R.id.reminder_title);
-        Button setdate_button =  (Button) view.findViewById(R.id.setdatetime_button);
+        Button setdate_button = (Button) view.findViewById(R.id.setdatetime_button);
         final TextView dateTime_view = (TextView) view.findViewById(R.id.datetime_textview);
         Button proceed_view = (Button) view.findViewById(R.id.proceed_button);
         builder.setView(view);
@@ -624,31 +621,27 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
                 String datetime = dateTime_view.getText().toString();
                 String title = title_view.getText().toString();
 
-                if(datetime.isEmpty() || datetime == null || datetime.equalsIgnoreCase("") || title.isEmpty() || title == null || title.equalsIgnoreCase("") )
-                {
+                if (datetime.isEmpty() || datetime == null || datetime.equalsIgnoreCase("") || title.isEmpty() || title == null || title.equalsIgnoreCase("")) {
                     Toast.makeText(mContext, "Mandatory fields should be entered", Toast.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     Calendar c = Calendar.getInstance();
-                    c.add(Calendar.MINUTE,5);
+                    c.add(Calendar.MINUTE, 5);
                     long minLong = c.getTimeInMillis();
 
                     long remLong = remindCalendar.getTimeInMillis();
 
-                    if(remLong < minLong)
-                    {
+                    if (remLong < minLong) {
                         Toast.makeText(mContext, "Time set should be atleast 5 mins later than current time", Toast.LENGTH_LONG).show();
-                    }
-                    else{
+                    } else {
 
                         //// TODO: add reminder
-                        Reminder reminder = new Reminder(myUid,friendUid,title,Long.toString(remLong),myName,chatId);
+                        Reminder reminder = new Reminder(myUid, friendUid, title, Long.toString(remLong), myName, chatId);
 
                         firebaseDatabase.getReference().child("Reminders").push().setValue(reminder);
 
                         dialog.dismiss();
 
-                        Message message = new Message(currentUser.getUserName() + " has added a reminder ",null,null,null,null,null);
+                        Message message = new Message(currentUser.getUserName() + " has added a reminder ", null, null, null, null, null);
 
                         String messageKey = messageReference.push().getKey();
 
@@ -665,25 +658,19 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
         });
 
 
-
     }
 
-    private void onFavouritePress()
-    {
+    private void onFavouritePress() {
 
-        if(isfavourite)
-        {
+        if (isfavourite) {
             chatViewModel.setNotFavouriteChat(chatId);
             isfavourite = false;
 
-        }
+        } else {
+            if (messages_adapter.messages.size() > 0) {
+                isfavourite = chatViewModel.setFavouriteChat(chatId);
 
-        else {
-            if(messages_adapter.messages.size()>0) {
-                chatViewModel.setFavouriteChat(chatId);
-                isfavourite = true;
-            }
-            else {
+            } else {
                 AlertDialog alertDialog = new AlertDialog.Builder(ChatActivity.this).create();
                 alertDialog.setMessage(getString(R.string.fav_alert));
                 alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
@@ -702,7 +689,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
     }
 
-    private void datePicker(final TextView datetimetext){
+    private void datePicker(final TextView datetimetext) {
 
         // Get Current Date
 
@@ -716,16 +703,16 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 
-                        remindCalendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
-                        remindCalendar.set(Calendar.MONTH,monthOfYear);
-                        remindCalendar.set(Calendar.YEAR,year);
+                        remindCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                        remindCalendar.set(Calendar.MONTH, monthOfYear);
+                        remindCalendar.set(Calendar.YEAR, year);
                         timePicker(datetimetext);
                     }
                 }, mYear, mMonth, mDay);
         datePickerDialog.show();
     }
 
-    private void timePicker(final TextView datetimeText){
+    private void timePicker(final TextView datetimeText) {
         // Get Current Time
 
         int mHour = remindCalendar.get(Calendar.HOUR_OF_DAY);
@@ -738,26 +725,24 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
-                        remindCalendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
-                        remindCalendar.set(Calendar.MINUTE,minute);
+                        remindCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                        remindCalendar.set(Calendar.MINUTE, minute);
 
-                        datetimeText.setText(remindCalendar.get(Calendar.DAY_OF_MONTH) + "/" + (remindCalendar.get(Calendar.MONTH)+1) + "/" + remindCalendar.get(Calendar.YEAR) + " " +hourOfDay + ":" +  ((minute > 9) ? minute : "0"+minute ) +"  ");
+                        datetimeText.setText(remindCalendar.get(Calendar.DAY_OF_MONTH) + "/" + (remindCalendar.get(Calendar.MONTH) + 1) + "/" + remindCalendar.get(Calendar.YEAR) + " " + hourOfDay + ":" + ((minute > 9) ? minute : "0" + minute) + "  ");
                     }
                 }, mHour, mMinute, false);
         timePickerDialog.show();
     }
 
 
-
-    public void handlePermissions()
-    {
+    public void handlePermissions() {
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},LOCATION_REQUEST
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST
             );
 
 
@@ -767,14 +752,13 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
     }
 
     @OnClick(R.id.attachlocation)
-    public void startPlacePicker()
-    {
+    public void startPlacePicker() {
 
 //            attachMenu.toggleMenu(true);
         attachMenu.toggle(true);
 
 
-        if(ContextCompat.checkSelfPermission(this,
+        if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED)
 
@@ -784,7 +768,6 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
             return;
         }
-
 
 
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
@@ -797,43 +780,34 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
         }
 
 
+    }
+
+
+    public void createChatId() {
+
+        DatabaseReference ChatReference = firebaseDatabase.getReference().child("Messages");
+
+        chatId = ChatReference.push().getKey();
+
+        friend.setChatid(chatId);
+
+        firebaseDatabase.getReference().child("Friends").child(myUid).child(friendUid).setValue(friend);
+
+        firebaseDatabase.getReference().child("Friends").child(friendUid).child(myUid).child("chatid").setValue(chatId);
 
 
     }
 
 
-
-
-
-
-
-     public void createChatId()
-     {
-
-         DatabaseReference ChatReference = firebaseDatabase.getReference().child("Messages");
-
-          chatId = ChatReference.push().getKey();
-
-         friend.setChatid(chatId);
-
-         firebaseDatabase.getReference().child("Friends").child(myUid).child(friendUid).setValue(friend);
-
-         firebaseDatabase.getReference().child("Friends").child(friendUid).child(myUid).child("chatid").setValue(chatId);
-
-
-     }
-
-
     @OnClick(R.id.attachPhoto)
-    public void attachPhoto()
-    {
+    public void attachPhoto() {
 
         attachMenu.toggle(true);
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(this,new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},WRITE_REQUEST);
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_REQUEST);
 
             return;
 
@@ -841,7 +815,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CAMERA},CAMERA_REQUEST);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST);
 
             return;
 
@@ -850,20 +824,19 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
         boolean addListener = false;
 
 
-        if(friend.getChatid() == null) {
+        if (friend.getChatid() == null) {
             createChatId();
             addListener = true;
         }
 
-        if(addListener)
-        {
+        if (addListener) {
             chatMessageListener = new ChatMessageListener();
             chatReference = firebaseDatabase.getReference().child("Messages").child(chatId);
             chatReference.addChildEventListener(chatMessageListener);
 
         }
 
-        if(bottomSheetDialogFragment==null) {
+        if (bottomSheetDialogFragment == null) {
 
             bottomSheetDialogFragment = new TedBottomPicker.Builder(this)
                     .setOnImageSelectedListener(new TedBottomPicker.OnImageSelectedListener() {
@@ -875,7 +848,6 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
                         }
 
 
-
                     })
                     .create();
 
@@ -885,84 +857,78 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
     }
 
-    private void uploadImage(final Uri uri)
-    {
-            // here is selected uri
+    private void uploadImage(final Uri uri) {
+        // here is selected uri
 
-            StorageReference imageRef = imageStorageReference.child(uri.getLastPathSegment());
+        StorageReference imageRef = imageStorageReference.child(uri.getLastPathSegment());
 
-            final Snackbar snackbar = Snackbar.make(RootView,(isConnected ? "Uploading the image" : "Image will be uploaded once connection resumes"),(isConnected ? 10000 : 3000));
-            snackbar.show();
+        final Snackbar snackbar = Snackbar.make(RootView, (isConnected ? "Uploading the image" : "Image will be uploaded once connection resumes"), (isConnected ? 10000 : 3000));
+        snackbar.show();
 
 
-            final Message loadmessage = new Message(null, myName,uri.toString(),uri.getLastPathSegment(),currentUser.getUid(),null);
-            loadmessage.setTimeStamp(System.currentTimeMillis());
+        final Message loadmessage = new Message(null, myName, uri.toString(), uri.getLastPathSegment(), currentUser.getUid(), null);
+        loadmessage.setTimeStamp(System.currentTimeMillis());
 
 //            messages_adapter.messages.add(Util.loadmessage);
 
-            messages_adapter.notifyDataSetChanged();
+        messages_adapter.notifyDataSetChanged();
 
-            imageRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+        imageRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
 
-                    @SuppressWarnings("VisibleForTests") Message message = new Message(null, myName, taskSnapshot.getDownloadUrl().toString(),uri.getLastPathSegment(),currentUser.getUid(),null);
+                @SuppressWarnings("VisibleForTests") Message message = new Message(null, myName, taskSnapshot.getDownloadUrl().toString(), uri.getLastPathSegment(), currentUser.getUid(), null);
 
-                    if (currentUser.getProfileDP() != null)
-                        message.setPhotoUrl(currentUser.getProfileDP());
+                if (currentUser.getProfileDP() != null)
+                    message.setPhotoUrl(currentUser.getProfileDP());
 
-                    String messageKey = messageReference.push().getKey();
+                String messageKey = messageReference.push().getKey();
 
-                    messageReference.child(messageKey).setValue(message);
+                messageReference.child(messageKey).setValue(message);
 
-  //                  messages_adapter.messages.remove(loadmessage);
+                //                  messages_adapter.messages.remove(loadmessage);
 
-                    snackbar.dismiss();
+                snackbar.dismiss();
 
-                    messageReference.child(messageKey).child("timeStamp").setValue(ServerValue.TIMESTAMP);
+                messageReference.child(messageKey).child("timeStamp").setValue(ServerValue.TIMESTAMP);
 
-                    messageInput.setText("");
+                messageInput.setText("");
 
-                    firebaseDatabase.getReference().child("Friends").child(myUid).child(friendUid).child("lastMessage").setValue(currentUser.getUserName() + " has uploaded a image");
+                firebaseDatabase.getReference().child("Friends").child(myUid).child(friendUid).child("lastMessage").setValue(currentUser.getUserName() + " has uploaded a image");
 
-                    firebaseDatabase.getReference().child("Friends").child(myUid).child(friendUid).child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
+                firebaseDatabase.getReference().child("Friends").child(myUid).child(friendUid).child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
 
-                    firebaseDatabase.getReference().child("Friends").child(friendUid).child(myUid).child("lastMessage").setValue(currentUser.getUserName() + " has uploaded a image");
+                firebaseDatabase.getReference().child("Friends").child(friendUid).child(myUid).child("lastMessage").setValue(currentUser.getUserName() + " has uploaded a image");
 
-                    firebaseDatabase.getReference().child("Friends").child(friendUid).child(myUid).child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
+                firebaseDatabase.getReference().child("Friends").child(friendUid).child(myUid).child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
 
-                    NotificationMessage notificationMessage = new NotificationMessage(myUid,friendUid,currentUser.getUserName() + " has uploaded a image" );
+                NotificationMessage notificationMessage = new NotificationMessage(myUid,myName,friendUid,chatId, currentUser.getUserName() + " has uploaded a image");
 
-                    firebaseDatabase.getReference().child("Notications").push().setValue(notificationMessage);
+                firebaseDatabase.getReference().child("Notications").push().setValue(notificationMessage);
 
-                    Snackbar snackbar2 = Snackbar.make(RootView, "Uploading done !", Snackbar.LENGTH_SHORT);
-                    snackbar2.show();
+                Snackbar snackbar2 = Snackbar.make(RootView, "Uploading done !", Snackbar.LENGTH_SHORT);
+                snackbar2.show();
 
-                }
-            });
+            }
+        });
 
     }
 
 
-
     @OnClick(R.id.chatsend_button)
-    public void SendMessage()
-    {
+    public void SendMessage() {
 
         boolean addListener = false;
 
 
-        if(friend.getChatid() == null) {
+        if (friend.getChatid() == null) {
             createChatId();
             addListener = true;
         }
 
 
-
-
-
-        Message message = new Message(messageInput.getText().toString(),myName,null,null,currentUser.getUid(),null);
+        Message message = new Message(messageInput.getText().toString(), myName, null, null, currentUser.getUid(), null);
 
 
         String messageKey = messageReference.push().getKey();
@@ -981,21 +947,19 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
         String notificationtext;
 
-        if(message.getText().length() <= 20)
+        if (message.getText().length() <= 20)
             notificationtext = currentUser.getUserName() + " : " + message.getText();
 
         else
-            notificationtext = currentUser.getUserName() + " : " + message.getText().substring(0,20) + "...";
+            notificationtext = currentUser.getUserName() + " : " + message.getText().substring(0, 20) + "...";
 
 
-
-         NotificationMessage notificationMessage = new NotificationMessage(myUid,friendUid,notificationtext );
+        NotificationMessage notificationMessage = new NotificationMessage(myUid,myName, friendUid,chatId, notificationtext);
 
         firebaseDatabase.getReference().child("Notications").push().setValue(notificationMessage);
 
 
-        if(addListener)
-        {
+        if (addListener) {
             chatMessageListener = new ChatMessageListener();
             chatReference = firebaseDatabase.getReference().child("Messages").child(chatId);
             chatReference.addChildEventListener(chatMessageListener);
@@ -1009,8 +973,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        if(requestCode==WRITE_REQUEST)
-        {
+        if (requestCode == WRITE_REQUEST) {
 
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -1033,12 +996,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
             }
 
 
-
-        }
-
-
-        else if(requestCode == LOCATION_REQUEST)
-        {
+        } else if (requestCode == LOCATION_REQUEST) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
@@ -1059,11 +1017,11 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Place place = PlacePicker.getPlace(this,data);
+                Place place = PlacePicker.getPlace(this, data);
 
-                com.chatapp.ramji.buddyplans.Location location = new com.chatapp.ramji.buddyplans.Location(place.getLatLng().latitude,place.getLatLng().longitude);
+                com.chatapp.ramji.buddyplans.Location location = new com.chatapp.ramji.buddyplans.Location(place.getLatLng().latitude, place.getLatLng().longitude);
 
-                Message message = new Message(null,myName,null,null,currentUser.getUid(),location);
+                Message message = new Message(null, myName, null, null, currentUser.getUid(), location);
 
                 String messageKey = messageReference.push().getKey();
 
@@ -1081,10 +1039,9 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
                 firebaseDatabase.getReference().child("Friends").child(friendUid).child(myUid).child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
 
-                NotificationMessage notificationMessage = new NotificationMessage(myUid,friendUid,currentUser.getUserName() + " has uploaded a location" );
+                NotificationMessage notificationMessage = new NotificationMessage(myUid,myName, friendUid,chatId, currentUser.getUserName() + " has uploaded a location");
 
                 firebaseDatabase.getReference().child("Notications").push().setValue(notificationMessage);
-
 
 
             }
@@ -1097,18 +1054,16 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
     protected void onStart() {
         super.onStart();
 
-        if(chatId!=null)
-        {
-            if(chatMessageListener==null)
+        if (chatId != null) {
+            if (chatMessageListener == null)
                 chatMessageListener = new ChatMessageListener();
 
-            if(getfromdb) {
+            if (getfromdb) {
 
-                Long tmp = dbLastTimestamp +1;
+                Long tmp = dbLastTimestamp + 1;
                 chatQuery = chatReference.orderByChild("timeStamp").startAt(tmp);
 //           .addChildEventListener(groupChatMessageListener);
-            }
-            else {
+            } else {
                 chatQuery = chatReference.orderByChild("timeStamp");
             }
 
@@ -1127,13 +1082,13 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
     protected void onStop() {
         super.onStop();
 
-        if(chatId!=null && chatMessageListener!=null) {
+        if (chatId != null && chatMessageListener != null) {
             chatQuery.removeEventListener(chatMessageListener);
             chatMessageListener = null;
 
         }
 
-        if(liveStatusListener!=null) {
+        if (liveStatusListener != null) {
             firebaseDatabase.getReference().child("Users").child(friendUid).child("online").removeEventListener(liveStatusListener);
             liveStatusListener = null;
 
@@ -1144,7 +1099,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.d("Google API connection","Google API connection " + connectionResult.getErrorMessage());
+        Log.d("Google API connection", "Google API connection " + connectionResult.getErrorMessage());
     }
 
 
@@ -1162,7 +1117,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
     }
 
 
-    class LiveStatusListener implements ValueEventListener{
+    class LiveStatusListener implements ValueEventListener {
 
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -1183,127 +1138,21 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
         }
     }
 
-    class ChatMessageListener implements ChildEventListener{
+    class ChatMessageListener implements ChildEventListener {
 
 
         @Override
         public void onChildAdded(final DataSnapshot dataSnapshot, String s) {
 
-            final Message message = dataSnapshot.getValue(Message.class);
-
-            final boolean m_getfromdb = getfromdb;
-
-            if(message.getTimeStamp()!=null) {
-
-
-                if (message.getPhotoContentUrl() != null)
-
-                    mhandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            String contentphotourl = Util.saveImage(ChatActivity.this, message.getPhotoContentUrl(), message.getPhotoContentName());
-                            //// TODO: update the db message with local urls
-
-                            if(!m_getfromdb) {
-                                String groupphotourl = Util.saveImage(ChatActivity.this, friend.getPhotourl(), chatId);
-                                chatViewModel.insertChat(new SavedChatsEntity(chatId,friend.getName(),groupphotourl,false,null,friendUid));
-                                getfromdb = true;
-                            }
-
-                            message.setMessageid(dataSnapshot.getKey());
-
-                            MessageEntity entity = Util.getEntityfromMessage(message, chatId, mContext);
-
-                            entity.setPhotoContentUrl(contentphotourl);
-
-                            chatViewModel.insertMessage(entity);
-
-                        }
-                    });
-
-
-                else
-
-                    mhandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            //// TODO: update the db message with local urls
-
-                            if(!m_getfromdb) {
-                                String groupphotourl = Util.saveImage(ChatActivity.this, friend.getPhotourl(), chatId);
-                                chatViewModel.insertChat(new SavedChatsEntity(chatId,friend.getName(),groupphotourl,false,null,friendUid));
-                                getfromdb = true;
-                            }
-
-                            message.setMessageid(dataSnapshot.getKey());
-
-                            MessageEntity entity = Util.getEntityfromMessage(message, chatId, mContext);
-
-                            chatViewModel.insertMessage(entity);
-
-                        }
-                    });
-
-                message.setMessageid(dataSnapshot.getKey());
-
-                MessageEntity entity = Util.getEntityfromMessage(message, chatId, mContext);
-
-                if(!getfromdb)
-                {
-
-                    chatViewModel.insertChat(new SavedChatsEntity(chatId,friend.getName(),friend.getPhotourl(),false,null,friendUid));
-                    getfromdb = true;
-                }
-
-                chatViewModel.insertMessage(entity);
-
-
-            }
+            handleMessage(dataSnapshot);
 
         }
-
-
 
 
         @Override
         public void onChildChanged(final DataSnapshot dataSnapshot, String s) {
 
-            final   Message message = dataSnapshot.getValue(Message.class);
-
-            if(message.getTimeStamp()!=null)
-            {
-//
-                if(message.getPhotoContentUrl() != null)
-
-                    mhandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            String contentphotourl =  Util.saveImage(ChatActivity.this,message.getPhotoContentUrl(),message.getPhotoContentName());
-                            //// TODO: update the db message with local urls
-
-                            message.setMessageid(dataSnapshot.getKey());
-
-                            MessageEntity entity = Util.getEntityfromMessage(message, chatId, mContext);
-
-                            entity.setPhotoContentUrl(contentphotourl);
-
-                            chatViewModel.insertMessage(entity);
-                        }
-                    });
-
-
-                message.setMessageid(dataSnapshot.getKey());
-
-                MessageEntity entity = Util.getEntityfromMessage(message,chatId,mContext);
-
-                chatViewModel.insertMessage(entity);
-
-            }
-
-
+            handleMessage(dataSnapshot);
         }
 
         @Override
@@ -1323,4 +1172,101 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
     }
 
 
+    public void handleMessage(final DataSnapshot dataSnapshot) {
+
+        final Message message = dataSnapshot.getValue(Message.class);
+
+        final boolean m_getfromdb = getfromdb;
+
+        if (message.getTimeStamp() != null) {
+
+
+            if (message.getPhotoContentUrl() != null)
+
+                mhandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        String contentphotourl = Util.saveImage(ChatActivity.this, message.getPhotoContentUrl(), message.getPhotoContentName());
+                        //// TODO: update the db message with local urls
+
+                        if (!m_getfromdb) {
+                            String groupphotourl = Util.saveImage(ChatActivity.this, friend.getPhotourl(), chatId);
+                            chatViewModel.insertChat(new SavedChatsEntity(chatId, friend.getName(), groupphotourl, false, null, friendUid));
+                            getfromdb = true;
+                        }
+
+                        message.setMessageid(dataSnapshot.getKey());
+
+                        MessageEntity entity = Util.getEntityfromMessage(message, chatId, mContext);
+
+                        entity.setPhotoContentUrl(contentphotourl);
+
+                        chatViewModel.insertMessage(entity);
+
+                    }
+                });
+
+
+            else
+
+                mhandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        //// TODO: update the db message with local urls
+
+                        if (!m_getfromdb) {
+                            String groupphotourl = Util.saveImage(ChatActivity.this, friend.getPhotourl(), chatId);
+                            chatViewModel.insertChat(new SavedChatsEntity(chatId, friend.getName(), groupphotourl, false, null, friendUid));
+                            getfromdb = true;
+                        }
+
+                        message.setMessageid(dataSnapshot.getKey());
+
+                        MessageEntity entity = Util.getEntityfromMessage(message, chatId, mContext);
+
+                        chatViewModel.insertMessage(entity);
+
+                    }
+                });
+
+            message.setMessageid(dataSnapshot.getKey());
+
+            MessageEntity entity = Util.getEntityfromMessage(message, chatId, mContext);
+
+            if (!getfromdb) {
+
+                chatViewModel.insertChat(new SavedChatsEntity(chatId, friend.getName(), friend.getPhotourl(), false, null, friendUid));
+                getfromdb = true;
+            }
+
+            chatViewModel.insertMessage(entity);
+
+
+        }
+
+
+    }
+
+
+    @Override
+    public void onBackPressed() {
+
+        if(bundle.containsKey("notification")) {
+
+            finish();
+
+            Intent upIntent = NavUtils.getParentActivityIntent(this);
+            TaskStackBuilder.create(this)
+                    // Add all of this activity's parents to the back stack
+                    .addNextIntentWithParentStack(upIntent)
+                    // Navigate up to the closest parent
+                    .startActivities();
+
+        }
+        else {
+            super.onBackPressed();
+        }
+    }
 }
