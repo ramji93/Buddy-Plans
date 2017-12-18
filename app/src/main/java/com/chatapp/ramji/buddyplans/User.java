@@ -17,8 +17,7 @@ public class User implements Serializable {
     private String fb_id;
 
 
-    public  User(String profiledp,String username,String email,String uid)
-    {
+    public User(String profiledp, String username, String email, String uid) {
         this.profileDP = profiledp;
         this.userName = username;
         this.eMail = email;
@@ -26,8 +25,7 @@ public class User implements Serializable {
 
     }
 
-    public User()
-    {
+    public User() {
 
     }
 

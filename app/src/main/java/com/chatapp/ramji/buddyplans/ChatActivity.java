@@ -181,12 +181,12 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
         bundle = getIntent().getExtras();
         if (bundle != null && bundle.containsKey("notification")) {
-               friend = new Friend();
+            friend = new Friend();
 
-           friend.setPhotourl(bundle.getString("photourl"));
-           friend.setChatid(bundle.getString("chatid"));
-           friend.setName(bundle.getString("sendername"));
-           friend.setUid(bundle.getString("senderid"));
+            friend.setPhotourl(bundle.getString("photourl"));
+            friend.setChatid(bundle.getString("chatid"));
+            friend.setName(bundle.getString("sendername"));
+            friend.setUid(bundle.getString("senderid"));
 
         }
 
@@ -903,7 +903,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
                 firebaseDatabase.getReference().child("Friends").child(friendUid).child(myUid).child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
 
-                NotificationMessage notificationMessage = new NotificationMessage(myUid,myName,friendUid,chatId, currentUser.getUserName() + " has uploaded a image");
+                NotificationMessage notificationMessage = new NotificationMessage(myUid, myName, friendUid, chatId, currentUser.getUserName() + " has uploaded a image");
 
                 firebaseDatabase.getReference().child("Notications").push().setValue(notificationMessage);
 
@@ -954,7 +954,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
             notificationtext = currentUser.getUserName() + " : " + message.getText().substring(0, 20) + "...";
 
 
-        NotificationMessage notificationMessage = new NotificationMessage(myUid,myName, friendUid,chatId, notificationtext);
+        NotificationMessage notificationMessage = new NotificationMessage(myUid, myName, friendUid, chatId, notificationtext);
 
         firebaseDatabase.getReference().child("Notications").push().setValue(notificationMessage);
 
@@ -1039,7 +1039,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
 
                 firebaseDatabase.getReference().child("Friends").child(friendUid).child(myUid).child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
 
-                NotificationMessage notificationMessage = new NotificationMessage(myUid,myName, friendUid,chatId, currentUser.getUserName() + " has uploaded a location");
+                NotificationMessage notificationMessage = new NotificationMessage(myUid, myName, friendUid, chatId, currentUser.getUserName() + " has uploaded a location");
 
                 firebaseDatabase.getReference().child("Notications").push().setValue(notificationMessage);
 
@@ -1253,7 +1253,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
     @Override
     public void onBackPressed() {
 
-        if(bundle.containsKey("notification")) {
+        if (bundle.containsKey("notification")) {
 
             finish();
 
@@ -1264,8 +1264,7 @@ public class ChatActivity extends BaseActivity implements GoogleApiClient.OnConn
                     // Navigate up to the closest parent
                     .startActivities();
 
-        }
-        else {
+        } else {
             super.onBackPressed();
         }
     }

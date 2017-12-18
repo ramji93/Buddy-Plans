@@ -37,7 +37,7 @@ public class UserActivity extends BaseActivity {
     private User user;
     @BindView(R.id.userDP)
     CircularImageView profilePhotoView;
-//    @BindView(R.id.username)
+    //    @BindView(R.id.username)
 //    TextView userNameView;
 //    @BindView(R.id.useremail)
 //    TextView userEmailView;
@@ -79,16 +79,14 @@ public class UserActivity extends BaseActivity {
         user = (User) intent.getSerializableExtra("User");
 
 
-
         Gson gson = new Gson();
 
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        currentUser = gson.fromJson(sharedPreferences.getString("User",""),User.class);
+        currentUser = gson.fromJson(sharedPreferences.getString("User", ""), User.class);
 
 
-        if(user.getFb_id()!=null)
-        {
+        if (user.getFb_id() != null) {
             dividerview.setVisibility(View.VISIBLE);
             fbLayout.setVisibility(View.VISIBLE);
 
@@ -114,16 +112,15 @@ public class UserActivity extends BaseActivity {
         firebaseDatabase.getReference("Friends").child(currentUser.getUid()).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-               if (dataSnapshot.exists()) {
+                if (dataSnapshot.exists()) {
 
-                   constraintLayout.setVisibility(View.VISIBLE);
+                    constraintLayout.setVisibility(View.VISIBLE);
 
-               }
-               else {
+                } else {
 
-                   userAdd.setVisibility(View.VISIBLE);
+                    userAdd.setVisibility(View.VISIBLE);
 
-               }
+                }
 
             }
 
@@ -138,26 +135,25 @@ public class UserActivity extends BaseActivity {
 
 
     @OnClick(R.id.fb_group)
-    public void viewFbProfile()
-    {
+    public void viewFbProfile() {
 
         Intent intent = new Intent();
 
-            try {
-                getPackageManager()
-                        .getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
-                String url = "https://www.facebook.com/"+user.getFb_id();
-              intent = new  Intent(Intent.ACTION_VIEW,
+        try {
+            getPackageManager()
+                    .getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
+            String url = "https://www.facebook.com/" + user.getFb_id();
+            intent = new Intent(Intent.ACTION_VIEW,
 //                        Uri.parse("fb://page/"+user.getFb_id())); //Trys to make intent with FB's URI
-                      Uri.parse("fb://facewebmodal/f?href="+url));
-                intent.setPackage("com.facebook.katana");
-            } catch (Exception e) {
-                intent = new  Intent(Intent.ACTION_VIEW,
-                        Uri.parse("https://www.facebook.com/"+user.getFb_id())); //catches and opens a url to the desired page
-            }
+                    Uri.parse("fb://facewebmodal/f?href=" + url));
+            intent.setPackage("com.facebook.katana");
+        } catch (Exception e) {
+            intent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://www.facebook.com/" + user.getFb_id())); //catches and opens a url to the desired page
+        }
 
 
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
 
     }
@@ -179,8 +175,7 @@ public class UserActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if(item.getItemId() == android.R.id.home)
-        {
+        if (item.getItemId() == android.R.id.home) {
             super.onBackPressed();
         }
 
@@ -188,8 +183,7 @@ public class UserActivity extends BaseActivity {
     }
 
     @OnClick(R.id.useradd)
-    public void addToFriends()
-    {
+    public void addToFriends() {
 
 
         //1. add new object in friends/user id/
@@ -200,7 +194,7 @@ public class UserActivity extends BaseActivity {
 
         friendDatabaseReference1 = firebaseDatabase.getReference().child("Friends").child(currentUser.getUid()).child(user.getUid());
 
-        Friend friend1 = new Friend(user.getUserName(),user.getProfileDP(),true,user.getUid());
+        Friend friend1 = new Friend(user.getUserName(), user.getProfileDP(), true, user.getUid());
 
         friend1.setChatid(chatId);
 
@@ -209,13 +203,13 @@ public class UserActivity extends BaseActivity {
 
         //2. add new object in friends/user id2/
 
-           friendDatabaseReference2 = firebaseDatabase.getReference().child("Friends").child(user.getUid()).child(currentUser.getUid());
+        friendDatabaseReference2 = firebaseDatabase.getReference().child("Friends").child(user.getUid()).child(currentUser.getUid());
 
-           Friend friend2 = new Friend(currentUser.getUserName(),currentUser.getProfileDP(),true,currentUser.getUid());
+        Friend friend2 = new Friend(currentUser.getUserName(), currentUser.getProfileDP(), true, currentUser.getUid());
 
-           friend2.setChatid(chatId);
+        friend2.setChatid(chatId);
 
-           friendDatabaseReference2.setValue(friend2);
+        friendDatabaseReference2.setValue(friend2);
 
         Snackbar snackbar = Snackbar
                 .make(coordinatorLayout, "Added to your friends list", Snackbar.LENGTH_LONG);
@@ -226,9 +220,6 @@ public class UserActivity extends BaseActivity {
 
 
     }
-
-
-
 
 
 }

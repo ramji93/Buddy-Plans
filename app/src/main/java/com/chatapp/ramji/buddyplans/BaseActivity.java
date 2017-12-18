@@ -10,22 +10,20 @@ public class BaseActivity extends AppCompatActivity {
 
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
 
         super.onResume();
 
-    MyApplication myApp = (MyApplication)this.getApplication();
+        MyApplication myApp = (MyApplication) this.getApplication();
 
         myApp.stopActivityTransitionTimer();
 
     }
 
     @Override
-    public void onPause()
-    {
+    public void onPause() {
         super.onPause();
-        ((MyApplication)this.getApplication()).startActivityTransitionTimer();
+        ((MyApplication) this.getApplication()).startActivityTransitionTimer();
     }
 
 }

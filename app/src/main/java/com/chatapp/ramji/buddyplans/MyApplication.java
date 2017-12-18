@@ -52,12 +52,11 @@ public class MyApplication extends Application {
 //        this.mActivityTransitionTimer = new Timer();
 //        this.mActivityTransitionTimerTask = new TimerTask() {
 //            public void run() {
-                previousState = IsInBackground;
-                MyApplication.this.IsInBackground = true;
-                if(previousState != true && IsInBackground == true && userid != null )
-                {
-                    FirebaseDatabase.getInstance().getReference().child("Users").child(userid).child("online").setValue(false);
-                }
+        previousState = IsInBackground;
+        MyApplication.this.IsInBackground = true;
+        if (previousState != true && IsInBackground == true && userid != null) {
+            FirebaseDatabase.getInstance().getReference().child("Users").child(userid).child("online").setValue(false);
+        }
 //
 //            }
 //        };
@@ -73,13 +72,11 @@ public class MyApplication extends Application {
         previousState = IsInBackground;
         this.IsInBackground = false;
 
-        if(previousState !=false && IsInBackground == false && userid != null)
-        {
+        if (previousState != false && IsInBackground == false && userid != null) {
             FirebaseDatabase.getInstance().getReference().child("Users").child(userid).child("online").setValue(true);
         }
 
     }
-
 
 
 }

@@ -79,12 +79,13 @@ import static android.Manifest.permission.READ_CONTACTS;
 /**
  * A login screen that offers login via email/password.
  */
-public class MainActivity extends BaseActivity  {
+public class MainActivity extends BaseActivity {
 
-   // @BindView(R.id.welcome_message)
-   // TextView userText;
+    // @BindView(R.id.welcome_message)
+    // TextView userText;
 
-    @BindView(R.id.mainTab) TabLayout mainTabLayout;
+    @BindView(R.id.mainTab)
+    TabLayout mainTabLayout;
 
     @BindView(R.id.mainToolbar)
     Toolbar mainToolbar;
@@ -125,10 +126,10 @@ public class MainActivity extends BaseActivity  {
     private String mUid = null;
 
     int tab_index = 0;
-//    final int WRITE_REQUEST = 1;
+    //    final int WRITE_REQUEST = 1;
 //    final int CALENDAR_REQUEST = 2;
 //    final int CAMERA_REQUEST = 3;
-      final int PERMISSION_REQUEST = 4;
+    final int PERMISSION_REQUEST = 4;
 
 
     FirebaseUser user;
@@ -146,15 +147,12 @@ public class MainActivity extends BaseActivity  {
         ViewPagerAdapter adapter;
 
 
-
-        if(viewPager.getAdapter()!=null)
-        {
+        if (viewPager.getAdapter() != null) {
             adapter = (ViewPagerAdapter) viewPager.getAdapter();
             adapter.mFragmentList.clear();
             adapter.mFragmentTitleList.clear();
 
-        }
-        else {
+        } else {
             adapter = new ViewPagerAdapter(getSupportFragmentManager());
         }
         friendsFragment = new FriendsFragment();
@@ -168,7 +166,6 @@ public class MainActivity extends BaseActivity  {
     }
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -180,9 +177,9 @@ public class MainActivity extends BaseActivity  {
 
         setSupportActionBar(mainToolbar);
 
-        if(getIntent() != null ) {
+        if (getIntent() != null) {
 
-            if(getIntent().getAction()==Intent.ACTION_SEND) {
+            if (getIntent().getAction() == Intent.ACTION_SEND) {
 
                 shareIntent = getIntent();
                 Log.d(MainActivity.class.getName(), "share intent");
@@ -213,7 +210,6 @@ public class MainActivity extends BaseActivity  {
                 user = firebaseAuth.getCurrentUser();
 
 
-
                 if (user != null) {
 //                    Log.d("main activity","user id is "+user.getUid());
 //                    Log.d("main activity","user photo url is "+user.getPhotoUrl());
@@ -226,9 +222,7 @@ public class MainActivity extends BaseActivity  {
                     //  userText.setText("welcome " + mUsername);
 
 
-
                 } else {
-
 
 
                     List<AuthUI.IdpConfig> authProviders = new ArrayList<AuthUI.IdpConfig>();
@@ -250,23 +244,22 @@ public class MainActivity extends BaseActivity  {
         }
 
 
-        if(ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_CALENDAR)
                 != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED
-                )
-        {
+                ) {
             ArrayList<String> permissionStrings = new ArrayList<String>();
 
-            if(ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED)
                 permissionStrings.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-            if(ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.WRITE_CALENDAR)
+            if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.WRITE_CALENDAR)
                     != PackageManager.PERMISSION_GRANTED)
                 permissionStrings.add(android.Manifest.permission.WRITE_CALENDAR);
 
-            if(ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.CAMERA)
+            if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.CAMERA)
                     != PackageManager.PERMISSION_GRANTED)
                 permissionStrings.add(android.Manifest.permission.CAMERA);
 
@@ -276,7 +269,6 @@ public class MainActivity extends BaseActivity  {
 
 
     }
-
 
 
     private void setUpNavigationView() {
@@ -293,16 +285,16 @@ public class MainActivity extends BaseActivity  {
                     case R.id.nav_profile:
                         navItemIndex = 1;
 
-                        startActivity(new Intent(MainActivity.this,MyProfileActivity.class));
+                        startActivity(new Intent(MainActivity.this, MyProfileActivity.class));
                         drawer.closeDrawers();
 
                         break;
 
                     case R.id.nav_favourites:
-                         navItemIndex = 2;
-                         startActivity(new Intent(MainActivity.this,FavouritesActivity.class));
-                         drawer.closeDrawers();
-                         break;
+                        navItemIndex = 2;
+                        startActivity(new Intent(MainActivity.this, FavouritesActivity.class));
+                        drawer.closeDrawers();
+                        break;
 
                     case R.id.nav_logout:
                         navItemIndex = 3;
@@ -320,8 +312,6 @@ public class MainActivity extends BaseActivity  {
                         editor.remove("profiledp");
 
                         editor.commit();
-
-
 
 
                     default:
@@ -363,30 +353,28 @@ public class MainActivity extends BaseActivity  {
         drawer.addDrawerListener(actionBarDrawerToggle);
 
         //calling sync state is necessary or else your hamburger icon wont show up
-        if(shareIntent!=null)
-        actionBarDrawerToggle.setDrawerIndicatorEnabled(false);
+        if (shareIntent != null)
+            actionBarDrawerToggle.setDrawerIndicatorEnabled(false);
 
         actionBarDrawerToggle.syncState();
 
     }
 
-    public void refreshProfileImage()
-    {
+    public void refreshProfileImage() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        String storedPhotoUrl = sharedPreferences.getString("profiledp",currentuser.getProfileDP());
+        String storedPhotoUrl = sharedPreferences.getString("profiledp", currentuser.getProfileDP());
         Glide.with(this).load(storedPhotoUrl).into(imgProfile);
     }
 
 
-    public void SigninInitialize()
-    {
+    public void SigninInitialize() {
 
         String facebook_id = null;
 
         currentuser = null;
 
 
-        if(AccessToken.getCurrentAccessToken()!=null) {
+        if (AccessToken.getCurrentAccessToken() != null) {
 
             facebook_id = Profile.getCurrentProfile().getId().toString();
 
@@ -396,39 +384,32 @@ public class MainActivity extends BaseActivity  {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
 
 
+        if (!sharedPreferences.contains("User")) {
 
-        if(!sharedPreferences.contains("User"))
-        {
-
-             currentuser = new User( (user.getPhotoUrl() == null) ? null : user.getPhotoUrl().toString() ,user.getDisplayName(),user.getEmail(),user.getUid());
+            currentuser = new User((user.getPhotoUrl() == null) ? null : user.getPhotoUrl().toString(), user.getDisplayName(), user.getEmail(), user.getUid());
 
             currentuser.setFb_id(facebook_id);
 
             SharedPreferences.Editor editor = sharedPreferences.edit();
             Gson gson = new Gson();
             String currentUserString = gson.toJson(currentuser);
-            editor.putString("User",currentUserString);
+            editor.putString("User", currentUserString);
 
             editor.commit();
 
 
-
             Glide.with(this).load(currentuser.getProfileDP()).into(imgProfile);
-        }
-
-        else
-        {
+        } else {
             Gson gson = new Gson();
 
             sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
             currentuser = gson.fromJson(sharedPreferences.getString("User", ""), User.class);
 
             String storedPhotoUrl;
-            storedPhotoUrl = sharedPreferences.getString("profiledp",currentuser.getProfileDP());
+            storedPhotoUrl = sharedPreferences.getString("profiledp", currentuser.getProfileDP());
             Glide.with(this).load(storedPhotoUrl).into(imgProfile);
 
         }
-
 
 
         txtName.setText(mUsername);
@@ -442,20 +423,16 @@ public class MainActivity extends BaseActivity  {
         mainTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if(tab.getPosition() == 0)
-                {
+                if (tab.getPosition() == 0) {
 
-                    if(shareIntent==null) {
+                    if (shareIntent == null) {
                         searchMenuItem.setVisible(true);
                         addGroupMenuItem.setVisible(false);
                     }
                     tab_index = tab.getPosition();
 
-                }
-
-                else
-                {
-                    if(shareIntent==null) {
+                } else {
+                    if (shareIntent == null) {
                         searchMenuItem.setVisible(false);
                         addGroupMenuItem.setVisible(true);
                     }
@@ -484,21 +461,18 @@ public class MainActivity extends BaseActivity  {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final User currentUser = dataSnapshot.getValue(User.class);
 
-                if(currentUser == null)
-                {
+                if (currentUser == null) {
 
                     mDatabaseReference.setValue(finalCurrentuser);
 
-                }
-
-                else
+                } else
 
                 {
                     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
 
                     final SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                    if(currentUser.getProfileDP()!=null)
+                    if (currentUser.getProfileDP() != null)
 
                     {
                         editor.putString("profiledp", currentUser.getProfileDP());
@@ -507,8 +481,8 @@ public class MainActivity extends BaseActivity  {
                             @Override
                             public void run() {
 
-                               String url = Util.saveProfileImage(mContext,currentUser.getProfileDP(),mUid);
-                                editor.putString("profiledp",url);
+                                String url = Util.saveProfileImage(mContext, currentUser.getProfileDP(), mUid);
+                                editor.putString("profiledp", url);
                                 editor.commit();
 
                             }
@@ -527,8 +501,7 @@ public class MainActivity extends BaseActivity  {
 
                 String token = FirebaseInstanceId.getInstance().getToken();
 
-                if(token!= null)
-                {
+                if (token != null) {
 
                     mDatabaseReference.child("instanceId").setValue(token);
                 }
@@ -547,8 +520,7 @@ public class MainActivity extends BaseActivity  {
     }
 
 
-    public void SignoutFuction()
-    {
+    public void SignoutFuction() {
         mFirebaseDatabase.getReference().child("Users").child(mUid).child("online").setValue(false);
 
         mFirebaseDatabase.getReference().child("Users").child(mUid).child("instanceId").setValue(null);
@@ -557,9 +529,9 @@ public class MainActivity extends BaseActivity  {
 
         mViewpager.setAdapter(null);
 
-        ViewPagerAdapter pagerAdapter =  (ViewPagerAdapter) mViewpager.getAdapter();
+        ViewPagerAdapter pagerAdapter = (ViewPagerAdapter) mViewpager.getAdapter();
 
-        if(UserCheckListener != null)
+        if (UserCheckListener != null)
             mDatabaseReference.removeEventListener(UserCheckListener);
 //
 //        try {
@@ -574,10 +546,9 @@ public class MainActivity extends BaseActivity  {
 //       }
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-       fragmentTransaction.remove(groupsFragment);
-       fragmentTransaction.remove(friendsFragment);
-       fragmentTransaction.commit();
-
+        fragmentTransaction.remove(groupsFragment);
+        fragmentTransaction.remove(friendsFragment);
+        fragmentTransaction.commit();
 
 
     }
@@ -594,7 +565,8 @@ public class MainActivity extends BaseActivity  {
             } else if (resultCode == RESULT_CANCELED) {
                 // Sign in was canceled by the user, finish the activity
                 Toast.makeText(this, "Sign in canceled", Toast.LENGTH_SHORT).show();
-                finish();            }
+                finish();
+            }
         }
     }
 
@@ -602,10 +574,8 @@ public class MainActivity extends BaseActivity  {
     @Override
     protected void onStart() {
         super.onStart();
-        if(currentuser!=null)
-        refreshProfileImage();
-
-
+        if (currentuser != null)
+            refreshProfileImage();
 
 
     }
@@ -627,7 +597,7 @@ public class MainActivity extends BaseActivity  {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if(shareIntent!=null)
+        if (shareIntent != null)
             return true;
         else {
             MenuInflater inflater = getMenuInflater();
@@ -680,18 +650,17 @@ public class MainActivity extends BaseActivity  {
                         .appendPath("store")
                         .appendPath("apps")
                         .appendPath("details")
-                        .appendQueryParameter("id","com.chatapp.ramji.buddyplans");
+                        .appendQueryParameter("id", "com.chatapp.ramji.buddyplans");
 
                 Intent appintent = new Intent(Intent.ACTION_SEND);
                 appintent.setType("text/plain");
-                appintent.putExtra(Intent.EXTRA_TEXT,message + uribuilder.build().toString());
-                startActivity(Intent.createChooser(appintent,"Select an app to send invite"));
+                appintent.putExtra(Intent.EXTRA_TEXT, message + uribuilder.build().toString());
+                startActivity(Intent.createChooser(appintent, "Select an app to send invite"));
                 return true;
 
             case R.id.add_group:
 
-                if(!Util.checkConnection(mContext))
-                {
+                if (!Util.checkConnection(mContext)) {
 
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -708,7 +677,7 @@ public class MainActivity extends BaseActivity  {
                     return true;
 
                 }
-                Intent intent = new Intent(this,GroupCreateActivity.class);
+                Intent intent = new Intent(this, GroupCreateActivity.class);
                 this.startActivity(intent);
                 return true;
 

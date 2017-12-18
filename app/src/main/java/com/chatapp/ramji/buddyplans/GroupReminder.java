@@ -21,13 +21,12 @@ public class GroupReminder {
     public String chatid;
 
 
-
     public GroupReminder() {
 
 
     }
 
-    public GroupReminder(String senderId, String groupId, String title, String timestamp, String sendername,String groupchat,String chatid) {
+    public GroupReminder(String senderId, String groupId, String title, String timestamp, String sendername, String groupchat, String chatid) {
 
         this.senderId = senderId;
         this.groupId = groupId;

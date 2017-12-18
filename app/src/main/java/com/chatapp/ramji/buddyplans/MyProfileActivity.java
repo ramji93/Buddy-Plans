@@ -84,33 +84,28 @@ public class MyProfileActivity extends BaseActivity {
 
         Gson gson = new Gson();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        user = gson.fromJson(sharedPreferences.getString("User",""),User.class);
+        user = gson.fromJson(sharedPreferences.getString("User", ""), User.class);
 
-        String profile_dp_uri = sharedPreferences.getString("profiledp",user.getProfileDP());
+        String profile_dp_uri = sharedPreferences.getString("profiledp", user.getProfileDP());
 
-        if(profile_dp_uri!=null)
+        if (profile_dp_uri != null)
 
-        Glide.with(this).load(profile_dp_uri).into(profilePhotoView);
+            Glide.with(this).load(profile_dp_uri).into(profilePhotoView);
 
-        else
-        {
+        else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 Glide.with(this).load(getDrawable(R.drawable.ic_person_black_24dp)).into(profilePhotoView);
-            }
-
-            else{
+            } else {
                 Glide.with(this).load(getResources().getDrawable(R.drawable.ic_person_black_24dp)).into(profilePhotoView);
             }
 
         }
 
 
-
         profilePhotoView.setActivated(true);
 
 
-        if(user.getFb_id()!=null)
-        {
+        if (user.getFb_id() != null) {
             dividerview.setVisibility(View.VISIBLE);
             fbLayout.setVisibility(View.VISIBLE);
 
@@ -131,7 +126,6 @@ public class MyProfileActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
-
 
 
     }
@@ -168,9 +162,7 @@ public class MyProfileActivity extends BaseActivity {
                         public void onImageSelected(Uri uri) {
 
 
-
                             ProfilePhoto_new = uri;
-
 
 
                             Glide.with(MyProfileActivity.this).load(ProfilePhoto_new).into(profilePhotoView);
@@ -195,10 +187,9 @@ public class MyProfileActivity extends BaseActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        if(requestCode==WRITE_REQUEST)
-        {
+        if (requestCode == WRITE_REQUEST) {
 
-            if(bottomSheetDialogFragment==null) {
+            if (bottomSheetDialogFragment == null) {
 
                 bottomSheetDialogFragment = new TedBottomPicker.Builder(this).setTitle("Choose new Profile Photo")
                         .setOnImageSelectedListener(new TedBottomPicker.OnImageSelectedListener() {
@@ -220,65 +211,62 @@ public class MyProfileActivity extends BaseActivity {
             bottomSheetDialogFragment.show(getSupportFragmentManager());
 
 
-
         }
     }
 
 
     @OnClick(R.id.useredit)
-    public void editProfile()
-    {
+    public void editProfile() {
 
         userreference.child(user.getUid()).child("profileDP").setValue(null);
 
-        SharedPreferences sharedPreferences =  PreferenceManager.getDefaultSharedPreferences(MyProfileActivity.this);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MyProfileActivity.this);
 
-        SharedPreferences.Editor editor =  sharedPreferences.edit();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putString("profiledp",ProfilePhoto_new.toString());
+        editor.putString("profiledp", ProfilePhoto_new.toString());
 
         editor.commit();
 
-            StorageReference imageRef = imageStorageReference.child(user.getUid()).child("profile");
+        StorageReference imageRef = imageStorageReference.child(user.getUid()).child("profile");
 
-            imageRef.putFile(ProfilePhoto_new).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+        imageRef.putFile(ProfilePhoto_new).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                    //noinspection VisibleForTests
-                    userreference.child(user.getUid()).child("profileDP").setValue(taskSnapshot.getDownloadUrl().toString());
-                }
-            });
+                //noinspection VisibleForTests
+                userreference.child(user.getUid()).child("profileDP").setValue(taskSnapshot.getDownloadUrl().toString());
+            }
+        });
 
 //        }
 
-        Toast.makeText(this,"Your Profile is being edited ",Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Your Profile is being edited ", Toast.LENGTH_LONG).show();
 
         finish();
 
     }
 
     @OnClick(R.id.fb_group)
-    public void viewFbProfile()
-    {
+    public void viewFbProfile() {
 
         Intent intent = new Intent();
 
         try {
             getPackageManager()
                     .getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
-            String url = "https://www.facebook.com/"+user.getFb_id();
-            intent = new  Intent(Intent.ACTION_VIEW,
+            String url = "https://www.facebook.com/" + user.getFb_id();
+            intent = new Intent(Intent.ACTION_VIEW,
 //                        Uri.parse("fb://page/"+user.getFb_id())); //Trys to make intent with FB's URI
-                    Uri.parse("fb://facewebmodal/f?href="+url));
+                    Uri.parse("fb://facewebmodal/f?href=" + url));
             intent.setPackage("com.facebook.katana");
         } catch (Exception e) {
-            intent = new  Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://www.facebook.com/"+user.getFb_id())); //catches and opens a url to the desired page
+            intent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://www.facebook.com/" + user.getFb_id())); //catches and opens a url to the desired page
         }
 
 
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
 
     }
@@ -291,7 +279,7 @@ public class MyProfileActivity extends BaseActivity {
                 return true;
         }
 
-        return(super.onOptionsItemSelected(item));
+        return (super.onOptionsItemSelected(item));
     }
 
 }

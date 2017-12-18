@@ -210,12 +210,12 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
         }
 
         if (groupChatId != null && menu != null) {
-           if(chatViewModel.savedchat.size()>0 ) {
-               if(chatViewModel.savedchat.get(0).favourite==true) {
-                   isfavourite = true;
-                   menu.getItem(1).setIcon(R.drawable.fav_unselect);
-                   menu.getItem(2).setVisible(true);
-               }
+            if (chatViewModel.savedchat.size() > 0) {
+                if (chatViewModel.savedchat.get(0).favourite == true) {
+                    isfavourite = true;
+                    menu.getItem(1).setIcon(R.drawable.fav_unselect);
+                    menu.getItem(2).setVisible(true);
+                }
             }
 
         }
@@ -248,45 +248,41 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
             public void onClick(View v) {
 //                ZoomAnimation.zoom(v, groupLogo.getDrawable(), GroupChatActivity.this, false);
 
-                final String path = Environment.getExternalStorageDirectory().getPath()+"/Buddyplans/pictures"+"/"+groupheader.getChatId();
+                final String path = Environment.getExternalStorageDirectory().getPath() + "/Buddyplans/pictures" + "/" + groupheader.getChatId();
 
-                File f=new File(path);
+                File f = new File(path);
 
-                if(f.exists()) {
+                if (f.exists()) {
 
-                      if(!imageLoadedIntoMediaStore) {
+                    if (!imageLoadedIntoMediaStore) {
 
-                          imageLoadedIntoMediaStore = true;
+                        imageLoadedIntoMediaStore = true;
 
-                          mhandler.post(new Runnable() {
-                              @Override
-                              public void run() {
-                                  try {
-                                      MediaStore.Images.Media.insertImage(GroupChatActivity.this.getContentResolver(), path, groupheader.getChatId(), groupheader.getChatId());
-                                  } catch (FileNotFoundException e) {
-                                      e.printStackTrace();
-                                  }
-                              }
-                          });
+                        mhandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    MediaStore.Images.Media.insertImage(GroupChatActivity.this.getContentResolver(), path, groupheader.getChatId(), groupheader.getChatId());
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
 
-                      }
+                    }
 
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_VIEW);
 
-                    if(Build.VERSION.SDK_INT > M)
-                    {
-                        intent.setDataAndType(CustomFileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".my.package.name.provider", f),"image/*");
+                    if (Build.VERSION.SDK_INT > M) {
+                        intent.setDataAndType(CustomFileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".my.package.name.provider", f), "image/*");
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         mContext.startActivity(intent);
-                    }
-
-                    else {
+                    } else {
                         intent.setDataAndType(Uri.fromFile(f), "image/*");
                         mContext.startActivity(intent);
                     }
                 }
-
 
 
             }
@@ -302,7 +298,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         currentUser = gson.fromJson(sharedPreferences.getString("User", ""), User.class);
         myName = currentUser.getUserName();
-        profileDpUrl = sharedPreferences.getString("profiledp",currentUser.getProfileDP());
+        profileDpUrl = sharedPreferences.getString("profiledp", currentUser.getProfileDP());
 
         firebaseDatabase = FirebaseDatabase.getInstance();
 
@@ -371,7 +367,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
                 activeNetwork.isConnectedOrConnecting();
 
         Uri uri = Uri.parse(groupheader.getPhotoUrl());
-        if(isConnected && uri.getScheme() != null) {
+        if (isConnected && uri.getScheme() != null) {
 
             if (uri.getScheme().equalsIgnoreCase("https") || uri.getScheme().equalsIgnoreCase("http")) {
 
@@ -452,8 +448,8 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
                 Message message = new Message(null, myName, null, null, currentUser.getUid(), location);
 
-                if(profileDpUrl != null)
-                message.setPhotoUrl(profileDpUrl);
+                if (profileDpUrl != null)
+                    message.setPhotoUrl(profileDpUrl);
 
                 String messageKey = groupmessageReference.push().getKey();
 
@@ -465,7 +461,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
                 String notificationText = groupheader.getName() + " : " + myName + " has uploaded a location";
 
-                GroupNotification groupNotification = new GroupNotification(currentUser.getUid(), myName,groupheader.getGroupKey(),groupChatId,groupheader.getName(), notificationText);
+                GroupNotification groupNotification = new GroupNotification(currentUser.getUid(), myName, groupheader.getGroupKey(), groupChatId, groupheader.getName(), notificationText);
 
                 firebaseDatabase.getReference("GroupNotifications").push().setValue(groupNotification);
 
@@ -487,7 +483,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
         inflater.inflate(R.menu.groupchat_menu, menu);
         if (groupChatId != null) {
-            if(chatViewModel!=null) {
+            if (chatViewModel != null) {
                 if (chatViewModel.savedchat.size() > 0) {
                     if (chatViewModel.savedchat.get(0).favourite == true) {
                         isfavourite = true;
@@ -504,8 +500,6 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
     }
 
 
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -516,8 +510,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
             case R.id.editgroup_menu:
 
-                if(!Util.checkConnection(mContext))
-                {
+                if (!Util.checkConnection(mContext)) {
 
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -537,7 +530,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
                 Intent intent = new Intent(this, EditGroupActivity.class);
                 intent.putExtra("group", groupheader);
                 startActivity(intent);
-               break;
+                break;
 
             case R.id.mark_favourite:
 
@@ -562,18 +555,17 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
         }
 
-          return true;
+        return true;
     }
 
 
-    private void addReminder()
-    {
+    private void addReminder() {
 
         remindCalendar = Calendar.getInstance();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View view = getLayoutInflater().inflate(R.layout.setreminder_dialog_layout,null);
+        View view = getLayoutInflater().inflate(R.layout.setreminder_dialog_layout, null);
         final EditText title_view = (EditText) view.findViewById(R.id.reminder_title);
-        Button setdate_button =  (Button) view.findViewById(R.id.setdatetime_button);
+        Button setdate_button = (Button) view.findViewById(R.id.setdatetime_button);
         final TextView dateTime_view = (TextView) view.findViewById(R.id.datetime_textview);
         Button proceed_view = (Button) view.findViewById(R.id.proceed_button);
         builder.setView(view);
@@ -594,32 +586,28 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
                 String datetime = dateTime_view.getText().toString();
                 String title = title_view.getText().toString();
 
-                if(datetime.isEmpty() || datetime == null || datetime.equalsIgnoreCase("") || title.isEmpty() || title == null || title.equalsIgnoreCase("") )
-                {
+                if (datetime.isEmpty() || datetime == null || datetime.equalsIgnoreCase("") || title.isEmpty() || title == null || title.equalsIgnoreCase("")) {
                     Toast.makeText(mContext, "Mandatory fields should be entered", Toast.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     Calendar c = Calendar.getInstance();
-                    c.add(Calendar.MINUTE,5);
+                    c.add(Calendar.MINUTE, 5);
                     long minLong = c.getTimeInMillis();
 
                     long remLong = remindCalendar.getTimeInMillis();
 
-                    if(remLong < minLong)
-                    {
+                    if (remLong < minLong) {
                         Toast.makeText(mContext, "Time set should be atleast 5 mins later than current time", Toast.LENGTH_LONG).show();
-                    }
-                    else{
+                    } else {
 
                         //// TODO: add reminder
 
-                        GroupReminder reminder = new GroupReminder(currentUser.getUid(),groupheader.getGroupKey(),title,Long.toString(remLong),myName,groupheader.getName(),groupChatId);
+                        GroupReminder reminder = new GroupReminder(currentUser.getUid(), groupheader.getGroupKey(), title, Long.toString(remLong), myName, groupheader.getName(), groupChatId);
 
                         firebaseDatabase.getReference().child("GroupReminders").push().setValue(reminder);
 
                         dialog.dismiss();
 
-                        Message message = new Message(currentUser.getUserName() + " has added a group reminder ",null,null,null,null,null);
+                        Message message = new Message(currentUser.getUserName() + " has added a group reminder ", null, null, null, null, null);
 
                         String messageKey = groupmessageReference.push().getKey();
 
@@ -636,36 +624,30 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
         });
 
 
-
     }
 
-    private void onFavouritePress()
-    {
+    private void onFavouritePress() {
 
-       if(isfavourite)
-       {
-           chatViewModel.setNotFavouriteChat(groupChatId);
-           isfavourite = false;
+        if (isfavourite) {
+            chatViewModel.setNotFavouriteChat(groupChatId);
+            isfavourite = false;
 
-       }
-
-       else {
-           if(messages_adapter.messages.size()>0) {
-               chatViewModel.setFavouriteChat(groupChatId);
-               isfavourite = false;
-           }
-           else {
-               AlertDialog alertDialog = new AlertDialog.Builder(GroupChatActivity.this).create();
-               alertDialog.setMessage(getString(R.string.fav_alert));
-               alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
-                       new DialogInterface.OnClickListener() {
-                           public void onClick(DialogInterface dialog, int which) {
-                               dialog.dismiss();
-                           }
-                       });
-               alertDialog.show();
-           }
-       }
+        } else {
+            if (messages_adapter.messages.size() > 0) {
+                chatViewModel.setFavouriteChat(groupChatId);
+                isfavourite = false;
+            } else {
+                AlertDialog alertDialog = new AlertDialog.Builder(GroupChatActivity.this).create();
+                alertDialog.setMessage(getString(R.string.fav_alert));
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.show();
+            }
+        }
 
         chatViewModel.refreshchat(groupChatId);
 
@@ -673,11 +655,11 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
     }
 
-    private void datePicker(final TextView datetimetext){
+    private void datePicker(final TextView datetimetext) {
 
         // Get Current Date
 
-       int mYear = remindCalendar.get(Calendar.YEAR);
+        int mYear = remindCalendar.get(Calendar.YEAR);
         int mMonth = remindCalendar.get(Calendar.MONTH);
         int mDay = remindCalendar.get(Calendar.DAY_OF_MONTH);
 
@@ -685,18 +667,18 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
                 new DatePickerDialog.OnDateSetListener() {
 
                     @Override
-                    public void onDateSet(DatePicker view, int year,int monthOfYear, int dayOfMonth) {
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 
-                        remindCalendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
-                        remindCalendar.set(Calendar.MONTH,monthOfYear);
-                        remindCalendar.set(Calendar.YEAR,year);
+                        remindCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                        remindCalendar.set(Calendar.MONTH, monthOfYear);
+                        remindCalendar.set(Calendar.YEAR, year);
                         timePicker(datetimetext);
                     }
                 }, mYear, mMonth, mDay);
         datePickerDialog.show();
     }
 
-    private void timePicker(final TextView datetimeText){
+    private void timePicker(final TextView datetimeText) {
         // Get Current Time
 
         int mHour = remindCalendar.get(Calendar.HOUR_OF_DAY);
@@ -707,19 +689,16 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
                 new TimePickerDialog.OnTimeSetListener() {
 
                     @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay,int minute) {
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
-                        remindCalendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
-                        remindCalendar.set(Calendar.MINUTE,minute);
+                        remindCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                        remindCalendar.set(Calendar.MINUTE, minute);
 
-                        datetimeText.setText(remindCalendar.get(Calendar.DAY_OF_MONTH) + "/" + (remindCalendar.get(Calendar.MONTH)+1) + "/" + remindCalendar.get(Calendar.YEAR) + " " +hourOfDay + ":" +  ((minute > 9) ? minute : "0"+minute ) +"  ");
+                        datetimeText.setText(remindCalendar.get(Calendar.DAY_OF_MONTH) + "/" + (remindCalendar.get(Calendar.MONTH) + 1) + "/" + remindCalendar.get(Calendar.YEAR) + " " + hourOfDay + ":" + ((minute > 9) ? minute : "0" + minute) + "  ");
                     }
                 }, mHour, mMinute, false);
         timePickerDialog.show();
     }
-
-
-
 
 
     @OnClick(R.id.attachlocation)
@@ -818,7 +797,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
         StorageReference imageRef = imageStorageReference.child(uri.getLastPathSegment());
 
 
-        final Snackbar snackbar = Snackbar.make(rootView,(isConnected ? "Uploading the image" : "Image will be uploaded once connection resumes"),(isConnected ? 10000 : 3000));
+        final Snackbar snackbar = Snackbar.make(rootView, (isConnected ? "Uploading the image" : "Image will be uploaded once connection resumes"), (isConnected ? 10000 : 3000));
         snackbar.show();
 
         imageRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -843,7 +822,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
                 String notificationText = groupheader.getName() + " : " + myName + " has uploaded a image";
 
-                GroupNotification groupNotification = new GroupNotification(currentUser.getUid(), myName, groupheader.getGroupKey(),groupChatId,groupheader.getName(), notificationText);
+                GroupNotification groupNotification = new GroupNotification(currentUser.getUid(), myName, groupheader.getGroupKey(), groupChatId, groupheader.getName(), notificationText);
 
                 firebaseDatabase.getReference("GroupNotifications").push().setValue(groupNotification);
 
@@ -939,7 +918,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
     @Override
     public void onBackPressed() {
 
-        if(bundle.containsKey("notification")) {
+        if (bundle.containsKey("notification")) {
 
             finish();
 
@@ -950,19 +929,17 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
                     // Navigate up to the closest parent
                     .startActivities();
 
-        }
-        else {
+        } else {
             super.onBackPressed();
         }
     }
 
     @OnClick(R.id.groupsend_button)
-    public void groupMessageSend()
-    {
+    public void groupMessageSend() {
 
-        Message message = new Message(groupMessageText.getText().toString(),myName,null,null,currentUser.getUid(),null);
+        Message message = new Message(groupMessageText.getText().toString(), myName, null, null, currentUser.getUid(), null);
 
-        if(profileDpUrl!=null)
+        if (profileDpUrl != null)
             message.setPhotoUrl(profileDpUrl);
 
         String messageKey = groupmessageReference.push().getKey();
@@ -975,22 +952,21 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
         String notificationText;
 
-        if(message.getText().length() <= 20)
+        if (message.getText().length() <= 20)
             notificationText = groupheader.getName() + " ~ " + currentUser.getUserName() + " : " + message.getText();
 
         else
-            notificationText = groupheader.getName() + " ~ " + currentUser.getUserName() + " : " + message.getText().substring(0,20) + "...";
+            notificationText = groupheader.getName() + " ~ " + currentUser.getUserName() + " : " + message.getText().substring(0, 20) + "...";
 
 
-
-        GroupNotification groupNotification = new GroupNotification(currentUser.getUid(),myName,groupheader.getGroupKey(),groupChatId,groupheader.getName(),notificationText);
+        GroupNotification groupNotification = new GroupNotification(currentUser.getUid(), myName, groupheader.getGroupKey(), groupChatId, groupheader.getName(), notificationText);
 
         firebaseDatabase.getReference("GroupNotifications").push().setValue(groupNotification);
 
 
-        firebaseDatabase.getReference("/GroupChat/"+groupheader.getGroupKey()).child("lastMessage").setValue(message.getUserName() +" : " + message.getText());
+        firebaseDatabase.getReference("/GroupChat/" + groupheader.getGroupKey()).child("lastMessage").setValue(message.getUserName() + " : " + message.getText());
 
-        firebaseDatabase.getReference("/GroupChat/"+groupheader.getGroupKey()).child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
+        firebaseDatabase.getReference("/GroupChat/" + groupheader.getGroupKey()).child("lastMessageTimestap").setValue(ServerValue.TIMESTAMP);
 
     }
 
@@ -999,15 +975,14 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
     protected void onStart() {
         super.onStart();
 
-        if(groupChatMessageListener == null)
+        if (groupChatMessageListener == null)
             groupChatMessageListener = new GroupChatMessageListener();
-        if(getfromdb) {
+        if (getfromdb) {
 
-            Long tmp = dbLastTimestamp +1;
+            Long tmp = dbLastTimestamp + 1;
             groupQuery = groupmessageReference.orderByChild("timeStamp").startAt(tmp);
 //           .addChildEventListener(groupChatMessageListener);
-        }
-        else {
+        } else {
             groupQuery = groupmessageReference.orderByChild("timeStamp");
         }
 
@@ -1019,7 +994,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
     protected void onStop() {
         super.onStop();
 
-        if(groupChatMessageListener!=null) {
+        if (groupChatMessageListener != null) {
             groupQuery.removeEventListener(groupChatMessageListener);
             groupChatMessageListener = null;
 
@@ -1034,7 +1009,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
         @Override
         public void onChildAdded(final DataSnapshot dataSnapshot, String s) {
 
-         handleMessage(dataSnapshot);
+            handleMessage(dataSnapshot);
 
         }
 
@@ -1042,7 +1017,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
         @Override
         public void onChildChanged(final DataSnapshot dataSnapshot, String s) {
 
-          handleMessage(dataSnapshot);
+            handleMessage(dataSnapshot);
 
         }
 
@@ -1068,15 +1043,15 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
         super.onDestroy();
     }
 
-    public void handleMessage(final DataSnapshot dataSnapshot){
+    public void handleMessage(final DataSnapshot dataSnapshot) {
 
         final Message message = dataSnapshot.getValue(Message.class);
 
         final boolean m_getfromdb = getfromdb;
 
-        if(message.getTimeStamp()!=null ) {
+        if (message.getTimeStamp() != null) {
 
-            if(!imageLoadedUsers.contains(message.getUid()) && (message.getUid()!=null)) {
+            if (!imageLoadedUsers.contains(message.getUid()) && (message.getUid() != null)) {
 
                 imageLoadedUsers.add(message.getUid());
                 FirebaseDatabase.getInstance().getReference().child("Users").child(message.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -1085,7 +1060,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                Util.saveProfileImage(GroupChatActivity.this,dataSnapshot.getValue(String.class), message.getUid());
+                                Util.saveProfileImage(GroupChatActivity.this, dataSnapshot.getValue(String.class), message.getUid());
 
                             }
                         }).start();
@@ -1108,18 +1083,17 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
                     public void run() {
 
 
-
                         String contentphotourl = Util.saveImage(GroupChatActivity.this, message.getPhotoContentUrl(), message.getPhotoContentName());
                         String userphotourl;
 //                            if(!imageLoadedUsers.contains(message.getUid())) {
 
-                        userphotourl = Util.getUserPath(GroupChatActivity.this,message.getUid());
+                        userphotourl = Util.getUserPath(GroupChatActivity.this, message.getUid());
 //
                         //// TODO: update the db message with local urls
 
-                        if(!m_getfromdb) {
+                        if (!m_getfromdb) {
                             String groupphotourl = Util.saveImage(GroupChatActivity.this, groupheader.getPhotoUrl(), groupChatId);
-                            chatViewModel.insertChat(new SavedChatsEntity(groupChatId,groupheader.getName(),groupphotourl,false,groupheader.getGroupKey(),null));
+                            chatViewModel.insertChat(new SavedChatsEntity(groupChatId, groupheader.getName(), groupphotourl, false, groupheader.getGroupKey(), null));
                             getfromdb = true;
                         }
 
@@ -1144,13 +1118,13 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
                         String userphotourl;
 //                        if(!imageLoadedUsers.contains(message.getUid())) {
-                        userphotourl = Util.getUserPath(GroupChatActivity.this,message.getUid());
+                        userphotourl = Util.getUserPath(GroupChatActivity.this, message.getUid());
 //
                         //// TODO: update the db message with local urls
 
-                        if(!m_getfromdb) {
-                            String groupphotourl = Util.saveImage(GroupChatActivity.this,groupheader.getPhotoUrl(), groupChatId);
-                            chatViewModel.insertChat(new SavedChatsEntity(groupChatId,groupheader.getName(),groupphotourl,false,groupheader.getGroupKey(),null));
+                        if (!m_getfromdb) {
+                            String groupphotourl = Util.saveImage(GroupChatActivity.this, groupheader.getPhotoUrl(), groupChatId);
+                            chatViewModel.insertChat(new SavedChatsEntity(groupChatId, groupheader.getName(), groupphotourl, false, groupheader.getGroupKey(), null));
                             getfromdb = true;
                         }
 
@@ -1169,10 +1143,9 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
             MessageEntity entity = Util.getEntityfromMessage(message, groupChatId, mContext);
 
-            if(!getfromdb)
-            {
+            if (!getfromdb) {
 
-                chatViewModel.insertChat(new SavedChatsEntity(groupChatId,groupheader.getName(),groupheader.getPhotoUrl(),false,groupheader.getGroupKey(),null));
+                chatViewModel.insertChat(new SavedChatsEntity(groupChatId, groupheader.getName(), groupheader.getPhotoUrl(), false, groupheader.getGroupKey(), null));
                 getfromdb = true;
             }
 
@@ -1183,8 +1156,7 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
     }
 
 
-    private void exitGroup()
-    {
+    private void exitGroup() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Do you want to exit the group?")
                 .setPositiveButton("YES", new DialogInterface.OnClickListener() {
@@ -1208,7 +1180,6 @@ public class GroupChatActivity extends BaseActivity implements ActivityCompat.On
 
 
     }
-
 
 
 }

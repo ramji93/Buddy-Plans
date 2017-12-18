@@ -44,10 +44,7 @@ public class Util {
 //    String time = String.format("%02d:%02d:%02d:%d", hour, minute, second, millis);
 
 
-    public static String getDate(Long timestamp)
-    {
-
-
+    public static String getDate(Long timestamp) {
 
 
         Calendar msgcalendar = Calendar.getInstance();
@@ -62,16 +59,16 @@ public class Util {
 
         SimpleDateFormat sdf;
 
-        if(todaycalendar.get(Calendar.DAY_OF_YEAR) > msgcalendar.get(Calendar.DAY_OF_YEAR))
+        if (todaycalendar.get(Calendar.DAY_OF_YEAR) > msgcalendar.get(Calendar.DAY_OF_YEAR))
 
-        sdf = new SimpleDateFormat("HH:mm dd/MM");
+            sdf = new SimpleDateFormat("HH:mm dd/MM");
 
         else
 
-        sdf = new SimpleDateFormat("HH:mm");
+            sdf = new SimpleDateFormat("HH:mm");
 
-        String dateAsString = sdf.format (timestamp);
-        Log.i("Inside Util func","date is "+ dateAsString );
+        String dateAsString = sdf.format(timestamp);
+        Log.i("Inside Util func", "date is " + dateAsString);
 
 
         return dateAsString;
@@ -79,97 +76,18 @@ public class Util {
 
     }
 
-    public static String getUserPath(Context context,String uid) {
+    public static String getUserPath(Context context, String uid) {
 
         String appsegment = context.getString(R.string.appsegment);
 
-        String path = Environment.getExternalStorageDirectory().getPath()+appsegment+"/"+uid;
+        String path = Environment.getExternalStorageDirectory().getPath() + appsegment + "/" + uid;
 
         return path;
 
     }
 
 
-    public static String saveImage(Context context,String downloaduri,String photoContentName) {
-
-
-        String appsegment = context.getString(R.string.appsegment);
-
-       // ContextWrapper cw = new ContextWrapper(getApplicationContext());
-        //File directory = cw.getDir("imageDir", Context.MODE_ENABLE_WRITE_AHEAD_LOGGING);
-
-        String dir = Environment.getExternalStorageDirectory().getPath()+appsegment;
-
-        File fdir = new File(dir);
-
-        boolean create_result = false;
-
-        if(!fdir.exists())
-
-         create_result = fdir.mkdirs();
-
-        String path = Environment.getExternalStorageDirectory().getPath()+appsegment+"/"+photoContentName;
-
-
-
-        final File f=new File(path);
-
-        if(f.exists())
-            return path;
-        else
-        {
-
-
-
-            Bitmap bitmap = null;
-
-            ImageView im = new ImageView(context);
-
-            FileOutputStream fos = null;
-            try {
-                bitmap =  Glide.with(context).load(downloaduri).asBitmap().into(2048,2048).get();
-
-
-            // bitmap = ((BitmapDrawable)im.getDrawable()).getBitmap();
-
-
-                fos = new FileOutputStream(f);
-                // Use the compress method on the BitMap object to write image to the OutputStream
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-
-                MediaStore.Images.Media.insertImage(context.getContentResolver(),path,photoContentName,photoContentName);
-
-
-            }
-                catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-                catch(IOException e) {
-                    e.printStackTrace();
-                }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-             finally {
-                try {
-                    if(fos!=null)
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-;;
-        }
-
-      return path;
-
-    }
-
-
-    public static String saveProfileImage(Context context,String downloaduri,String photoContentName) {
+    public static String saveImage(Context context, String downloaduri, String photoContentName) {
 
 
         String appsegment = context.getString(R.string.appsegment);
@@ -177,26 +95,25 @@ public class Util {
         // ContextWrapper cw = new ContextWrapper(getApplicationContext());
         //File directory = cw.getDir("imageDir", Context.MODE_ENABLE_WRITE_AHEAD_LOGGING);
 
-        String dir = Environment.getExternalStorageDirectory().getPath()+appsegment;
+        String dir = Environment.getExternalStorageDirectory().getPath() + appsegment;
 
         File fdir = new File(dir);
 
         boolean create_result = false;
 
-        if(!fdir.exists())
+        if (!fdir.exists())
 
             create_result = fdir.mkdirs();
 
-        String path = Environment.getExternalStorageDirectory().getPath()+appsegment+"/"+photoContentName;
+        String path = Environment.getExternalStorageDirectory().getPath() + appsegment + "/" + photoContentName;
 
 
+        final File f = new File(path);
 
-        final File f=new File(path);
+        if (f.exists())
+            return path;
+        else {
 
-        if(f.exists())
-        {
-            f.delete();
-        }
 
             Bitmap bitmap = null;
 
@@ -204,7 +121,7 @@ public class Util {
 
             FileOutputStream fos = null;
             try {
-                bitmap =  Glide.with(context).load(downloaduri).asBitmap().into(2048,2048).get();
+                bitmap = Glide.with(context).load(downloaduri).asBitmap().into(2048, 2048).get();
 
 
                 // bitmap = ((BitmapDrawable)im.getDrawable()).getBitmap();
@@ -214,29 +131,98 @@ public class Util {
                 // Use the compress method on the BitMap object to write image to the OutputStream
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
 
-                //MediaStore.Images.Media.insertImage(context.getContentResolver(),path,photoContentName,photoContentName);
-            }
-            catch (InterruptedException e) {
+                MediaStore.Images.Media.insertImage(context.getContentResolver(), path, photoContentName, photoContentName);
+
+
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
                 e.printStackTrace();
-            }
-            catch(IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
-            }
-            finally {
+            } finally {
                 try {
-                    if(fos!=null)
+                    if (fos != null)
                         fos.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
 
-            ;;
+            ;
+            ;
+        }
+
+        return path;
+
+    }
+
+
+    public static String saveProfileImage(Context context, String downloaduri, String photoContentName) {
+
+
+        String appsegment = context.getString(R.string.appsegment);
+
+        // ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        //File directory = cw.getDir("imageDir", Context.MODE_ENABLE_WRITE_AHEAD_LOGGING);
+
+        String dir = Environment.getExternalStorageDirectory().getPath() + appsegment;
+
+        File fdir = new File(dir);
+
+        boolean create_result = false;
+
+        if (!fdir.exists())
+
+            create_result = fdir.mkdirs();
+
+        String path = Environment.getExternalStorageDirectory().getPath() + appsegment + "/" + photoContentName;
+
+
+        final File f = new File(path);
+
+        if (f.exists()) {
+            f.delete();
+        }
+
+        Bitmap bitmap = null;
+
+        ImageView im = new ImageView(context);
+
+        FileOutputStream fos = null;
+        try {
+            bitmap = Glide.with(context).load(downloaduri).asBitmap().into(2048, 2048).get();
+
+
+            // bitmap = ((BitmapDrawable)im.getDrawable()).getBitmap();
+
+
+            fos = new FileOutputStream(f);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+
+            //MediaStore.Images.Media.insertImage(context.getContentResolver(),path,photoContentName,photoContentName);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fos != null)
+                    fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        ;
+        ;
 
 
         return path;
@@ -244,29 +230,26 @@ public class Util {
     }
 
 
-    public static MessageEntity getEntityfromMessage(Message message,String chatId,Context mcontext)
-    {
+    public static MessageEntity getEntityfromMessage(Message message, String chatId, Context mcontext) {
 
         MessageEntity dbmessage;
-        String dbphotoContentUrl=null;
-        String dbphotoContentName=null;
-        String dbText=null;
-        String dbUserName=null;
+        String dbphotoContentUrl = null;
+        String dbphotoContentName = null;
+        String dbText = null;
+        String dbUserName = null;
         long dbTimestamp;
-        String dbuserid=null;
-        String dbUserPhotoUrl=null;
-        Location dbLocation=null;
-        String dbChatid=null;
+        String dbuserid = null;
+        String dbUserPhotoUrl = null;
+        Location dbLocation = null;
+        String dbChatid = null;
 
 
-        if(message.getPhotoContentUrl()!=null)
-        {
-            dbphotoContentUrl =  message.getPhotoContentUrl();
+        if (message.getPhotoContentUrl() != null) {
+            dbphotoContentUrl = message.getPhotoContentUrl();
             dbphotoContentName = message.getPhotoContentName();
         }
 
-        if(message.getText()!=null)
-        {
+        if (message.getText() != null) {
             dbText = message.getText();
         }
 
@@ -276,28 +259,25 @@ public class Util {
 
         dbuserid = message.getUid();
 
-        if(message.getPhotoUrl()!= null)
-        {
+        if (message.getPhotoUrl() != null) {
             dbUserPhotoUrl = message.getPhotoUrl();
         }
 
-        if(message.getLocation()!=null)
-        {
+        if (message.getLocation() != null) {
             dbLocation = message.getLocation();
         }
 
-        if(chatId!=null) {
+        if (chatId != null) {
             dbChatid = chatId;
         }
 
-        dbmessage = new MessageEntity(message.getMessageid(),dbText,dbphotoContentUrl,dbphotoContentName,dbUserName,dbTimestamp,dbUserPhotoUrl,dbuserid,dbLocation,dbChatid);
+        dbmessage = new MessageEntity(message.getMessageid(), dbText, dbphotoContentUrl, dbphotoContentName, dbUserName, dbTimestamp, dbUserPhotoUrl, dbuserid, dbLocation, dbChatid);
 
-         return  dbmessage;
+        return dbmessage;
     }
 
 
-    public static boolean checkConnection(Context mContext)
-    {
+    public static boolean checkConnection(Context mContext) {
         ConnectivityManager cm =
                 (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -308,7 +288,6 @@ public class Util {
         return isConnected;
 
     }
-
 
 
 }

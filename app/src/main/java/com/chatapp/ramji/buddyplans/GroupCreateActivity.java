@@ -95,8 +95,8 @@ public class GroupCreateActivity extends BaseActivity implements GroupCreateFrie
         getSupportActionBar().setTitle("Create New Group");
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        recyclerView1.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true));
-        recyclerView2.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true));
+        recyclerView1.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
+        recyclerView2.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
         friendListAdapter = new GroupCreateFriendListAdapter(this);
         recyclerView2.setAdapter(friendListAdapter);
         selectedListAdapter = new GroupCreateSelectedListAdapter(this);
@@ -104,7 +104,7 @@ public class GroupCreateActivity extends BaseActivity implements GroupCreateFrie
         selectedFriends = new ArrayList<Friend>();
         Gson gson = new Gson();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        currentUser = gson.fromJson(sharedPreferences.getString("User",""),User.class);
+        currentUser = gson.fromJson(sharedPreferences.getString("User", ""), User.class);
         firebaseDatabase = FirebaseDatabase.getInstance();
         friendsReference = firebaseDatabase.getReference().child("Friends").child(currentUser.getUid());
         imageStorageReference = FirebaseStorage.getInstance().getReference().child("chat_photos");
@@ -131,7 +131,7 @@ public class GroupCreateActivity extends BaseActivity implements GroupCreateFrie
     }
 
 
-     @OnClick(R.id.photoframe)
+    @OnClick(R.id.photoframe)
     public void setGroupPhoto() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -161,10 +161,10 @@ public class GroupCreateActivity extends BaseActivity implements GroupCreateFrie
                         @Override
                         public void onImageSelected(Uri uri) {
 
-                             selectedProfilePhoto = uri;
+                            selectedProfilePhoto = uri;
 
-                             attachPhotoview.setVisibility(View.GONE);
-                             groupPhoto.setVisibility(View.VISIBLE);
+                            attachPhotoview.setVisibility(View.GONE);
+                            groupPhoto.setVisibility(View.VISIBLE);
 
                             Glide.with(GroupCreateActivity.this).load(selectedProfilePhoto).into(groupPhoto);
 
@@ -181,10 +181,9 @@ public class GroupCreateActivity extends BaseActivity implements GroupCreateFrie
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        if(requestCode==WRITE_REQUEST)
-        {
+        if (requestCode == WRITE_REQUEST) {
 
-            if(bottomSheetDialogFragment==null) {
+            if (bottomSheetDialogFragment == null) {
 
                 bottomSheetDialogFragment = new TedBottomPicker.Builder(this)
                         .setOnImageSelectedListener(new TedBottomPicker.OnImageSelectedListener() {
@@ -207,16 +206,13 @@ public class GroupCreateActivity extends BaseActivity implements GroupCreateFrie
             bottomSheetDialogFragment.show(getSupportFragmentManager());
 
 
-
         }
     }
 
     @OnClick(R.id.create_button)
-    public void createGroup()
-    {
+    public void createGroup() {
 
-        if(selectedProfilePhoto == null)
-        {
+        if (selectedProfilePhoto == null) {
             Snackbar snackbar = Snackbar.make(rootView, "Please select a Group photo !", Snackbar.LENGTH_SHORT);
             snackbar.show();
             return;
@@ -240,7 +236,7 @@ public class GroupCreateActivity extends BaseActivity implements GroupCreateFrie
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
                 //noinspection VisibleForTests
-                groupChatReference.child(groupkey).setValue(new Groupheader(groupNameString,newChatId,taskSnapshot.getDownloadUrl().toString()));
+                groupChatReference.child(groupkey).setValue(new Groupheader(groupNameString, newChatId, taskSnapshot.getDownloadUrl().toString()));
             }
         });
 
@@ -249,11 +245,11 @@ public class GroupCreateActivity extends BaseActivity implements GroupCreateFrie
 
 //        Iterator<Friend> iterator =  newGroupListAdapter.selectedFriendsList.iterator();
 
-        Map<String,Boolean> friendsmap = new HashMap<String, Boolean>();
+        Map<String, Boolean> friendsmap = new HashMap<String, Boolean>();
 
-        for (Friend friend:selectedListAdapter.selectedlist) {
+        for (Friend friend : selectedListAdapter.selectedlist) {
 
-           // friendsmap.put(friend.getUid(),true);
+            // friendsmap.put(friend.getUid(),true);
 
             groupMembersReference.child(friend.getUid()).child("current").setValue(true);
 
@@ -261,19 +257,18 @@ public class GroupCreateActivity extends BaseActivity implements GroupCreateFrie
 
         groupMembersReference.child(currentUser.getUid()).child("current").setValue(true);
 
-      //  friendsmap.put(currentUser.getUid(),true);
+        //  friendsmap.put(currentUser.getUid(),true);
 
-      //  groupMembersReference.setValue(friendsmap);
+        //  groupMembersReference.setValue(friendsmap);
 
 
-        Toast.makeText(this,"New Group "+ groupNameString +" is created ",Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "New Group " + groupNameString + " is created ", Toast.LENGTH_LONG).show();
 
 
         finish();
 
 
     }
-
 
 
 //    @Override
@@ -304,7 +299,7 @@ public class GroupCreateActivity extends BaseActivity implements GroupCreateFrie
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(friendsListener != null) {
+        if (friendsListener != null) {
             friendsQuery.removeEventListener(friendsListener);
         }
 
@@ -313,8 +308,7 @@ public class GroupCreateActivity extends BaseActivity implements GroupCreateFrie
     }
 
 
-    private class FriendsListener implements ChildEventListener
-    {
+    private class FriendsListener implements ChildEventListener {
 
 
         @Override
@@ -322,24 +316,23 @@ public class GroupCreateActivity extends BaseActivity implements GroupCreateFrie
 
             final Friend friend = (Friend) dataSnapshot.getValue(Friend.class);
 
-            if(friend.isActive())
+            if (friend.isActive())
 
-            firebaseDatabase.getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
+                firebaseDatabase.getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    friend.setPhotourl((String) dataSnapshot.getValue());
-                    friendListAdapter.add(friend);
-                    friendListAdapter.notifyDataSetChanged();
-                    emptyView.setVisibility(View.GONE);
-                }
+                        friend.setPhotourl((String) dataSnapshot.getValue());
+                        friendListAdapter.add(friend);
+                        friendListAdapter.notifyDataSetChanged();
+                        emptyView.setVisibility(View.GONE);
+                    }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-                }
-            });
-
+                    }
+                });
 
 
         }
@@ -372,7 +365,7 @@ public class GroupCreateActivity extends BaseActivity implements GroupCreateFrie
         selectedListAdapter.selectedlist.add(friend);
         selectedListAdapter.notifyDataSetChanged();
         recyclerView1.setVisibility(View.VISIBLE);
-        if(friendListAdapter.friendList.size()==1)
+        if (friendListAdapter.friendList.size() == 1)
             emptyView.setVisibility(View.VISIBLE);
 
     }
@@ -382,8 +375,8 @@ public class GroupCreateActivity extends BaseActivity implements GroupCreateFrie
 
         friendListAdapter.friendList.add(friend);
         friendListAdapter.notifyDataSetChanged();
-        if(selectedListAdapter.selectedlist.isEmpty())
-           recyclerView1.setVisibility(View.GONE);
+        if (selectedListAdapter.selectedlist.isEmpty())
+            recyclerView1.setVisibility(View.GONE);
         emptyView.setVisibility(View.GONE);
 
     }

@@ -35,20 +35,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         if (remoteMessage.getData().size() > 0) {
 
-            Map<String,String> data = remoteMessage.getData();
+            Map<String, String> data = remoteMessage.getData();
             String title = data.get("title");
             String eventTimeString = data.get("time");
             String sender = data.get("sender");
-           // String chatid = reminderData.get("chatid");
+            // String chatid = reminderData.get("chatid");
             // TODO: get sender uid to display image   
             String senderid = data.get("senderid");
             String chatid = data.get("chatid");
-            String imgpath =  Environment.getExternalStorageDirectory().getPath()+"/Buddyplans/pictures"+"/"+chatid;
+            String imgpath = Environment.getExternalStorageDirectory().getPath() + "/Buddyplans/pictures" + "/" + chatid;
 
             Bitmap bitmap = null;
             try {
 
-                bitmap = Glide.with(this).load(imgpath).asBitmap().into(100,100).get();
+                bitmap = Glide.with(this).load(imgpath).asBitmap().into(100, 100).get();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
@@ -59,7 +59,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             String group = data.get("groupchat");
 
             Long eventTime = Long.parseLong(eventTimeString);
-            Log.d(MyFirebaseMessagingService.class.getSimpleName(),"inside onMessageReceived()");
+            Log.d(MyFirebaseMessagingService.class.getSimpleName(), "inside onMessageReceived()");
 
             Calendar cal = Calendar.getInstance();
             int day = cal.get(Calendar.DAY_OF_MONTH);
@@ -71,38 +71,38 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             int minute = cal.get(Calendar.MINUTE);
 
-            if(day==cal.get(Calendar.DAY_OF_MONTH) && month==cal.get(Calendar.MONTH) && year==cal.get(Calendar.YEAR))
+            if (day == cal.get(Calendar.DAY_OF_MONTH) && month == cal.get(Calendar.MONTH) && year == cal.get(Calendar.YEAR))
 
-            timeString = " at " + cal.get(Calendar.HOUR_OF_DAY)+":"+ ((minute > 9) ? minute : "0"+minute ) + " today";
+                timeString = " at " + cal.get(Calendar.HOUR_OF_DAY) + ":" + ((minute > 9) ? minute : "0" + minute) + " today";
 
             else
 
-            timeString = " on " + cal.get(Calendar.DAY_OF_MONTH)+"/"+cal.get(Calendar.MONTH)+"/"+cal.get(Calendar.YEAR)+" "+ cal.get(Calendar.HOUR_OF_DAY)+":"+ ((minute > 9) ? minute : "0"+minute );
+                timeString = " on " + cal.get(Calendar.DAY_OF_MONTH) + "/" + cal.get(Calendar.MONTH) + "/" + cal.get(Calendar.YEAR) + " " + cal.get(Calendar.HOUR_OF_DAY) + ":" + ((minute > 9) ? minute : "0" + minute);
 
             int notificationId = new Random().nextInt();
 
             Intent intent = new Intent(this, AddEventReminderService.class);
-            intent.putExtra("title",title);
-            intent.putExtra("description","sent by " + sender + ((group!=null ) ? " in " + group : "" ));
-            intent.putExtra("time",eventTime);
+            intent.putExtra("title", title);
+            intent.putExtra("description", "sent by " + sender + ((group != null) ? " in " + group : ""));
+            intent.putExtra("time", eventTime);
             intent.putExtra("notification id", notificationId);
 
-            PendingIntent reminderintent = PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent reminderintent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            String message = "'"+ title + "'" + timeString + " ~ " + "sent by " + sender + ((group!=null ) ? " in " + group : "" );
+            String message = "'" + title + "'" + timeString + " ~ " + "sent by " + sender + ((group != null) ? " in " + group : "");
 
-            android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setContentTitle(((group!=null ) ?  "Group Reminder" : "Friendly Reminder"))
-                      .setContentText(message)
-                      .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
-                      .setSmallIcon(R.drawable.ic_notification_icon)
-                      .setColor(getColor(R.color.colorPrimary))
-                      .setAutoCancel(true)
-                      .addAction(R.drawable.add_reminder,"Save Reminder",reminderintent);
+            android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setContentTitle(((group != null) ? "Group Reminder" : "Friendly Reminder"))
+                    .setContentText(message)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                    .setSmallIcon(R.drawable.ic_notification_icon)
+                    .setColor(getColor(R.color.colorPrimary))
+                    .setAutoCancel(true)
+                    .addAction(R.drawable.add_reminder, "Save Reminder", reminderintent);
 
-            if(bitmap!= null)
-            builder.setLargeIcon(bitmap);
+            if (bitmap != null)
+                builder.setLargeIcon(bitmap);
 
-            Notification n =  builder.build();
+            Notification n = builder.build();
 
             NotificationManager notificationManager =
                     (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -111,7 +111,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager.notify(notificationId, n);
 
         }
-
 
 
     }

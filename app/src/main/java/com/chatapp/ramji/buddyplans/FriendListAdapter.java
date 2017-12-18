@@ -36,7 +36,7 @@ public class FriendListAdapter extends ArrayAdapter<Friend>
 
     List<Friend> friends;
 
-    HashMap<String,Friend> friendHashMap;
+    HashMap<String, Friend> friendHashMap;
 
     Boolean isConnected;
 
@@ -59,35 +59,32 @@ public class FriendListAdapter extends ArrayAdapter<Friend>
 
         View friendListItem;
 
-       if(convertView == null)
+        if (convertView == null)
 
-       {
-           LayoutInflater inflater = (LayoutInflater) context
-                   .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        {
+            LayoutInflater inflater = (LayoutInflater) context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-           friendListItem  = inflater.inflate(R.layout.friend_list_item, parent, false);
+            friendListItem = inflater.inflate(R.layout.friend_list_item, parent, false);
 
-       }
+        } else
 
-        else
+        {
 
-       {
+            ((TextView) convertView.findViewById(R.id.timestamp)).setText("");
 
-           ((TextView) convertView.findViewById(R.id.timestamp)).setText("");
+            ((TextView) convertView.findViewById(R.id.lastmessage)).setText("");
 
-           ((TextView) convertView.findViewById(R.id.lastmessage)).setText("");
-
-           friendListItem = convertView;
+            friendListItem = convertView;
 
 
-
-       }
+        }
 
         TextView friendNameView = (TextView) friendListItem.findViewById(R.id.friendName);
 
         CircularImageView imageView = (CircularImageView) friendListItem.findViewById(R.id.friend_item_photo);
 
-        ViewCompat.setTransitionName(imageView,friends.get(position).getName());
+        ViewCompat.setTransitionName(imageView, friends.get(position).getName());
 
         Glide.with(context).load(friends.get(position).getPhotourl()).asBitmap().diskCacheStrategy(isConnected ? DiskCacheStrategy.RESULT : DiskCacheStrategy.NONE).into(imageView);
 
@@ -95,13 +92,13 @@ public class FriendListAdapter extends ArrayAdapter<Friend>
 
         TextView lastmessage = (TextView) friendListItem.findViewById(R.id.lastmessage);
 
-        if(friends.get(position).getLastMessage() != null)
+        if (friends.get(position).getLastMessage() != null)
 
             lastmessage.setText(friends.get(position).getLastMessage());
 
         TextView timestamp = (TextView) friendListItem.findViewById(R.id.timestamp);
 
-        if(friends.get(position).getLastMessageTimestap() != null)
+        if (friends.get(position).getLastMessageTimestap() != null)
 
             timestamp.setText(Util.getDate(friends.get(position).getLastMessageTimestap()));
 
@@ -116,20 +113,17 @@ public class FriendListAdapter extends ArrayAdapter<Friend>
 
         friends.add(object);
 
-        friendHashMap.put(object.getUid(),object);
-
+        friendHashMap.put(object.getUid(), object);
 
 
     }
 
 
-    public boolean checkFriendExists(String userUid)
-    {
+    public boolean checkFriendExists(String userUid) {
 
-      return   friendHashMap.containsKey(userUid);
+        return friendHashMap.containsKey(userUid);
 
     }
-
 
 
 }

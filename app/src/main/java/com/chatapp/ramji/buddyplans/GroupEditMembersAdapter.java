@@ -19,15 +19,14 @@ import butterknife.ButterKnife;
  * Created by user on 23-06-2017.
  */
 
-public class GroupEditMembersAdapter extends RecyclerView.Adapter<GroupEditMembersAdapter.MemberViewHolder>  {
+public class GroupEditMembersAdapter extends RecyclerView.Adapter<GroupEditMembersAdapter.MemberViewHolder> {
 
 
     ArrayList<User> memberlist;
 
     Context mcontext;
 
-    GroupEditMembersAdapter( Context context)
-    {
+    GroupEditMembersAdapter(Context context) {
         memberlist = new ArrayList<User>();
         mcontext = context;
     }
@@ -35,7 +34,7 @@ public class GroupEditMembersAdapter extends RecyclerView.Adapter<GroupEditMembe
 
     @Override
     public GroupEditMembersAdapter.MemberViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(mcontext).inflate(R.layout.group_create_selected_item,parent,false);
+        View v = LayoutInflater.from(mcontext).inflate(R.layout.group_create_selected_item, parent, false);
 
         return new MemberViewHolder(v);
     }
@@ -47,12 +46,9 @@ public class GroupEditMembersAdapter extends RecyclerView.Adapter<GroupEditMembe
 
         holder.selectedFriendName.setText(memberlist.get(position).getUserName());
 
-        if(memberlist.get(position).geteMail() != null)
-        {
-         holder.deleteView.setVisibility(View.GONE);
-        }
-        else
-        {
+        if (memberlist.get(position).geteMail() != null) {
+            holder.deleteView.setVisibility(View.GONE);
+        } else {
 
             holder.entireView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -68,9 +64,7 @@ public class GroupEditMembersAdapter extends RecyclerView.Adapter<GroupEditMembe
             });
 
 
-
         }
-
 
 
     }
@@ -82,10 +76,7 @@ public class GroupEditMembersAdapter extends RecyclerView.Adapter<GroupEditMembe
     }
 
 
-
-
-    class MemberViewHolder extends RecyclerView.ViewHolder
-    {
+    class MemberViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.selected_item_circleimage)
         CircularImageView imageView;
         @BindView(R.id.selected_item)
@@ -99,27 +90,22 @@ public class GroupEditMembersAdapter extends RecyclerView.Adapter<GroupEditMembe
         public MemberViewHolder(View itemView) {
 
             super(itemView);
-            ButterKnife.bind(this,itemView);
-
-
+            ButterKnife.bind(this, itemView);
 
 
         }
 
 
-
     }
 
-    public void add(User user)
-    {
+    public void add(User user) {
         memberlist.add(user);
     }
 
 
-    public interface DeleteSelectedItemListener{
+    public interface DeleteSelectedItemListener {
 
         public void ondeleteselecteditem(User user);
-
 
 
     }

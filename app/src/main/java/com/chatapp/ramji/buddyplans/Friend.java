@@ -31,22 +31,17 @@ public class Friend implements Serializable {
     }
 
 
+    public Friend(String nameparam, String photourlparam, boolean active, String uid) {
 
-
-
-    public Friend(String nameparam,String photourlparam,boolean active,String uid)
-    {
-
-         this.name = nameparam;
-         this.photourl = photourlparam;
-         this.active = active;
-         this.uid = uid;
+        this.name = nameparam;
+        this.photourl = photourlparam;
+        this.active = active;
+        this.uid = uid;
 
 
     }
 
-    public Friend()
-    {
+    public Friend() {
 
     }
 

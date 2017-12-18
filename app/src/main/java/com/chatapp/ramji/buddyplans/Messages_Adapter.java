@@ -55,20 +55,19 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
     private Context mContext;
     ArrayList<MessageEntity> messages;
     String myuid;
-    HashMap<String,Message> messageMap = new HashMap<String,Message>();
+    HashMap<String, Message> messageMap = new HashMap<String, Message>();
     private DatabaseReference mDatabaseReference;
     FirebaseDatabase mFirebaseDatabase;
     private ValueEventListener FriendCheckListener;
     private String Uid;
-//    ArrayList<String> imageLoadedUsers;
+    //    ArrayList<String> imageLoadedUsers;
     private int ClickPosition;
 
     private final int OTHERS = 1;
     private final int MINE = 2;
     private final int SYSTEM = 3;
 
-    public Messages_Adapter(Context context, String uid)
-    {
+    public Messages_Adapter(Context context, String uid) {
 
         mContext = context;
         messages = new ArrayList<MessageEntity>();
@@ -83,47 +82,42 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
 //        imageLoadedUsers = new ArrayList<String>();
 
 
+        FriendCheckListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Friend authorfriend = dataSnapshot.getValue(Friend.class);
 
-        FriendCheckListener  = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            Friend authorfriend = dataSnapshot.getValue(Friend.class);
+                if (authorfriend != null) {
+                    if (authorfriend.isActive()) {
 
-            if(authorfriend != null)
-            {
-                if(authorfriend.isActive()) {
+                        Intent intent = new Intent(mContext, ChatActivity.class);
 
-                    Intent intent = new Intent(mContext, ChatActivity.class);
+                        if (authorfriend.getChatid() != null) {
+                            String path = Environment.getExternalStorageDirectory().getPath() + mContext.getString(R.string.appsegment) + "/" + authorfriend.getChatid();
+                            File f = new File(path);
+                            if (f.exists())
+                                authorfriend.setPhotourl(path);
+                            else
+                                authorfriend.setPhotourl(messages.get(ClickPosition).getPhotoUrl());
+                        } else
+                            authorfriend.setPhotourl(messages.get(ClickPosition).getPhotoUrl());
 
-                    if(authorfriend.getChatid()!=null)
-                    {
-                      String path =  Environment.getExternalStorageDirectory().getPath()+mContext.getString(R.string.appsegment)+"/"+authorfriend.getChatid();
-                      File f = new File(path);
-                      if(f.exists())
-                          authorfriend.setPhotourl(path);
-                      else
-                          authorfriend.setPhotourl(messages.get(ClickPosition).getPhotoUrl());
+                        intent.putExtra("Friend", authorfriend);
+                        mContext.startActivity(intent);
+
                     }
-                    else
-                        authorfriend.setPhotourl(messages.get(ClickPosition).getPhotoUrl());
-
-                    intent.putExtra("Friend", authorfriend);
-                    mContext.startActivity(intent);
 
                 }
 
             }
 
-        }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
+            }
+        };
 
     }
-
 
 
     @Override
@@ -131,15 +125,14 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
 
         View view;
 
-        if(viewType == OTHERS)
-            view = LayoutInflater.from(mContext).inflate(R.layout.message_list_item,parent,false);
+        if (viewType == OTHERS)
+            view = LayoutInflater.from(mContext).inflate(R.layout.message_list_item, parent, false);
 
-        else if(viewType == MINE)
-            view = LayoutInflater.from(mContext).inflate(R.layout.message_list_item_right,parent,false);
+        else if (viewType == MINE)
+            view = LayoutInflater.from(mContext).inflate(R.layout.message_list_item_right, parent, false);
 
-        else
-        {
-            view = LayoutInflater.from(mContext).inflate(R.layout.sysmessage_list_item,parent,false);
+        else {
+            view = LayoutInflater.from(mContext).inflate(R.layout.sysmessage_list_item, parent, false);
 
         }
 
@@ -150,18 +143,17 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
     public void onBindViewHolder(final Message_ViewHolder holder, final int position) {
 
 
-        if(getItemViewType(position)==SYSTEM) {
+        if (getItemViewType(position) == SYSTEM) {
             holder.messageContents.setText(messages.get(position).getText());
             holder.timeView.setText(Util.getDate(messages.get(position).getTimeStamp()));
             return;
         }
 
 
-        if(mContext instanceof ChatActivity) {
+        if (mContext instanceof ChatActivity) {
             holder.author.setVisibility(View.GONE);
             holder.userPhoto.setVisibility(View.GONE);
-        }
-        else {
+        } else {
 
             holder.author.setText(messages.get(position).getUserName());
 
@@ -175,113 +167,101 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
 //                    Glide.with(mContext).load(messages.get(position).getPhotoUrl()).into(holder.userPhoto);
 
 
-
-
-                Glide.with(mContext).load("file://"+messages.get(position).getPhotoUrl()).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .into(holder.userPhoto);
+                Glide.with(mContext).load("file://" + messages.get(position).getPhotoUrl()).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .into(holder.userPhoto);
 
             }
         }
 
 
-         if(messages.get(position).getPhotoContentUrl()!=null && messages.get(position).getText() == null && messages.get(position).getLocation() == null)
-         {
+        if (messages.get(position).getPhotoContentUrl() != null && messages.get(position).getText() == null && messages.get(position).getLocation() == null) {
 
-             Uri uri = Uri.parse(messages.get(position).getPhotoContentUrl());
+            Uri uri = Uri.parse(messages.get(position).getPhotoContentUrl());
 
-             holder.contentPhoto.setVisibility(View.VISIBLE);
-             holder.mapView.setVisibility(View.GONE);
-             holder.messageContents.setVisibility(View.GONE);
-             Glide.with(mContext).load(messages.get(position).getPhotoContentUrl()).into(holder.contentPhoto);
-             holder.contentPhoto.setOnClickListener(new View.OnClickListener() {
-                 @Override
-                 public void onClick(View v) {
+            holder.contentPhoto.setVisibility(View.VISIBLE);
+            holder.mapView.setVisibility(View.GONE);
+            holder.messageContents.setVisibility(View.GONE);
+            Glide.with(mContext).load(messages.get(position).getPhotoContentUrl()).into(holder.contentPhoto);
+            holder.contentPhoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-                     String path = Environment.getExternalStorageDirectory().getPath()+"/Buddyplans/pictures"+"/"+messages.get(position).getPhotoContentName();
+                    String path = Environment.getExternalStorageDirectory().getPath() + "/Buddyplans/pictures" + "/" + messages.get(position).getPhotoContentName();
 
-                      File f=new File(path);
+                    File f = new File(path);
 
-                     if(f.exists()) {
+                    if (f.exists()) {
 
-                         Intent intent = new Intent();
-                         intent.setAction(Intent.ACTION_VIEW);
+                        Intent intent = new Intent();
+                        intent.setAction(Intent.ACTION_VIEW);
 
-                             if(Build.VERSION.SDK_INT > M)
-                         {
-                           intent.setDataAndType(CustomFileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".my.package.name.provider", f),"image/*");
-                             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                             mContext.startActivity(intent);
-                         }
+                        if (Build.VERSION.SDK_INT > M) {
+                            intent.setDataAndType(CustomFileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".my.package.name.provider", f), "image/*");
+                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            mContext.startActivity(intent);
+                        } else {
+                            intent.setDataAndType(Uri.fromFile(f), "image/*");
+                            mContext.startActivity(intent);
+                        }
+                    }
 
-                         else {
-                             intent.setDataAndType(Uri.fromFile(f), "image/*");
-                             mContext.startActivity(intent);
-                         }
-                     }
+                }
+            });
 
-                 }
-             });
+        } else if (messages.get(position).getPhotoContentUrl() == null && messages.get(position).getText() != null && messages.get(position).getLocation() == null) {
+            holder.contentPhoto.setVisibility(View.GONE);
+            holder.mapView.setVisibility(View.GONE);
+            holder.messageContents.setVisibility(View.VISIBLE);
+            holder.messageContents.setText(messages.get(position).getText());
+        } else if (messages.get(position).getPhotoContentUrl() == null && messages.get(position).getText() == null && messages.get(position).getLocation() != null) {
+            holder.contentPhoto.setVisibility(View.GONE);
+            holder.mapView.setVisibility(View.VISIBLE);
+            holder.messageContents.setVisibility(View.GONE);
+            holder.messageContents.setText(messages.get(position).getText());
+            Location location = messages.get(position).getLocation();
+            final double lat = location.getLatitude();
+            final double lon = location.getLongitude();
 
-         }
-          else if(messages.get(position).getPhotoContentUrl()==null && messages.get(position).getText() != null && messages.get(position).getLocation() == null)
-         {
-             holder.contentPhoto.setVisibility(View.GONE);
-             holder.mapView.setVisibility(View.GONE);
-             holder.messageContents.setVisibility(View.VISIBLE);
-             holder.messageContents.setText(messages.get(position).getText());
-         }
+            new AsyncTask<Location, Void, Bitmap>() {
+                @Override
+                protected Bitmap doInBackground(Location... params) {
 
-         else if(messages.get(position).getPhotoContentUrl()==null && messages.get(position).getText() == null && messages.get(position).getLocation() != null)
-         {
-             holder.contentPhoto.setVisibility(View.GONE);
-             holder.mapView.setVisibility(View.VISIBLE);
-             holder.messageContents.setVisibility(View.GONE);
-             holder.messageContents.setText(messages.get(position).getText());
-             Location location = messages.get(position).getLocation();
-             final double lat = location.getLatitude();
-             final double lon = location.getLongitude();
+                    Location loc = params[0];
+                    double lat = loc.getLatitude();
+                    double lon = loc.getLongitude();
+                    Bitmap mapbitmap = null;
+                    try {
+                        mapbitmap = Glide.with(mContext).load("https://maps.googleapis.com/maps/api/staticmap?center=" + lat + "," + lon + "&zoom=15&size=600x300&maptype=normal").asBitmap().into(100, 100).get();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
 
-        new AsyncTask<Location, Void, Bitmap>() {
-            @Override
-            protected Bitmap doInBackground(Location... params) {
-
-                Location loc = params[0];
-                double lat = loc.getLatitude();
-                double lon = loc.getLongitude();
-                Bitmap   mapbitmap = null;
-                try {
-                      mapbitmap = Glide.with(mContext).load("https://maps.googleapis.com/maps/api/staticmap?center="+lat+","+lon+"&zoom=15&size=600x300&maptype=normal").asBitmap().into(100,100).get();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
+                    return mapbitmap;
                 }
 
-                return mapbitmap;
-            }
-
-            @Override
-            protected void onPostExecute(Bitmap bitmap) {
-                super.onPostExecute(bitmap);
-                holder.mapView.setBackground( new BitmapDrawable(mContext.getResources(), bitmap));
-            }
-        }.execute(location);
+                @Override
+                protected void onPostExecute(Bitmap bitmap) {
+                    super.onPostExecute(bitmap);
+                    holder.mapView.setBackground(new BitmapDrawable(mContext.getResources(), bitmap));
+                }
+            }.execute(location);
 
 
-             holder.mapView.setOnClickListener(new View.OnClickListener() {
-                 @Override
-                 public void onClick(View v) {
-                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:"+ lat +","+ lon +"?q="+ lat +","+ lon +"(Location provided by "+ messages.get(position).getUserName() +")"));
-                     mContext.startActivity(intent);
-                 }
-             });
+            holder.mapView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:" + lat + "," + lon + "?q=" + lat + "," + lon + "(Location provided by " + messages.get(position).getUserName() + ")"));
+                    mContext.startActivity(intent);
+                }
+            });
 
-         }
+        }
 
-         holder.timeView.setText(Util.getDate(messages.get(position).getTimeStamp()));
+        holder.timeView.setText(Util.getDate(messages.get(position).getTimeStamp()));
 
-        if(getItemViewType(position)==OTHERS && holder.author.getVisibility()==View.VISIBLE)
-        {
+        if (getItemViewType(position) == OTHERS && holder.author.getVisibility() == View.VISIBLE) {
 
             holder.author.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -307,18 +287,16 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
     @Override
     public int getItemViewType(int position) {
 
-        if(messages.get(position).getUid()!=null) {
+        if (messages.get(position).getUid() != null) {
 
             if (messages.get(position).getUid().equalsIgnoreCase(myuid))
                 return MINE;
             else
                 return OTHERS;
 
-        }
+        } else
 
-        else
-
-        return SYSTEM;
+            return SYSTEM;
 
     }
 
@@ -328,10 +306,9 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
     }
 
 
-    public void changeMessage(String key, Long newTimestamp)
-    {
+    public void changeMessage(String key, Long newTimestamp) {
 
-        Message oldmessage =  (Message) messageMap.get(key);
+        Message oldmessage = (Message) messageMap.get(key);
 
         int index = messages.indexOf(oldmessage);
 
@@ -340,12 +317,7 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
     }
 
 
-
-
-
-
-    class Message_ViewHolder extends RecyclerView.ViewHolder
-    {
+    class Message_ViewHolder extends RecyclerView.ViewHolder {
 
         EmojiconTextView messageContents;
         TextView author;
@@ -355,15 +327,14 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
         ImageButton mapView;
 
 
-
         public Message_ViewHolder(View itemView) {
             super(itemView);
 
 
-        messageContents = (EmojiconTextView) itemView.findViewById(R.id.message_content);
-         author = (TextView) itemView.findViewById(R.id.author);
-         userPhoto = (CircularImageView) itemView.findViewById(R.id.userPhoto);
-         contentPhoto = (ImageView) itemView.findViewById(R.id.photoImageView);
+            messageContents = (EmojiconTextView) itemView.findViewById(R.id.message_content);
+            author = (TextView) itemView.findViewById(R.id.author);
+            userPhoto = (CircularImageView) itemView.findViewById(R.id.userPhoto);
+            contentPhoto = (ImageView) itemView.findViewById(R.id.photoImageView);
             timeView = (TextView) itemView.findViewById(R.id.message_time);
             mapView = (ImageButton) itemView.findViewById(R.id.mapView);
 
@@ -372,8 +343,6 @@ public class Messages_Adapter extends RecyclerView.Adapter<Messages_Adapter.Mess
 
 
     }
-
-
 
 
 }

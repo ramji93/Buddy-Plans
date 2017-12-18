@@ -19,8 +19,7 @@ public class ServiceData implements Serializable {
 
     public ArrayList<Message> messages;
 
-    public ServiceData(String chatid,String chatName,String chatProfileImageUrl ,ArrayList<Message> messages,String groupKey)
-    {
+    public ServiceData(String chatid, String chatName, String chatProfileImageUrl, ArrayList<Message> messages, String groupKey) {
         this.chatid = chatid;
         this.chatName = chatName;
         this.chatProfileImageUrl = chatProfileImageUrl;

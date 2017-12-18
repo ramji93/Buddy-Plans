@@ -18,7 +18,6 @@ public class CircularDeleteView extends View {
     Paint Fillpaint;
 
 
-
     public CircularDeleteView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
@@ -40,8 +39,7 @@ public class CircularDeleteView extends View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
 
-
-       setMeasuredDimension(getMeasuredWidth(), getMeasuredWidth());
+        setMeasuredDimension(getMeasuredWidth(), getMeasuredWidth());
 
 
     }
@@ -50,10 +48,9 @@ public class CircularDeleteView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        final int radius = getMeasuredWidth()/2;
-        final int center = getMeasuredWidth()/2;
-        canvas.drawCircle(center,center,radius,Fillpaint);
-
+        final int radius = getMeasuredWidth() / 2;
+        final int center = getMeasuredWidth() / 2;
+        canvas.drawCircle(center, center, radius, Fillpaint);
 
 
     }

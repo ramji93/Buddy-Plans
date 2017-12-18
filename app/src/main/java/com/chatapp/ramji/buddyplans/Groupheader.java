@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by user on 05-04-2017.
  */
 
-public class Groupheader implements Serializable{
+public class Groupheader implements Serializable {
 
     private String name;
 
@@ -28,9 +28,7 @@ public class Groupheader implements Serializable{
         this.photoUrl = photoUrl;
     }
 
-    public  Groupheader(String name, String chatId, String photoUrl)
-    {
-
+    public Groupheader(String name, String chatId, String photoUrl) {
 
 
         this.name = name;
@@ -41,8 +39,7 @@ public class Groupheader implements Serializable{
 
     }
 
-    public  Groupheader()
-    {
+    public Groupheader() {
 
     }
 

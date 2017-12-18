@@ -78,7 +78,6 @@ public class FriendsFragment extends Fragment {
         // Required empty public constructor
 
 
-
     }
 
     @Override
@@ -90,23 +89,22 @@ public class FriendsFragment extends Fragment {
 //        Uid =  mFirebaseUser.getUid();
 
 
-
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(getActivity().getIntent() != null ) {
+        if (getActivity().getIntent() != null) {
 
-            if(getActivity().getIntent().getAction()==Intent.ACTION_SEND) {
+            if (getActivity().getIntent().getAction() == Intent.ACTION_SEND) {
 
                 shareIntent = getActivity().getIntent();
                 Log.d(FriendsFragment.class.getName(), "share intent");
             }
         }
 
-        MainActivity mainActivity = (MainActivity)  getActivity();
+        MainActivity mainActivity = (MainActivity) getActivity();
 
         viewModel = ViewModelProviders.of(this).get(SavedChatViewModel.class);
 
@@ -122,15 +120,12 @@ public class FriendsFragment extends Fragment {
         mFriendsListener = new FriendsListener();
 
 
-        friendListAdapter = new FriendListAdapter(getContext(),new ArrayList<Friend>());
-
+        friendListAdapter = new FriendListAdapter(getContext(), new ArrayList<Friend>());
 
 
         ViewGroup container = (ViewGroup) getActivity().findViewById(R.id.friendsfragment);
-        rootView =  LayoutInflater.from(getActivity())
+        rootView = LayoutInflater.from(getActivity())
                 .inflate(R.layout.fragment_friends, container, false);
-
-
 
 
         FriendLists = (ListView) rootView.findViewById(R.id.list);
@@ -141,9 +136,9 @@ public class FriendsFragment extends Fragment {
         friendListAdapter.sort(new Comparator<Friend>() {
             @Override
             public int compare(Friend o1, Friend o2) {
-                if(o1.getLastMessageTimestap() > o2.getLastMessageTimestap())
+                if (o1.getLastMessageTimestap() > o2.getLastMessageTimestap())
                     return 1;
-                else if(o1.getLastMessageTimestap() < o2.getLastMessageTimestap())
+                else if (o1.getLastMessageTimestap() < o2.getLastMessageTimestap())
                     return -1;
                 else
                     return 0;
@@ -154,41 +149,36 @@ public class FriendsFragment extends Fragment {
         FriendLists.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getContext(),ChatActivity.class);
+                Intent intent = new Intent(getContext(), ChatActivity.class);
                 ImageView imageView = (ImageView) view.findViewById(R.id.friend_item_photo);
                 Friend friend = (Friend) parent.getItemAtPosition(position);
 
 
-                if(friend.getPhotourl()!=null && imageView.getDrawable()!=null) {
+                if (friend.getPhotourl() != null && imageView.getDrawable() != null) {
                     Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
                     intent.putExtra("image", bitmap);
-                    intent.putExtra("transition",ViewCompat.getTransitionName(imageView));
+                    intent.putExtra("transition", ViewCompat.getTransitionName(imageView));
                     tranisition = true;
-                }
-
-                else
+                } else
                     tranisition = false;
-                intent.putExtra("Friend",friend);
+                intent.putExtra("Friend", friend);
 
-                if(shareIntent!= null)
-                {
-                    intent.putExtra("shareIntent",shareIntent);
+                if (shareIntent != null) {
+                    intent.putExtra("shareIntent", shareIntent);
 //                    shareIntent = null;
                     tranisition = false;
                 }
 
-                if(tranisition) {
+                if (tranisition) {
                     ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation
                             (
                                     getActivity(),
                                     imageView,
                                     ViewCompat.getTransitionName(imageView));
                     startActivity(intent, options.toBundle());
-                }
-                  else
-                {
-                    if(shareIntent!=null)
-                    getActivity().finish();
+                } else {
+                    if (shareIntent != null)
+                        getActivity().finish();
 //                    startActivity(intent);
                     TaskStackBuilder.create(getContext())
                             .addNextIntentWithParentStack(intent)
@@ -200,23 +190,22 @@ public class FriendsFragment extends Fragment {
 
 
         friendListQuery = friendReference.orderByChild("lastMessageTimestap");
-        if(mFriendsListener!=null)
+        if (mFriendsListener != null)
             friendListQuery.addChildEventListener(mFriendsListener);
 
         ConnectivityManager cm =
-                (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
 
-        if(!isConnected)
-        {
+        if (!isConnected) {
 
 
-            if(mFriendsListener!=null) {
+            if (mFriendsListener != null) {
                 friendListQuery.removeEventListener(mFriendsListener);
-                mFriendsListener=null;
+                mFriendsListener = null;
             }
 
             viewModel.getSavedFriendChats();
@@ -225,12 +214,12 @@ public class FriendsFragment extends Fragment {
                 @Override
                 public void onChanged(@Nullable List<SavedChatsEntity> savedChatsEntities) {
 
-                    if(savedChatsEntities.size()>0) {
+                    if (savedChatsEntities.size() > 0) {
 
                         friendListAdapter.clear();
 
                         for (SavedChatsEntity savedChatsEntity : savedChatsEntities) {
-                            Friend friend = new Friend(savedChatsEntity.chatName,savedChatsEntity.chatProfileImageurl,true,savedChatsEntity.friendUid);
+                            Friend friend = new Friend(savedChatsEntity.chatName, savedChatsEntity.chatProfileImageurl, true, savedChatsEntity.friendUid);
                             friend.setChatid(savedChatsEntity.chatid);
                             friendListAdapter.add(friend);
                         }
@@ -248,8 +237,6 @@ public class FriendsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-
 
 
         setHasOptionsMenu(false);
@@ -282,27 +269,26 @@ public class FriendsFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
 
-        if(mFriendsListener!=null) {
+        if (mFriendsListener != null) {
             friendListQuery.removeEventListener(mFriendsListener);
-            mFriendsListener=null;
+            mFriendsListener = null;
         }
 
     }
 
-    private class FriendsListener implements ChildEventListener
-    {
+    private class FriendsListener implements ChildEventListener {
 
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
             final Friend friend = (Friend) dataSnapshot.getValue(Friend.class);
 
-            if(friend.isActive()) {
+            if (friend.isActive()) {
                 FirebaseDatabase.getInstance().getReference("Users").child(friend.getUid()).child("profileDP").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         String photourl = dataSnapshot.getValue(String.class);
-                        if(photourl!=null) {
+                        if (photourl != null) {
                             friend.setPhotourl(photourl);
                             friendListAdapter.notifyDataSetChanged();
                         }
@@ -322,9 +308,7 @@ public class FriendsFragment extends Fragment {
 
                 viewModel.setChatActive(friend.getChatid());
 
-            }
-
-            else {
+            } else {
 
                 //// TODO: make active false in db and make active as offline criteria
                 viewModel.setChatInactive(friend.getChatid());
@@ -339,8 +323,7 @@ public class FriendsFragment extends Fragment {
             final Friend friend = (Friend) dataSnapshot.getValue(Friend.class);
 
 
-
-           Friend friend1 = friendListAdapter.friendHashMap.get(friend.getUid());
+            Friend friend1 = friendListAdapter.friendHashMap.get(friend.getUid());
 
             if (friend1 != null) {
                 friendListAdapter.friends.remove(friend1);
@@ -350,14 +333,11 @@ public class FriendsFragment extends Fragment {
 
             friendListAdapter.friendHashMap.remove(friend.getUid());
 
-            if(friend.isActive()) {
+            if (friend.isActive()) {
                 friendListAdapter.add(friend);
                 friendListAdapter.sort(friendComparator);
                 viewModel.setChatActive(friend.getChatid());
-            }
-
-            else
-            {
+            } else {
                 //// TODO: make active false in db and make active as offline criteria
                 viewModel.setChatInactive(friend.getChatid());
 
@@ -385,18 +365,18 @@ public class FriendsFragment extends Fragment {
     }
 
 
-    class FriendComparator implements Comparator<Friend>{
+    class FriendComparator implements Comparator<Friend> {
 
         @Override
         public int compare(Friend o1, Friend o2) {
 
-            if(o2.getLastMessageTimestap() == null)
+            if (o2.getLastMessageTimestap() == null)
                 return -1;
-            else if( o1.getLastMessageTimestap() == null)
+            else if (o1.getLastMessageTimestap() == null)
                 return 1;
-            else if(o1.getLastMessageTimestap() > o2.getLastMessageTimestap())
+            else if (o1.getLastMessageTimestap() > o2.getLastMessageTimestap())
                 return -1;
-            else if(o1.getLastMessageTimestap() < o2.getLastMessageTimestap())
+            else if (o1.getLastMessageTimestap() < o2.getLastMessageTimestap())
                 return 1;
             else
                 return 0;

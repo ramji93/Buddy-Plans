@@ -32,7 +32,7 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
     @Override
     public UserList_ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View view =  LayoutInflater.from(parent.getContext()).inflate(R.layout.usersearch_list_item,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.usersearch_list_item, parent, false);
 
         return new UserList_ViewHolder(view);
     }
@@ -52,13 +52,11 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
 
     {
 
-         mContext =   context;
-         userList = new ArrayList<User>();
+        mContext = context;
+        userList = new ArrayList<User>();
 
 
     }
-
-
 
 
     @Override
@@ -67,8 +65,7 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
     }
 
 
-    public class UserList_ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
-    {
+    public class UserList_ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.username)
         TextView userNameView;
 
@@ -76,12 +73,11 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
         CircularImageView imageView;
 
 
-        public UserList_ViewHolder(View view)
-        {
+        public UserList_ViewHolder(View view) {
 
             super(view);
 
-            ButterKnife.bind(this,view);
+            ButterKnife.bind(this, view);
 
             view.setOnClickListener(this);
 
@@ -91,12 +87,11 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
         @Override
         public void onClick(View v) {
 
-            Intent intent = new Intent(mContext,UserActivity.class);
+            Intent intent = new Intent(mContext, UserActivity.class);
 
-            intent.putExtra("User",userList.get(getAdapterPosition()));
+            intent.putExtra("User", userList.get(getAdapterPosition()));
 
             mContext.startActivity(intent);
-
 
 
         }

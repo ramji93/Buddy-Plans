@@ -37,9 +37,11 @@ public class SearchResultsActivity extends BaseActivity {
     private Query userQuery1;
     private ArrayList<User> userList;
     private UserListener userListener;
-    @BindView(R.id.usersearchlist) RecyclerView userSearchList;
-    @BindView(R.id.search_results_toolbar) Toolbar toolbar;
-    HashMap<String,String> hashMap;
+    @BindView(R.id.usersearchlist)
+    RecyclerView userSearchList;
+    @BindView(R.id.search_results_toolbar)
+    Toolbar toolbar;
+    HashMap<String, String> hashMap;
 
     UserSearchAdapter userSearchAdapter;
 
@@ -65,15 +67,14 @@ public class SearchResultsActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        if(!Util.checkConnection(SearchResultsActivity.this))
-        {
+        if (!Util.checkConnection(SearchResultsActivity.this)) {
 
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(R.string.nointernet)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                                     finish();
+                            finish();
                         }
                     });
 
@@ -95,7 +96,7 @@ public class SearchResultsActivity extends BaseActivity {
 
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        currentUser = gson.fromJson(sharedPreferences.getString("User",""),User.class);
+        currentUser = gson.fromJson(sharedPreferences.getString("User", ""), User.class);
 
     }
 
@@ -108,11 +109,11 @@ public class SearchResultsActivity extends BaseActivity {
 
             User user = dataSnapshot.getValue(User.class);
 
-            if(!hashMap.containsKey(user.getUid())) {
+            if (!hashMap.containsKey(user.getUid())) {
 
                 if (!user.getUid().equalsIgnoreCase(currentUser.getUid())) {
                     userSearchAdapter.userList.add(user);
-                    hashMap.put(user.getUid(),user.getUid());
+                    hashMap.put(user.getUid(), user.getUid());
                     userSearchAdapter.notifyDataSetChanged();
 
                 }
@@ -142,21 +143,18 @@ public class SearchResultsActivity extends BaseActivity {
         }
     }
 
-    public void displayResults(String query)
-    {
+    public void displayResults(String query) {
 
         String query1 = String.valueOf(query.charAt(0));
         query1 = query1.toUpperCase();
         query1 = query1.concat(query.substring(1));
 
-        userQuery = usersReference.orderByChild("userName").startAt(query).endAt(query+"\uf8ff");
+        userQuery = usersReference.orderByChild("userName").startAt(query).endAt(query + "\uf8ff");
 
-        userQuery1 =  usersReference.orderByChild("userName").startAt(query1).endAt(query+"\uf8ff");
-
+        userQuery1 = usersReference.orderByChild("userName").startAt(query1).endAt(query + "\uf8ff");
 
 
         userListener = new UserListener();
-
 
 
     }
@@ -165,7 +163,7 @@ public class SearchResultsActivity extends BaseActivity {
     protected void onStart() {
         super.onStart();
 
-        if(userListener!=null) {
+        if (userListener != null) {
             userQuery.addChildEventListener(userListener);
             userQuery1.addChildEventListener(userListener);
 
@@ -182,13 +180,13 @@ public class SearchResultsActivity extends BaseActivity {
                 return true;
         }
 
-        return(super.onOptionsItemSelected(item));
+        return (super.onOptionsItemSelected(item));
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if(userListener != null) {
+        if (userListener != null) {
             userQuery.removeEventListener(userListener);
             userQuery1.removeEventListener(userListener);
             userListener = null;

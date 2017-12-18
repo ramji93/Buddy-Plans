@@ -43,22 +43,20 @@ public class FavouritesActivity extends BaseActivity {
             @Override
             public void onChanged(@Nullable List<SavedChatsEntity> savedChatsEntities) {
 
-                if(savedChatsEntities.size()==0)
-                {
+                if (savedChatsEntities.size() == 0) {
                     emptytext.setVisibility(View.VISIBLE);
                     favouriteList.setVisibility(View.GONE);
-                }
-                else {
+                } else {
                     emptytext.setVisibility(View.GONE);
                     favouriteList.setVisibility(View.VISIBLE);
                 }
-                favouriteList.setAdapter(new FavouriteList_Adapter(FavouritesActivity.this,savedChatsEntities));
+                favouriteList.setAdapter(new FavouriteList_Adapter(FavouritesActivity.this, savedChatsEntities));
 
             }
         });
 
         favouriteList = (RecyclerView) findViewById(R.id.favourite_list);
-        favouriteList.setLayoutManager(new GridLayoutManager(this,this.getResources().getInteger(R.integer.fav_column_count)));
+        favouriteList.setLayoutManager(new GridLayoutManager(this, this.getResources().getInteger(R.integer.fav_column_count)));
         ItemOffsetDecoration itemDecoration = new ItemOffsetDecoration(this, R.dimen.item_offset);
         favouriteList.addItemDecoration(itemDecoration);
 
@@ -68,6 +66,7 @@ public class FavouritesActivity extends BaseActivity {
 //        favouriteList.setAdapter(adapter);
 
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -76,7 +75,7 @@ public class FavouritesActivity extends BaseActivity {
                 return true;
         }
 
-        return(super.onOptionsItemSelected(item));
+        return (super.onOptionsItemSelected(item));
     }
 
 }

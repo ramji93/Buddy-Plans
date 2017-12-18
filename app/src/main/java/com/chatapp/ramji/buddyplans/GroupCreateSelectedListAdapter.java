@@ -20,13 +20,12 @@ import butterknife.ButterKnife;
  * Created by user on 13-05-2017.
  */
 
-public class GroupCreateSelectedListAdapter extends RecyclerView.Adapter<GroupCreateSelectedListAdapter.GC_SelectedFriendViewHolder>{
+public class GroupCreateSelectedListAdapter extends RecyclerView.Adapter<GroupCreateSelectedListAdapter.GC_SelectedFriendViewHolder> {
 
     ArrayList<Friend> selectedlist;
     Context mcontext;
 
-    public GroupCreateSelectedListAdapter(Context context)
-    {
+    public GroupCreateSelectedListAdapter(Context context) {
 
         mcontext = context;
         selectedlist = new ArrayList<Friend>();
@@ -36,7 +35,7 @@ public class GroupCreateSelectedListAdapter extends RecyclerView.Adapter<GroupCr
     @Override
     public GC_SelectedFriendViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-       View v = LayoutInflater.from(mcontext).inflate(R.layout.group_create_selected_item,parent,false);
+        View v = LayoutInflater.from(mcontext).inflate(R.layout.group_create_selected_item, parent, false);
 
         return new GC_SelectedFriendViewHolder(v);
     }
@@ -68,7 +67,7 @@ public class GroupCreateSelectedListAdapter extends RecyclerView.Adapter<GroupCr
         public GC_SelectedFriendViewHolder(View itemView) {
 
             super(itemView);
-            ButterKnife.bind(this,itemView);
+            ButterKnife.bind(this, itemView);
             deleteView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -83,15 +82,12 @@ public class GroupCreateSelectedListAdapter extends RecyclerView.Adapter<GroupCr
             });
 
 
-
-
         }
     }
 
-    public interface DeleteSelectedItemListener{
+    public interface DeleteSelectedItemListener {
 
         public void ondeleteselecteditem(Friend friend);
-
 
 
     }

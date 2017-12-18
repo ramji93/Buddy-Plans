@@ -21,12 +21,11 @@ import butterknife.ButterKnife;
 
 public class GroupCreateFriendListAdapter extends RecyclerView.Adapter<GroupCreateFriendListAdapter.GC_FriendItem_ViewHolder> {
 
-   ArrayList<Friend> friendList;
+    ArrayList<Friend> friendList;
     Context mContext;
 
 
-    public GroupCreateFriendListAdapter(Context context)
-    {
+    public GroupCreateFriendListAdapter(Context context) {
         mContext = context;
         friendList = new ArrayList<Friend>();
     }
@@ -35,7 +34,7 @@ public class GroupCreateFriendListAdapter extends RecyclerView.Adapter<GroupCrea
     @Override
     public GC_FriendItem_ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View v = LayoutInflater.from(mContext).inflate(R.layout.group_create_friend_item,parent,false);
+        View v = LayoutInflater.from(mContext).inflate(R.layout.group_create_friend_item, parent, false);
 
 
         return new GC_FriendItem_ViewHolder(v);
@@ -57,8 +56,7 @@ public class GroupCreateFriendListAdapter extends RecyclerView.Adapter<GroupCrea
         return friendList.size();
     }
 
-    public class GC_FriendItem_ViewHolder extends  RecyclerView.ViewHolder
-    {
+    public class GC_FriendItem_ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.group_create_friend_photo)
         CircularImageView friend_photo;
@@ -66,12 +64,11 @@ public class GroupCreateFriendListAdapter extends RecyclerView.Adapter<GroupCrea
         TextView friend_name;
 
 
-
         public GC_FriendItem_ViewHolder(View itemView) {
 
 
             super(itemView);
-            ButterKnife.bind(this,itemView);
+            ButterKnife.bind(this, itemView);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -89,19 +86,16 @@ public class GroupCreateFriendListAdapter extends RecyclerView.Adapter<GroupCrea
 
     }
 
-    public void add(Friend friend)
-    {
+    public void add(Friend friend) {
 
         friendList.add(friend);
 
     }
 
 
-    public interface FriendSelectListener
-    {
+    public interface FriendSelectListener {
 
         public void onFriendSelect(Friend friend);
-
 
 
     }

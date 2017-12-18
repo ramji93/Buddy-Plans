@@ -6,7 +6,7 @@ package com.chatapp.ramji.buddyplans;
 
 public class NotificationMessage {
 
-   public String from;
+    public String from;
 
     public String to;
 
@@ -16,16 +16,13 @@ public class NotificationMessage {
 
     public String chatid;
 
-    public NotificationMessage()
-    {
-
+    public NotificationMessage() {
 
 
     }
 
 
-    public NotificationMessage(String fromparam,String nameparam, String toparam,String chatparam, String textparam)
-    {
+    public NotificationMessage(String fromparam, String nameparam, String toparam, String chatparam, String textparam) {
 
         from = fromparam;
 

@@ -26,8 +26,7 @@ public class FavouriteList_Adapter extends RecyclerView.Adapter<FavouriteList_Ad
     List<SavedChatsEntity> savedChatsEntities;
 
 
-    public FavouriteList_Adapter(Context context,List<SavedChatsEntity> entities)
-    {
+    public FavouriteList_Adapter(Context context, List<SavedChatsEntity> entities) {
         mcontext = context;
         this.savedChatsEntities = entities;
 
@@ -36,7 +35,7 @@ public class FavouriteList_Adapter extends RecyclerView.Adapter<FavouriteList_Ad
     @Override
     public FavriteViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(mcontext).inflate(R.layout.favourite_list_item,parent,false);
+        View view = LayoutInflater.from(mcontext).inflate(R.layout.favourite_list_item, parent, false);
 
         FavriteViewHolder viewHolder = new FavriteViewHolder(view);
 
@@ -50,8 +49,8 @@ public class FavouriteList_Adapter extends RecyclerView.Adapter<FavouriteList_Ad
 
         File fdir = new File(savedChatsEntities.get(position).chatProfileImageurl);
 
-        if(fdir.exists())
-        Glide.with(mcontext).load(fdir).into(holder.imageView);
+        if (fdir.exists())
+            Glide.with(mcontext).load(fdir).into(holder.imageView);
 
         holder.groupName.setText(savedChatsEntities.get(position).chatName);
 
@@ -59,18 +58,16 @@ public class FavouriteList_Adapter extends RecyclerView.Adapter<FavouriteList_Ad
             @Override
             public void onClick(View v) {
 
-                if(savedChatsEntities.get(position).groupKey != null) {
+                if (savedChatsEntities.get(position).groupKey != null) {
 
                     Groupheader group = new Groupheader(savedChatsEntities.get(position).chatName, savedChatsEntities.get(position).chatid, savedChatsEntities.get(position).chatProfileImageurl);
                     group.setGroupKey(savedChatsEntities.get(position).groupKey);
                     Intent intent = new Intent(mcontext, GroupChatActivity.class);
                     intent.putExtra("group", group);
                     mcontext.startActivity(intent);
-                }
+                } else {
 
-                else {
-
-                    Friend friend = new Friend(savedChatsEntities.get(position).chatName,savedChatsEntities.get(position).chatProfileImageurl,true,savedChatsEntities.get(position).friendUid);
+                    Friend friend = new Friend(savedChatsEntities.get(position).chatName, savedChatsEntities.get(position).chatProfileImageurl, true, savedChatsEntities.get(position).friendUid);
                     friend.setChatid(savedChatsEntities.get(position).chatid);
                     Intent intent = new Intent(mcontext, ChatActivity.class);
                     intent.putExtra("Friend", friend);
@@ -89,21 +86,19 @@ public class FavouriteList_Adapter extends RecyclerView.Adapter<FavouriteList_Ad
         return savedChatsEntities.size();
     }
 
- class FavriteViewHolder extends RecyclerView.ViewHolder
- {
-      ImageView imageView;
+    class FavriteViewHolder extends RecyclerView.ViewHolder {
+        ImageView imageView;
 
-      TextView groupName;
+        TextView groupName;
 
-     public FavriteViewHolder(View itemView) {
-         super(itemView);
+        public FavriteViewHolder(View itemView) {
+            super(itemView);
 
-         imageView = (ImageView) itemView.findViewById(R.id.fav_item_image);
-         groupName = (TextView) itemView.findViewById(R.id.fav_item_text);
+            imageView = (ImageView) itemView.findViewById(R.id.fav_item_image);
+            groupName = (TextView) itemView.findViewById(R.id.fav_item_text);
 
-     }
- }
-
+        }
+    }
 
 
 }

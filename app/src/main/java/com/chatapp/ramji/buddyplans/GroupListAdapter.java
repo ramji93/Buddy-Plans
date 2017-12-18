@@ -29,12 +29,12 @@ public class GroupListAdapter extends ArrayAdapter<Groupheader> {
 
     List<Groupheader> groups;
 
-    HashMap<String,Groupheader> grouphashmap;
+    HashMap<String, Groupheader> grouphashmap;
 
     Boolean isConnected;
 
     public GroupListAdapter(Context context, List<Groupheader> objects) {
-        super(context, R.layout.group_list_item , objects);
+        super(context, R.layout.group_list_item, objects);
 
         mcontext = context;
         groups = objects;
@@ -55,17 +55,14 @@ public class GroupListAdapter extends ArrayAdapter<Groupheader> {
 
         View groupItemView;
 
-        if(convertView == null)
-        {
+        if (convertView == null) {
 
             LayoutInflater inflater = (LayoutInflater) mcontext
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            groupItemView  = inflater.inflate(R.layout.group_list_item, parent, false);
+            groupItemView = inflater.inflate(R.layout.group_list_item, parent, false);
 
-        }
-
-        else
+        } else
 
         {
 
@@ -83,26 +80,25 @@ public class GroupListAdapter extends ArrayAdapter<Groupheader> {
         CircularImageView groupPhotoView = (CircularImageView) groupItemView.findViewById(R.id.group_item_photo);
 
 
-
-        ViewCompat.setTransitionName(groupPhotoView,groups.get(position).getName());
+        ViewCompat.setTransitionName(groupPhotoView, groups.get(position).getName());
 
         groupNameView.setText(groups.get(position).getName());
 
-        if(groups.get(position).getPhotoUrl()!=null)
+        if (groups.get(position).getPhotoUrl() != null)
 
-        Glide.with(mcontext).load(groups.get(position).getPhotoUrl()).asBitmap().diskCacheStrategy(isConnected ? DiskCacheStrategy.RESULT : DiskCacheStrategy.NONE).into(groupPhotoView);
+            Glide.with(mcontext).load(groups.get(position).getPhotoUrl()).asBitmap().diskCacheStrategy(isConnected ? DiskCacheStrategy.RESULT : DiskCacheStrategy.NONE).into(groupPhotoView);
 
         TextView lastmessage = (TextView) groupItemView.findViewById(R.id.lastmessage);
 
-        if(groups.get(position).getLastMessage() != null)
+        if (groups.get(position).getLastMessage() != null)
 
-        lastmessage.setText(groups.get(position).getLastMessage());
+            lastmessage.setText(groups.get(position).getLastMessage());
 
         TextView timestamp = (TextView) groupItemView.findViewById(R.id.timestamp);
 
-        if(groups.get(position).getLastMessageTimestap() != null)
+        if (groups.get(position).getLastMessageTimestap() != null)
 
-        timestamp.setText(Util.getDate(groups.get(position).getLastMessageTimestap()));
+            timestamp.setText(Util.getDate(groups.get(position).getLastMessageTimestap()));
 
         return groupItemView;
 
@@ -112,9 +108,7 @@ public class GroupListAdapter extends ArrayAdapter<Groupheader> {
     public void add(Groupheader object) {
 
         groups.add(object);
-        grouphashmap.put(object.getGroupKey(),object);
-
-
+        grouphashmap.put(object.getGroupKey(), object);
 
 
     }

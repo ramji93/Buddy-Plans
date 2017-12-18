@@ -6,27 +6,25 @@ package com.chatapp.ramji.buddyplans;
 
 public class GroupNotification {
 
-public String senderId;
+    public String senderId;
 
-public String senderName;
+    public String senderName;
 
-public String groupId;
+    public String groupId;
 
-public String chatId;
+    public String chatId;
 
-public String groupName;
+    public String groupName;
 
-public String text;
+    public String text;
 
 
-    public GroupNotification()
-    {
+    public GroupNotification() {
 
 
     }
 
-    public GroupNotification(String senderId,String senderName,String groupId,String chatId,String groupName,String text)
-    {
+    public GroupNotification(String senderId, String senderName, String groupId, String chatId, String groupName, String text) {
 
         this.senderId = senderId;
         this.senderName = senderName;

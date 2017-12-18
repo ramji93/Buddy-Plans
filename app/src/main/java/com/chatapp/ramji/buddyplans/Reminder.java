@@ -23,7 +23,7 @@ public class Reminder {
 
     }
 
-    public Reminder(String from, String to, String title, String timestamp, String sendername,String chatid) {
+    public Reminder(String from, String to, String title, String timestamp, String sendername, String chatid) {
 
         this.from = from;
         this.to = to;
@@ -33,7 +33,6 @@ public class Reminder {
         this.chatid = chatid;
 
     }
-
 
 
 }

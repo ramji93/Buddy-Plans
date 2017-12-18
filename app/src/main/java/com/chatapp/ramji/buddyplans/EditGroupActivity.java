@@ -50,7 +50,7 @@ import gun0912.tedbottompicker.TedBottomPicker;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 
-public class EditGroupActivity extends BaseActivity implements GroupCreateFriendListAdapter.FriendSelectListener, GroupEditMembersAdapter.DeleteSelectedItemListener  {
+public class EditGroupActivity extends BaseActivity implements GroupCreateFriendListAdapter.FriendSelectListener, GroupEditMembersAdapter.DeleteSelectedItemListener {
 
     @BindView(R.id.toolbar_groupedit)
     Toolbar toolbar;
@@ -94,8 +94,6 @@ public class EditGroupActivity extends BaseActivity implements GroupCreateFriend
     String groupName_old = null;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,19 +135,17 @@ public class EditGroupActivity extends BaseActivity implements GroupCreateFriend
         friendListAdapter = new GroupCreateFriendListAdapter(this);
         memberListAdapter = new GroupEditMembersAdapter(this);
 
-        recyclerView1.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true));
-        recyclerView2.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true));
-
+        recyclerView1.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
+        recyclerView2.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
 
 
         recyclerView1.setAdapter(memberListAdapter);
         recyclerView2.setAdapter(friendListAdapter);
 
 
-
         Gson gson = new Gson();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        currentUser = gson.fromJson(sharedPreferences.getString("User",""),User.class);
+        currentUser = gson.fromJson(sharedPreferences.getString("User", ""), User.class);
         firebaseDatabase = FirebaseDatabase.getInstance();
         friendsReference = firebaseDatabase.getReference().child("Friends").child(currentUser.getUid());
         groupMembersReference = firebaseDatabase.getReference("GroupMemebers").child(groupheader.getGroupKey());
@@ -231,14 +227,12 @@ public class EditGroupActivity extends BaseActivity implements GroupCreateFriend
     }
 
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        if(requestCode==WRITE_REQUEST)
-        {
+        if (requestCode == WRITE_REQUEST) {
 
-            if(bottomSheetDialogFragment==null) {
+            if (bottomSheetDialogFragment == null) {
 
                 bottomSheetDialogFragment = new TedBottomPicker.Builder(this).setTitle("Choose new Group Photo")
                         .setOnImageSelectedListener(new TedBottomPicker.OnImageSelectedListener() {
@@ -262,49 +256,46 @@ public class EditGroupActivity extends BaseActivity implements GroupCreateFriend
             bottomSheetDialogFragment.show(getSupportFragmentManager());
 
 
-
         }
     }
 
 
     @OnClick(R.id.edit_button)
-    public void editGroup()
-    {
+    public void editGroup() {
         Boolean photochanged = false;
         Boolean namechanged = false;
 
         groupmessageReference = firebaseDatabase.getReference().child("Messages").child(groupheader.getChatId());
 
-        if(ProfilePhoto_new != null )
+        if (ProfilePhoto_new != null)
             photochanged = true;
 
         String groupName_new = groupNameText.getText().toString();
 
-        if(!groupName_new.equalsIgnoreCase(groupName_old))
+        if (!groupName_new.equalsIgnoreCase(groupName_old))
             namechanged = true;
 
         groupChatReference = firebaseDatabase.getReference().child("GroupChat");
 
-        if(photochanged)
-        {
+        if (photochanged) {
 
 //            imageStorageReference.child(groupheader.getGroupKey()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
 //                @Override
 //                public void onSuccess(Void aVoid) {
 //TODO : check if photochanged works or not
-                    StorageReference imageRef = imageStorageReference.child(groupheader.getGroupKey()).child("groupphoto");
+            StorageReference imageRef = imageStorageReference.child(groupheader.getGroupKey()).child("groupphoto");
 
-                    imageRef.putFile(ProfilePhoto_new).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+            imageRef.putFile(ProfilePhoto_new).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                            //noinspection VisibleForTests
-                            groupChatReference.child(groupheader.getGroupKey()).child("photoUrl").setValue(taskSnapshot.getDownloadUrl().toString());
-                        }
-                    });
+                    //noinspection VisibleForTests
+                    groupChatReference.child(groupheader.getGroupKey()).child("photoUrl").setValue(taskSnapshot.getDownloadUrl().toString());
+                }
+            });
 
 
-            Message message = new Message(currentUser.getUserName() + " has changed group photo ",null,null,null,null,null);
+            Message message = new Message(currentUser.getUserName() + " has changed group photo ", null, null, null, null, null);
 
             String messageKey = groupmessageReference.push().getKey();
 
@@ -314,12 +305,11 @@ public class EditGroupActivity extends BaseActivity implements GroupCreateFriend
 
         }
 
-        if(namechanged)
-        {
+        if (namechanged) {
 
             groupChatReference.child(groupheader.getGroupKey()).child("name").setValue(groupName_new);
 
-            Message message = new Message(currentUser.getUserName() + " has changed group name ",null,null,null,null,null);
+            Message message = new Message(currentUser.getUserName() + " has changed group name ", null, null, null, null, null);
 
             String messageKey = groupmessageReference.push().getKey();
 
@@ -329,9 +319,9 @@ public class EditGroupActivity extends BaseActivity implements GroupCreateFriend
         }
 
 
-     //   Map<String,Boolean> groupmembers = new HashMap<String, Boolean>();
+        //   Map<String,Boolean> groupmembers = new HashMap<String, Boolean>();
 
-        for (User user:memberListAdapter.memberlist) {
+        for (User user : memberListAdapter.memberlist) {
 
 //            groupmembers.put(user.getUid(),true);
 
@@ -341,19 +331,17 @@ public class EditGroupActivity extends BaseActivity implements GroupCreateFriend
 
         groupMembersReference.child(currentUser.getUid()).child("current").setValue(true);
 
-       // groupmembers.put(currentUser.getUid(),true);
+        // groupmembers.put(currentUser.getUid(),true);
 
-       // groupMembersReference.setValue(groupmembers);
+        // groupMembersReference.setValue(groupmembers);
 
-        Toast.makeText(this,"Group is being edited ",Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Group is being edited ", Toast.LENGTH_LONG).show();
 
 
         onBackPressed();
 
 
-
     }
-
 
 
     //    @Override
@@ -387,10 +375,10 @@ public class EditGroupActivity extends BaseActivity implements GroupCreateFriend
     protected void onDestroy() {
         super.onDestroy();
 
-        if(friendsListener != null)
+        if (friendsListener != null)
             friendsQuery.removeEventListener(friendsListener);
 
-        if(groupMemberListener != null)
+        if (groupMemberListener != null)
             groupMembersReference.removeEventListener(groupMemberListener);
 
 
@@ -420,33 +408,31 @@ public class EditGroupActivity extends BaseActivity implements GroupCreateFriend
         friend.setPhotourl(user.getProfileDP());
         friendListAdapter.add(friend);
         friendListAdapter.notifyDataSetChanged();
-        recyclerView2.smoothScrollToPosition(friendListAdapter.getItemCount()-1);
-        if(memberListAdapter.memberlist.isEmpty())
-        {
+        recyclerView2.smoothScrollToPosition(friendListAdapter.getItemCount() - 1);
+        if (memberListAdapter.memberlist.isEmpty()) {
             recyclerView1.setVisibility(View.GONE);
         }
 
 
     }
 
-    class GroupMemberListener implements ChildEventListener{
+    class GroupMemberListener implements ChildEventListener {
 
 
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-            HashMap<String,Boolean> hashMap  = (HashMap<String, Boolean>) dataSnapshot.getValue();
+            HashMap<String, Boolean> hashMap = (HashMap<String, Boolean>) dataSnapshot.getValue();
 
             boolean bool = hashMap.get("current");
 
             String memberuid = dataSnapshot.getKey();
 
-            if(memberuid != null && bool && !(memberuid.equalsIgnoreCase(currentUser.getUid())) )
-            {
+            if (memberuid != null && bool && !(memberuid.equalsIgnoreCase(currentUser.getUid()))) {
                 firebaseDatabase.getReference("Users").child(memberuid).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                       User user =  dataSnapshot.getValue(User.class);
+                        User user = dataSnapshot.getValue(User.class);
                         // TODO: 23-06-2017
 
                         memberListAdapter.add(user);
@@ -488,76 +474,75 @@ public class EditGroupActivity extends BaseActivity implements GroupCreateFriend
         }
     }
 
-    class FriendsListener implements ChildEventListener{
+    class FriendsListener implements ChildEventListener {
 
 
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-           final Friend friend = dataSnapshot.getValue(Friend.class);
+            final Friend friend = dataSnapshot.getValue(Friend.class);
 
 
+            if (friend.isActive()) {
+                groupchatFriendReference = firebaseDatabase.getReference("GroupMemebers").child(groupheader.getGroupKey()).child(friend.getUid());
+                groupchatFriendReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
 
-              if(friend.isActive()) {
-                  groupchatFriendReference = firebaseDatabase.getReference("GroupMemebers").child(groupheader.getGroupKey()).child(friend.getUid());
-                  groupchatFriendReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                      @Override
-                      public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (!dataSnapshot.exists()) {
+                            firebaseDatabase.getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                          if (!dataSnapshot.exists()) {
-                              firebaseDatabase.getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
-                                  @Override
-                                  public void onDataChange(DataSnapshot dataSnapshot) {
+                                    friend.setPhotourl((String) dataSnapshot.getValue());
+                                    friendListAdapter.add(friend);
+                                    friendListAdapter.notifyDataSetChanged();
+                                    recyclerView2.smoothScrollToPosition(friendListAdapter.getItemCount() - 1);
+                                }
 
-                                      friend.setPhotourl((String) dataSnapshot.getValue());
-                                      friendListAdapter.add(friend);
-                                      friendListAdapter.notifyDataSetChanged();
-                                      recyclerView2.smoothScrollToPosition(friendListAdapter.getItemCount() - 1);
-                                  }
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
 
-                                  @Override
-                                  public void onCancelled(DatabaseError databaseError) {
+                                }
+                            });
 
-                                  }
-                              });
+                        } else {
 
-                          } else {
+                            HashMap<String, Boolean> hashMap = (HashMap<String, Boolean>) dataSnapshot.getValue();
 
-                              HashMap<String, Boolean> hashMap = (HashMap<String, Boolean>) dataSnapshot.getValue();
+                            boolean bool = hashMap.get("current");
 
-                              boolean bool = hashMap.get("current");
+                            if (!bool) {
 
-                              if (!bool) {
+                                firebaseDatabase.getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                  firebaseDatabase.getReference("Users").child(friend.getUid()).child("profileDP").addListenerForSingleValueEvent(new ValueEventListener() {
-                                      @Override
-                                      public void onDataChange(DataSnapshot dataSnapshot) {
+                                        friend.setPhotourl((String) dataSnapshot.getValue());
+                                        friendListAdapter.add(friend);
+                                        friendListAdapter.notifyDataSetChanged();
+                                        recyclerView2.smoothScrollToPosition(friendListAdapter.getItemCount() - 1);
+                                    }
 
-                                          friend.setPhotourl((String) dataSnapshot.getValue());
-                                          friendListAdapter.add(friend);
-                                          friendListAdapter.notifyDataSetChanged();
-                                          recyclerView2.smoothScrollToPosition(friendListAdapter.getItemCount() - 1);
-                                      }
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
 
-                                      @Override
-                                      public void onCancelled(DatabaseError databaseError) {
+                                    }
+                                });
 
-                                      }
-                                  });
-
-                              }
-
-
-                          }
-
-                      }
+                            }
 
 
-                      @Override
-                      public void onCancelled(DatabaseError databaseError) {
+                        }
 
-                      }
-                  });
-              }
+                    }
+
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
 
 
         }
@@ -596,9 +581,8 @@ public class EditGroupActivity extends BaseActivity implements GroupCreateFriend
                 return true;
         }
 
-        return(super.onOptionsItemSelected(item));
+        return (super.onOptionsItemSelected(item));
     }
-
 
 
 }

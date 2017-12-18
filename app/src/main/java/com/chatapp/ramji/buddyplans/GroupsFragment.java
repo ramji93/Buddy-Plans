@@ -79,13 +79,13 @@ public class GroupsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        MainActivity mainActivity = (MainActivity)  getActivity();
+        MainActivity mainActivity = (MainActivity) getActivity();
 
         Log.d(GroupsFragment.class.getName(), "inside oncreate");
 
-        if(getActivity().getIntent() != null ) {
+        if (getActivity().getIntent() != null) {
 
-            if(getActivity().getIntent().getAction()==Intent.ACTION_SEND) {
+            if (getActivity().getIntent().getAction() == Intent.ACTION_SEND) {
 
                 shareIntent = getActivity().getIntent();
                 Log.d(GroupsFragment.class.getName(), "share intent");
@@ -104,47 +104,43 @@ public class GroupsFragment extends Fragment {
         //GroupsFragment container = (GroupsFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.groupfragment);
 
         ViewGroup container = (ViewGroup) getActivity().findViewById(R.id.groupfragment);
-        rootView =  LayoutInflater.from(getActivity())
+        rootView = LayoutInflater.from(getActivity())
                 .inflate(R.layout.fragment_groups, container, false);
 
 
         GroupLists = (ListView) rootView.findViewById(R.id.grouplist);
 
-        groupListAdapter = new GroupListAdapter(getContext(),new ArrayList<Groupheader>());
+        groupListAdapter = new GroupListAdapter(getContext(), new ArrayList<Groupheader>());
 
         GroupLists.setAdapter(groupListAdapter);
 
         GroupLists.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getContext(),GroupChatActivity.class);
+                Intent intent = new Intent(getContext(), GroupChatActivity.class);
                 Groupheader group = (Groupheader) parent.getItemAtPosition(position);
 
                 ImageView imageView = (ImageView) view.findViewById(R.id.group_item_photo);
 
 
-
-                if(imageView.getDrawable()!=null && imageView.getDrawable()!=null) {
+                if (imageView.getDrawable() != null && imageView.getDrawable() != null) {
                     Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
                     intent.putExtra("image", bitmap);
-                    intent.putExtra("transition",ViewCompat.getTransitionName(imageView));
+                    intent.putExtra("transition", ViewCompat.getTransitionName(imageView));
                     tranisition = true;
-                }
-
-                else
+                } else
                     tranisition = false;
 
-                intent.putExtra("group",group);
+                intent.putExtra("group", group);
 
-                if(shareIntent!= null)
-                {
-                    intent.putExtra("shareIntent",shareIntent);
+                if (shareIntent != null) {
+                    intent.putExtra("shareIntent", shareIntent);
                     tranisition = false;
 //                    shareIntent = null;
                 }
 
 
-                if(tranisition) {
+                if (tranisition) {
 
                     ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation
                             (
@@ -152,11 +148,9 @@ public class GroupsFragment extends Fragment {
                                     imageView,
                                     ViewCompat.getTransitionName(imageView));
                     startActivity(intent, options.toBundle());
-                }
-                else
-                {
-                    if(shareIntent!=null)
-                    getActivity().finish();
+                } else {
+                    if (shareIntent != null)
+                        getActivity().finish();
 
 //                    startActivity(intent);
                     TaskStackBuilder.create(getContext())
@@ -174,24 +168,22 @@ public class GroupsFragment extends Fragment {
 
         groupListQuery = groupReference.orderByKey();
 
-        if(mGroupListener!=null)
+        if (mGroupListener != null)
             groupListQuery.addChildEventListener(mGroupListener);
 
 
-
         ConnectivityManager cm =
-                (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
 
-        if(!isConnected)
-        {
+        if (!isConnected) {
 
-            if(mGroupListener!=null) {
+            if (mGroupListener != null) {
                 groupListQuery.removeEventListener(mGroupListener);
-                mGroupListener=null;
+                mGroupListener = null;
             }
 
             viewModel.getSavedGroupChats();
@@ -200,7 +192,7 @@ public class GroupsFragment extends Fragment {
                 @Override
                 public void onChanged(@Nullable List<SavedChatsEntity> savedChatsEntities) {
 
-                    if(savedChatsEntities.size()>0) {
+                    if (savedChatsEntities.size() > 0) {
 
                         groupListAdapter.clear();
 
@@ -218,7 +210,6 @@ public class GroupsFragment extends Fragment {
         }
 
 
-
     }
 
 
@@ -226,7 +217,7 @@ public class GroupsFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         MainActivity mainActivity = (MainActivity) context;
-       // mFirebaseUser = mainActivity.user;
+        // mFirebaseUser = mainActivity.user;
         mFirebaseDatabase = FirebaseDatabase.getInstance();
 
 
@@ -250,11 +241,7 @@ public class GroupsFragment extends Fragment {
         // Inflate the layout for this fragment
 
 
-
-
-
         return rootView;
-
 
 
     }
@@ -290,19 +277,16 @@ public class GroupsFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(mGroupListener!=null) {
+        if (mGroupListener != null) {
             groupListQuery.removeEventListener(mGroupListener);
-            mGroupListener=null;
+            mGroupListener = null;
         }
     }
 
-    private class GroupListener implements ChildEventListener
-    {
+    private class GroupListener implements ChildEventListener {
 
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-
 
 
             final Groupheader group = (Groupheader) dataSnapshot.getValue(Groupheader.class);
@@ -314,29 +298,25 @@ public class GroupsFragment extends Fragment {
             userCheckRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists())
-                    {
-                        HashMap<String,Boolean> hashMap;
+                    if (dataSnapshot.exists()) {
+                        HashMap<String, Boolean> hashMap;
                         try {
                             hashMap = (HashMap<String, Boolean>) dataSnapshot.getValue();
-                        }
-                        catch (ClassCastException e)
-                        {
+                        } catch (ClassCastException e) {
                             return;
                         }
 
 
                         boolean bool = hashMap.get("current");
 
-                        if(bool) {
+                        if (bool) {
 
                             groupListAdapter.add(group);
-                            viewModel.setChatName(group.getChatId(),group.getName());
+                            viewModel.setChatName(group.getChatId(), group.getName());
                             groupListAdapter.sort(groupComparator);
                             groupListAdapter.notifyDataSetChanged();
                             viewModel.setChatActive(group.getChatId());
-                        }
-                        else {
+                        } else {
 
                             Groupheader group1 = groupListAdapter.grouphashmap.get(group.getGroupKey());
 
@@ -357,7 +337,6 @@ public class GroupsFragment extends Fragment {
 
                 }
             });
-
 
 
         }
@@ -374,18 +353,17 @@ public class GroupsFragment extends Fragment {
             userCheckRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists())
-                    {
+                    if (dataSnapshot.exists()) {
 
-                        HashMap<String,Boolean> hashMap  = (HashMap<String, Boolean>) dataSnapshot.getValue();
+                        HashMap<String, Boolean> hashMap = (HashMap<String, Boolean>) dataSnapshot.getValue();
 
                         boolean bool = hashMap.get("current");
 
-                        if(bool) {
+                        if (bool) {
 
                             Groupheader group1 = groupListAdapter.grouphashmap.get(group.getGroupKey());
 
-                            viewModel.setChatName(group.getChatId(),group.getName());
+                            viewModel.setChatName(group.getChatId(), group.getName());
 
                             groupListAdapter.groups.remove(group1);
 
@@ -398,9 +376,7 @@ public class GroupsFragment extends Fragment {
                             groupListAdapter.notifyDataSetChanged();
 
                             viewModel.setChatActive(group.getChatId());
-                        }
-
-                        else {
+                        } else {
                             Groupheader group1 = groupListAdapter.grouphashmap.get(group.getGroupKey());
 
                             groupListAdapter.groups.remove(group1);
@@ -417,7 +393,6 @@ public class GroupsFragment extends Fragment {
 
                 }
             });
-
 
 
         }
@@ -443,13 +418,13 @@ public class GroupsFragment extends Fragment {
         @Override
         public int compare(Groupheader o1, Groupheader o2) {
 
-            if(o2.getLastMessageTimestap() == null)
+            if (o2.getLastMessageTimestap() == null)
                 return -1;
-            else if( o1.getLastMessageTimestap() == null)
+            else if (o1.getLastMessageTimestap() == null)
                 return 1;
-            else if(o1.getLastMessageTimestap() > o2.getLastMessageTimestap())
+            else if (o1.getLastMessageTimestap() > o2.getLastMessageTimestap())
                 return -1;
-            else if(o1.getLastMessageTimestap() < o2.getLastMessageTimestap())
+            else if (o1.getLastMessageTimestap() < o2.getLastMessageTimestap())
                 return 1;
             else
                 return 0;

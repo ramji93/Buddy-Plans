@@ -43,8 +43,8 @@ public class AddEventReminderService extends IntentService {
 
         String title = intent.getStringExtra("title");
         String description = intent.getStringExtra("description");
-        Long eventTime = intent.getLongExtra("time",0);
-        int notification_id = intent.getIntExtra("notification id",0);
+        Long eventTime = intent.getLongExtra("time", 0);
+        int notification_id = intent.getIntExtra("notification id", 0);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -65,13 +65,11 @@ public class AddEventReminderService extends IntentService {
 
         eventValues.put("calendar_id", 3);
         eventValues.put("title", title);
-        eventValues.put("description",description);
+        eventValues.put("description", description);
         //// TODO: 18-10-2017 description
 
 
-
 //            long startDate = c.getTimeInMillis();
-
 
 
         long startDate = eventTime;
@@ -94,7 +92,7 @@ public class AddEventReminderService extends IntentService {
 
         long eventID = Long.parseLong(uri.getLastPathSegment());
 
-        Log.d(GroupChatActivity.class.getName(),"event uri: "+ uri.toString());
+        Log.d(GroupChatActivity.class.getName(), "event uri: " + uri.toString());
 
         ContentValues reminders = new ContentValues();
         reminders.put(CalendarContract.Reminders.EVENT_ID, eventID);
@@ -103,7 +101,7 @@ public class AddEventReminderService extends IntentService {
 
         Uri uri2 = cr.insert(CalendarContract.Reminders.CONTENT_URI, reminders);
 
-        Log.d(GroupChatActivity.class.getName(),"reminder uri: "+ uri2.toString());
+        Log.d(GroupChatActivity.class.getName(), "reminder uri: " + uri2.toString());
 
 
     }

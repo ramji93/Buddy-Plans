@@ -83,14 +83,12 @@ public class Message implements Serializable {
         TimeStamp = timeStamp;
     }
 
-    public Message()
-    {
+    public Message() {
 
     }
 
 
-    public Message(String content, String userName, String photoContentUrl,String photoContentName, String uid,Location location)
-    {
+    public Message(String content, String userName, String photoContentUrl, String photoContentName, String uid, Location location) {
         this.Text = content;
         this.userName = userName;
         this.PhotoContentUrl = photoContentUrl;
