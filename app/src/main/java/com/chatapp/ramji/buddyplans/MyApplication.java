@@ -48,7 +48,7 @@ public class MyApplication extends Application {
     }
 
 
-    public void startActivityTransitionTimer() {
+    public void setuseroffline() {
 //        this.mActivityTransitionTimer = new Timer();
 //        this.mActivityTransitionTimerTask = new TimerTask() {
 //            public void run() {
@@ -65,7 +65,7 @@ public class MyApplication extends Application {
 //                MAX_ACTIVITY_TRANSITION_TIME_MS);
     }
 
-    public void stopActivityTransitionTimer() {
+    public void setuseronline() {
         if (this.mActivityTransitionTimerTask != null) {
             this.mActivityTransitionTimerTask.cancel();
         }
@@ -77,6 +77,8 @@ public class MyApplication extends Application {
         }
 
     }
+
+
 
 
 }

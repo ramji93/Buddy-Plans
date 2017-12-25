@@ -16,14 +16,16 @@ public class BaseActivity extends AppCompatActivity {
 
         MyApplication myApp = (MyApplication) this.getApplication();
 
-        myApp.stopActivityTransitionTimer();
+        myApp.setuseronline();
 
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        ((MyApplication) this.getApplication()).startActivityTransitionTimer();
+        ((MyApplication) this.getApplication()).setuseroffline();
     }
+
+
 
 }
